@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://cak11gl508lfe"]
+
+[ext_resource type="Script" uid="uid://ci4q83qd0bho" path="res://player.gd" id="1_8afob"]
+[ext_resource type="Texture2D" uid="uid://br6b4vpywg05s" path="res://assets/SlimeChar.png" id="2_dovo2"]
+[ext_resource type="Texture2D" uid="uid://bvorqsstkj5m1" path="res://assets/SlimeOutline.png" id="3_gmlin"]
+
+[node name="Player" type="Node2D" unique_id=127484131]
+script = ExtResource("1_8afob")
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1270398527]
+texture = ExtResource("2_dovo2")
+
+[node name="Outline" type="Sprite2D" parent="." unique_id=712898837]
+texture = ExtResource("3_gmlin")
