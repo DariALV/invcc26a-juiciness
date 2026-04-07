@@ -4,3 +4,5 @@
 
 [node name="HurtboxComponent" type="Area2D" unique_id=1017695766]
 script = ExtResource("1_trd8p")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
