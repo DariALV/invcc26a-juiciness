@@ -1,16 +1,16 @@
 extends Node
 
-signal OnHealthIncreased(float)
-signal OnHealthReduced(float)
+signal died
+signal health_changed(new_health : float)
 
 @export var current_health : float = 0
 @export var max_health : float = 100
 @export var min_health : float = 0
 
-func Heal(amount : float):
+func apply_heal(amount : float):
 	current_health = min(max_health, current_health + amount)
-	OnHealthIncreased.emit(current_health)
+	health_changed.emit(current_health)
 
-func Damage(amount : float):
+func apply_damage(amount : float):
 	current_health = max(min_health, current_health - amount)
-	OnHealthReduced.emit(current_health)
+	health_changed.emit(current_health)
