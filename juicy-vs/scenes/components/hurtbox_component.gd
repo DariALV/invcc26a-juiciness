@@ -6,7 +6,5 @@ class_name HurtboxComponent
 
 
 func _on_area_entered(area : Area2D):
-	# TODO: Chequear que el area sea un HitboxComponent
-	if health:
-		# TODO: Aplicar el daño del HitboxComponent 
-		health.apply_damage(10)
+	if area is HitboxComponent and health:
+		health.apply_damage(area.damage)
