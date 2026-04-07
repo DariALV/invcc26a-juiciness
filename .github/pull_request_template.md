@@ -7,7 +7,7 @@
 - [ ] fix (bug fixes)
 - [ ] art / audio (assets)
 - [ ] refactor / performance (refactored code or better performance)
-- [ ] docs (documentation)
+- [ ] docs / configs (documentation or configurations such as addons)
 
 ## Screenshots / GIFs
 <!-- Visual changes that could require an image or a gif -->
