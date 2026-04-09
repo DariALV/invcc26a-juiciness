@@ -7,19 +7,25 @@
 [ext_resource type="Texture2D" uid="uid://bfbtdr6spmviu" path="res://assets/player/player_body.png" id="5_ypwcc"]
 [ext_resource type="Texture2D" uid="uid://cjaavgg02dgi0" path="res://assets/player/player_eyes.png" id="6_2l1sc"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_fgeo0"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8akj5"]
+size = Vector2(10, 13)
 
-[node name="Player" type="Node2D" unique_id=2119319787]
+[node name="Player" type="CharacterBody2D" unique_id=1914702113]
+scale = Vector2(4, 4)
 script = ExtResource("1_sjsxr")
 
 [node name="HealthComponent" parent="." unique_id=100227969 instance=ExtResource("2_acvb7")]
 
 [node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("3_ps70n")]
+speed = 100.0
+max_speed = 100.0
 
-[node name="HurtboxComponent" parent="." unique_id=1017695766 instance=ExtResource("4_v4i73")]
+[node name="HurtboxComponent" parent="." unique_id=1017695766 node_paths=PackedStringArray("health") instance=ExtResource("4_v4i73")]
+health = NodePath("../HealthComponent")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent" unique_id=903693394]
-shape = SubResource("CircleShape2D_fgeo0")
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_8akj5")
 
 [node name="BodySprite" type="Sprite2D" parent="." unique_id=732862129]
 texture_filter = 1
