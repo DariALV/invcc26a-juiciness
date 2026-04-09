@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://bd6clb2ukt70n"]
+
+[ext_resource type="Script" uid="uid://5kd7u42f77x5" path="res://scenes/components/player.gd" id="1_sjsxr"]
+[ext_resource type="PackedScene" uid="uid://d2tr3o63o4sgf" path="res://scenes/components/health_component.tscn" id="2_acvb7"]
+[ext_resource type="PackedScene" uid="uid://bje7baj4w6uoq" path="res://scenes/components/movement_component.tscn" id="3_ps70n"]
+[ext_resource type="PackedScene" uid="uid://c36afys2uuw6j" path="res://scenes/components/hurtbox_component.tscn" id="4_v4i73"]
+[ext_resource type="Texture2D" uid="uid://bfbtdr6spmviu" path="res://assets/player/player_body.png" id="5_ypwcc"]
+[ext_resource type="Texture2D" uid="uid://cjaavgg02dgi0" path="res://assets/player/player_eyes.png" id="6_2l1sc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fgeo0"]
+
+[node name="Player" type="Node2D" unique_id=2119319787]
+script = ExtResource("1_sjsxr")
+
+[node name="HealthComponent" parent="." unique_id=100227969 instance=ExtResource("2_acvb7")]
+
+[node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("3_ps70n")]
+
+[node name="HurtboxComponent" parent="." unique_id=1017695766 instance=ExtResource("4_v4i73")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent" unique_id=903693394]
+shape = SubResource("CircleShape2D_fgeo0")
+
+[node name="BodySprite" type="Sprite2D" parent="." unique_id=732862129]
+texture_filter = 1
+texture = ExtResource("5_ypwcc")
+
+[node name="EyesSprite" type="Sprite2D" parent="." unique_id=880314735]
+texture_filter = 1
+texture = ExtResource("6_2l1sc")
