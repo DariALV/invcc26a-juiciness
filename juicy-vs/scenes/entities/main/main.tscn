@@ -1,7 +1,15 @@
 [gd_scene format=3 uid="uid://bui6efsrg6hap"]
 
 [ext_resource type="PackedScene" uid="uid://bd6clb2ukt70n" path="res://scenes/entities/player/player.tscn" id="1_tg0td"]
+[ext_resource type="PackedScene" uid="uid://bw8e3y4qx1m1" path="res://scenes/entities/enemies/slime/slime.tscn" id="2_jhct2"]
 
 [node name="Main" type="Node2D" unique_id=148708768]
 
 [node name="Player" parent="." unique_id=1914702113 instance=ExtResource("1_tg0td")]
+position = Vector2(535, 339)
+
+[node name="Slime" parent="." unique_id=1923821936 instance=ExtResource("2_jhct2")]
+position = Vector2(818, 196)
+
+[node name="Slime2" parent="." unique_id=1007441768 instance=ExtResource("2_jhct2")]
+position = Vector2(540, 492)
