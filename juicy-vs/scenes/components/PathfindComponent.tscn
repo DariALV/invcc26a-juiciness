@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://cj0fip6oyfl1a"]
+
+[ext_resource type="Script" uid="uid://rc6jc6emn8da" path="res://scenes/components/pathfind_component.gd" id="1_231ma"]
+
+[node name="PathfindComponent" type="Node" unique_id=1237575905]
+script = ExtResource("1_231ma")
+
+[node name="Timer" type="Timer" parent="." unique_id=912600530]
+autostart = true
