@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://cj0fip6oyfl1a"]
+
+[ext_resource type="Script" uid="uid://rc6jc6emn8da" path="res://scenes/components/follow_component.gd" id="1_bhpkt"]
+
+[node name="FollowComponent" type="Node" unique_id=1237575905]
+script = ExtResource("1_bhpkt")
+
+[node name="Timer" type="Timer" parent="." unique_id=912600530]
+autostart = true
