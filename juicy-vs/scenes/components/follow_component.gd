@@ -1,4 +1,5 @@
 extends Node
+class_name FollowComponent
 
 @export_enum("player", "enemy") var target_group: String = "enemy"
 @export_enum("player", "enemy") var parent_group: String = "player"
