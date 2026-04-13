@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://bw8e3y4qx1m1"]
 
+[ext_resource type="Script" uid="uid://d4dg2vrjd4qqq" path="res://scenes/entities/enemies/slime/slime.gd" id="1_a3x4k"]
 [ext_resource type="PackedScene" uid="uid://d2tr3o63o4sgf" path="res://scenes/components/health_component.tscn" id="1_qkvj1"]
 [ext_resource type="PackedScene" uid="uid://bje7baj4w6uoq" path="res://scenes/components/movement_component.tscn" id="2_nnw2d"]
 [ext_resource type="PackedScene" uid="uid://c36afys2uuw6j" path="res://scenes/components/hurtbox_component.tscn" id="3_a3x4k"]
@@ -21,6 +22,7 @@ y_sort_enabled = true
 scale = Vector2(4, 4)
 collision_layer = 2
 collision_mask = 3
+script = ExtResource("1_a3x4k")
 
 [node name="HealthComponent" parent="." unique_id=100227969 instance=ExtResource("1_qkvj1")]
 
