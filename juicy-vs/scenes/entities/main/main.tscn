@@ -13,3 +13,11 @@ position = Vector2(818, 196)
 
 [node name="Slime2" parent="." unique_id=1007441768 instance=ExtResource("2_jhct2")]
 position = Vector2(540, 492)
+
+[node name="Slime3" parent="." unique_id=1309911706 instance=ExtResource("2_jhct2")]
+
+[node name="Slime4" parent="." unique_id=1258390443 instance=ExtResource("2_jhct2")]
+
+[node name="Slime5" parent="." unique_id=1003352493 instance=ExtResource("2_jhct2")]
+
+[node name="Slime6" parent="." unique_id=1411103444 instance=ExtResource("2_jhct2")]

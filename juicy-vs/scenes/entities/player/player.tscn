@@ -10,15 +10,15 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8akj5"]
 size = Vector2(10, 13)
 
-[node name="Player" type="CharacterBody2D" unique_id=1914702113]
+[node name="Player" type="CharacterBody2D" unique_id=1914702113 groups=["player"]]
 scale = Vector2(4, 4)
 script = ExtResource("1_sjsxr")
 
 [node name="HealthComponent" parent="." unique_id=100227969 instance=ExtResource("2_acvb7")]
 
 [node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("3_ps70n")]
-speed = 100.0
-max_speed = 100.0
+speed = 300.0
+max_speed = 300.0
 
 [node name="HurtboxComponent" parent="." unique_id=1017695766 node_paths=PackedStringArray("health") instance=ExtResource("4_v4i73")]
 collision_mask = 2
