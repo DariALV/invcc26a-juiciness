@@ -14,11 +14,7 @@ func _process(delta: float) -> void:
 
 func on_died():
 	movement.speed = 0
-
-func get_input():
-	var input_direction = Input.get_vector("left", "right", "up", "down")
-	velocity = movement.calculate_velocity(input_direction)
 	
 func _physics_process(delta):
-	get_input()
-	move_and_slide()
+	var input_direction = Input.get_vector("left", "right", "up", "down")
+	movement.move(input_direction, delta)
