@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c36afys2uuw6j" path="res://scenes/components/hurtbox_component.tscn" id="3_a3x4k"]
 [ext_resource type="PackedScene" uid="uid://cj0fip6oyfl1a" path="res://scenes/components/PathfindComponent.tscn" id="3_nnw2d"]
 [ext_resource type="PackedScene" uid="uid://bd81puu85l1x7" path="res://scenes/components/hitbox_component.tscn" id="4_1sn8x"]
+[ext_resource type="PackedScene" uid="uid://b1lirqe0q77dy" path="res://scenes/components/push_component.tscn" id="5_1sn8x"]
 [ext_resource type="Texture2D" uid="uid://ccc2nv8w1egtb" path="res://assets/enemies/slime.png" id="5_bj07i"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qkvj1"]
@@ -33,6 +34,11 @@ max_speed = 100.0
 [node name="PathfindComponent" parent="." unique_id=1237575905 node_paths=PackedStringArray("movement") instance=ExtResource("3_nnw2d")]
 target_group = "player"
 parent_group = "enemy"
+movement = NodePath("../MovementComponent")
+
+[node name="PushComponent" parent="." unique_id=417416546 node_paths=PackedStringArray("movement") instance=ExtResource("5_1sn8x")]
+repulsion_force = 3000.0
+min_distance = 32.0
 movement = NodePath("../MovementComponent")
 
 [node name="HurtboxComponent" parent="." unique_id=1017695766 node_paths=PackedStringArray("health") instance=ExtResource("3_a3x4k")]
