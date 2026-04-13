@@ -9,4 +9,4 @@
 position = Vector2(535, 339)
 
 [node name="EnemySpawner" parent="." unique_id=1794532682 instance=ExtResource("2_jhct2")]
-spawn_distance = 500.0
+spawn_distance = 1000.0
