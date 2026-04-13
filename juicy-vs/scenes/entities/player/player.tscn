@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c36afys2uuw6j" path="res://scenes/components/hurtbox_component.tscn" id="4_v4i73"]
 [ext_resource type="Texture2D" uid="uid://bfbtdr6spmviu" path="res://assets/player/player_body.png" id="5_ypwcc"]
 [ext_resource type="Texture2D" uid="uid://cjaavgg02dgi0" path="res://assets/player/player_eyes.png" id="6_2l1sc"]
+[ext_resource type="PackedScene" uid="uid://dm31kx0k84bwi" path="res://scenes/entities/juicy_camera/juicy_camera.tscn" id="7_bj7e2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8akj5"]
 size = Vector2(10, 13)
@@ -35,3 +36,5 @@ texture = ExtResource("5_ypwcc")
 [node name="EyesSprite" type="Sprite2D" parent="." unique_id=880314735]
 texture_filter = 1
 texture = ExtResource("6_2l1sc")
+
+[node name="JuicyCamera" parent="." unique_id=1308731280 instance=ExtResource("7_bj7e2")]
