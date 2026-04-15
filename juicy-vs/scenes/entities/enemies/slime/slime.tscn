@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bd81puu85l1x7" path="res://scenes/components/hitbox_component.tscn" id="4_1sn8x"]
 [ext_resource type="PackedScene" uid="uid://b1lirqe0q77dy" path="res://scenes/components/push_component.tscn" id="5_1sn8x"]
 [ext_resource type="Texture2D" uid="uid://ccc2nv8w1egtb" path="res://assets/enemies/slime.png" id="5_bj07i"]
+[ext_resource type="PackedScene" uid="uid://b4xm0ogbpyiw3" path="res://scenes/components/knockback_component.tscn" id="6_bj07i"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qkvj1"]
 size = Vector2(16, 11.5)
@@ -33,12 +34,16 @@ max_speed = 100.0
 
 [node name="FollowComponent" parent="." unique_id=1237575905 node_paths=PackedStringArray("movement") instance=ExtResource("3_nnw2d")]
 target_group = "player"
-parent_group = "enemy"
 movement = NodePath("../MovementComponent")
 
 [node name="PushComponent" parent="." unique_id=417416546 node_paths=PackedStringArray("movement") instance=ExtResource("5_1sn8x")]
 repulsion_force = 3000.0
 min_distance = 32.0
+movement = NodePath("../MovementComponent")
+
+[node name="KnockbackComponent" parent="." unique_id=119343038 node_paths=PackedStringArray("movement") instance=ExtResource("6_bj07i")]
+min_force = 30.0
+max_force = 200.0
 movement = NodePath("../MovementComponent")
 
 [node name="HurtboxComponent" parent="." unique_id=1017695766 node_paths=PackedStringArray("health") instance=ExtResource("3_a3x4k")]
@@ -52,7 +57,6 @@ debug_color = Color(0.54324436, 0.5615491, 0.2196221, 0.41960785)
 
 [node name="HitboxComponent" parent="." unique_id=920064139 instance=ExtResource("4_1sn8x")]
 collision_layer = 2
-damage = 20.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent" unique_id=464273818]
 position = Vector2(-0.125, 1.125)

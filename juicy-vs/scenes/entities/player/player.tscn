@@ -23,6 +23,7 @@ max_speed = 300.0
 
 [node name="HurtboxComponent" parent="." unique_id=1017695766 node_paths=PackedStringArray("health") instance=ExtResource("4_v4i73")]
 collision_mask = 2
+knockback_on_damage = true
 health = NodePath("../HealthComponent")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent" unique_id=903693394]

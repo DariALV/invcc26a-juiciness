@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://b4xm0ogbpyiw3"]
+
+[ext_resource type="Script" uid="uid://bbt44xk3txo7s" path="res://scenes/components/knockback_component.gd" id="1_rusx3"]
+
+[node name="KnockbackComponent" type="Node" unique_id=119343038]
+script = ExtResource("1_rusx3")
+
+[node name="FreezeTimer" type="Timer" parent="." unique_id=900975157]

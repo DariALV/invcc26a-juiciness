@@ -2,7 +2,6 @@ extends Node
 class_name FollowComponent
 
 @export_enum("player", "enemy") var target_group: String = "enemy"
-@export_enum("player", "enemy") var parent_group: String = "player"
 @export var refresh_rate : float = 1
 @export var repulsion_force : float = 15
 @export var movement : MovementComponent = null
@@ -22,7 +21,6 @@ func _ready():
 
 func search_target():
 	var entities = get_tree().get_nodes_in_group(target_group) as Array[Node2D]
-	print(entities)
 	for entity in entities:
 		if (target == null):
 			target = entity
