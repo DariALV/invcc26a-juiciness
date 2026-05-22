@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://d3og7njf4dm7y"]
+
+[ext_resource type="Script" uid="uid://cma3e6e3h6jcw" path="res://scenes/components/steering_behaviors/force_component.gd" id="1_0esxa"]
+
+[node name="ForceComponent" type="Node" unique_id=147930361]
+script = ExtResource("1_0esxa")

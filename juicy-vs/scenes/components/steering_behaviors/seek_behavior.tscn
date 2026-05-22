@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ditq6dg2xyyij"]
+
+[ext_resource type="Script" uid="uid://bqlr5dkcl3tx3" path="res://scenes/components/steering_behaviors/seek_behavior.gd" id="1_vcb04"]
+
+[node name="SeekBehavior" type="Node" unique_id=1838009483]
+script = ExtResource("1_vcb04")

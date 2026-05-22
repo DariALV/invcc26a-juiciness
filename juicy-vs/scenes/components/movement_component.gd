@@ -1,22 +1,30 @@
-extends Node
-class_name MovementComponent
+class_name MovementComponent extends Node
 
-@export var speed : float = 1
-@export var max_speed : float = 10
+@export var stats: StatsComponent
+@export var friction: float = 0
 
-var parent : Node2D = null
+var parent : CharacterBody2D = null
 
 func _ready():
-	assert(get_parent() is Node2D, 
-	"MovementComponent parent must be a Node2D")
+	assert(get_parent() is CharacterBody2D, "MovementComponent parent must be a CharacterBody2D")
+	assert(stats != null, "StatsComponent required, found null instead")
 	parent = get_parent()
 
-func increase_speed(amount : float):
-	speed = min(max_speed, speed + amount);
+func _process(delta):
+	if stats.current_force.length() > stats.max_force:
+		stats.current_force = stats.current_force.normalized() * stats.max_force
 	
-func move(direction : Vector2, delta : float = 1):
-	var final_direction = direction.normalized() * speed * delta
-	parent.global_position += final_direction
-
-func apply_force(force : Vector2, delta : float = 1):
-	parent.global_position += force * delta
+	stats.current_speed += stats.current_force * delta
+	
+	if stats.current_speed.length() > stats.max_speed:
+		stats.current_speed = stats.current_speed.normalized() * stats.max_speed
+		
+	if stats.current_force == Vector2.ZERO:
+		stats.current_speed -= stats.current_speed * friction * delta
+		if stats.current_speed.length() < 5:
+			stats.current_speed = Vector2.ZERO
+	
+	
+	parent.velocity = stats.current_speed
+	parent.move_and_slide()
+	stats.current_force = Vector2.ZERO

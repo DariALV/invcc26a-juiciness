@@ -1,3 +1,6 @@
 [gd_scene format=3 uid="uid://dm31kx0k84bwi"]
 
+[ext_resource type="Script" uid="uid://c1uyotxib3m2f" path="res://scenes/entities/juicy_camera/juicy_camera.gd" id="1_q6qcl"]
+
 [node name="JuicyCamera" type="Camera2D" unique_id=1308731280]
+script = ExtResource("1_q6qcl")
