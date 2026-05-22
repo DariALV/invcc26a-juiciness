@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://chatvbsrx3y0v"]
+
+[ext_resource type="Script" uid="uid://dxi0ij02iewqr" path="res://globals/quad_tree_partitioning.gd" id="1_614w7"]
+
+[node name="QuadTreePartitioning" type="Node" unique_id=2077759802]
+script = ExtResource("1_614w7")

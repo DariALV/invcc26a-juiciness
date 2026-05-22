@@ -11,7 +11,7 @@ func _ready():
 	timer.timeout.connect(spawn_slime)
 
 func spawn_slime():
-	var enemy : Slime = enemy_scene.instantiate() as Slime
+	var enemy : Enemy = enemy_scene.instantiate() as Enemy
 	enemy.global_position = get_spawn_position()
 	get_parent().add_child(enemy)
 

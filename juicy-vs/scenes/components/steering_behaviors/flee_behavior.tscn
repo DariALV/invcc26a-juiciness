@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://chtjo8gl2o2ke"]
+
+[ext_resource type="Script" uid="uid://b1yax38j3gbqr" path="res://scenes/components/steering_behaviors/flee_behavior.gd" id="1_3h140"]
+
+[node name="FleeBehavior" type="Node" unique_id=1963351202]
+script = ExtResource("1_3h140")

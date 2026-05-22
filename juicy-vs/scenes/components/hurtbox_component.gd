@@ -9,14 +9,14 @@ class_name HurtboxComponent
 func _on_area_entered(area : Area2D):
 	if area is HitboxComponent and health and not health.isDead:
 		health.apply_damage(area.damage)
-		if knockback_on_damage:
-			if knockback_all:
-				var entities = get_tree().get_nodes_in_group(knockback_group)
-				var parent : Node2D = get_parent() as Node2D
-				var point : Vector2 = parent.global_position
-				for entity in entities:
-					if entity.global_position.distance_to(point) < entity.knockback.max_distance:
-						entity.knockback.apply_knockback(point)
+		#if knockback_on_damage:
+			#if knockback_all:
+				#var entities = get_tree().get_nodes_in_group(knockback_group)
+				#var parent : Node2D = get_parent() as Node2D
+				#var point : Vector2 = parent.global_position
+				#for entity in entities:
+					#if entity.global_position.distance_to(point) < entity.knockback.max_distance:
+						#entity.knockback.apply_knockback(point)
 				
 			
 			
