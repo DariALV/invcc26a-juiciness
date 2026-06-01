@@ -42,18 +42,20 @@ metadata/_custom_type_script = "uid://dbmta0nfatl81"
 [sub_resource type="Resource" id="Resource_62a7t"]
 script = ExtResource("6_yb2vu")
 amount = 500
+health_multiplier = 1.0
 scene = ExtResource("7_s5x0e")
 metadata/_custom_type_script = "uid://cgs1a7yb064lb"
 
 [sub_resource type="Resource" id="Resource_s5x0e"]
 script = ExtResource("6_yb2vu")
+amount = 20
+health_multiplier = 1.0
 scene = ExtResource("9_yb2vu")
 metadata/_custom_type_script = "uid://cgs1a7yb064lb"
 
 [sub_resource type="Resource" id="Resource_w370m"]
 script = ExtResource("8_4c717")
 enemies = Array[ExtResource("6_yb2vu")]([SubResource("Resource_62a7t"), SubResource("Resource_s5x0e")])
-min_enemies = null
 metadata/_custom_type_script = "uid://585ndpli0d33"
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_62a7t"]
@@ -2066,7 +2068,7 @@ ground_layer = NodePath("../GroundLayer")
 [node name="EnemySpawner" parent="." unique_id=1794532682 node_paths=PackedStringArray("node_spawn_position") instance=ExtResource("4_cgpkm")]
 node_spawn_position = NodePath("../YSortEntities")
 waves = Array[ExtResource("8_4c717")]([SubResource("Resource_w370m")])
-spawn_cooldown = 0.5
+spawn_cooldown = 0.1
 spawn_distance = 500.0
 
 [node name="JuicyCamera" parent="." unique_id=1308731280 node_paths=PackedStringArray("target") instance=ExtResource("5_xteuy")]

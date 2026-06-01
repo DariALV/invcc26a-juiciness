@@ -6,6 +6,7 @@ signal weapon_upgrade_taken(upgrade: WeaponUpgrade)
 
 @export var upgrade_item_scene: PackedScene
 @export var available_upgrades: Array[Upgrade] = []
+@export var upgrade_type_colors: Array[UpgradeColor] = []
 
 var spawn_node: Node2D
 
@@ -38,3 +39,9 @@ func spawn_upgrade_item(pos: Vector2):
 		var upgrade_item: UpgradeItem = upgrade_item_scene.instantiate()
 		upgrade_item.global_position = pos
 		spawn_node.call_deferred("add_child", upgrade_item)
+
+func get_upgrade_color(upgrade: Upgrade) -> UpgradeColor:
+	for c in upgrade_type_colors:
+		if upgrade.type == c.type:
+			return c
+	return 

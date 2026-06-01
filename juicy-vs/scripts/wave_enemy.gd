@@ -1,6 +1,7 @@
 class_name WaveEnemy extends Resource
 
 @export var amount: int = 0
+@export var health_multiplier: float = 0
 @export var scene: PackedScene
 
 var spawned_count: int = 0

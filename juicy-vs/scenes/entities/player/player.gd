@@ -12,6 +12,7 @@ func _ready() -> void:
 	health.died.connect(on_died)
 	health.health_changed.connect(on_health_changed)
 	EventBus.add_player_health.connect(on_add_health)
+	UpgradeManager.weapon_upgrade_taken.connect(on_weapon_upgrade_taken)
 
 func on_died():
 	movement.max_speed = 0

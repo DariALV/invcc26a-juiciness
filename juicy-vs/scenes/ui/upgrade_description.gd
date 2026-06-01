@@ -1,5 +1,7 @@
 class_name UpgradeDescription extends Label
 
+@onready var lifespan_timer: Timer = $LifespanTimer
+
 var tween: Tween
 
 func _ready():
@@ -10,6 +12,10 @@ func _ready():
 	tween.finished.connect(on_appeared_tween_finished)
 
 func on_appeared_tween_finished():
+	lifespan_timer.start()
+	lifespan_timer.timeout.connect(on_lifespan_timer_timeout)
+
+func on_lifespan_timer_timeout():
 	reset_tween()
 	var modulate_color = Color(modulate.r, modulate.g, modulate.b, 0)
 	tween.tween_property(self, "modulate", modulate_color, 1)

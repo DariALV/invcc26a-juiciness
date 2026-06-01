@@ -18,3 +18,7 @@ theme_override_constants/shadow_outline_size = 2
 theme_override_fonts/font = ExtResource("1_p5d0k")
 text = "Upgrade Description"
 script = ExtResource("1_7xax1")
+
+[node name="LifespanTimer" type="Timer" parent="." unique_id=1703065426]
+wait_time = 10.0
+one_shot = true

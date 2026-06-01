@@ -22,7 +22,9 @@ func _process(delta):
 		rotation = velocity.angle()
 
 func on_collision_detected():
-	queue_free()
+	pierce -= 1
+	if pierce <= 0:
+		queue_free()
 
 func _enter_tree():
 	NodeCounter.add_entity("arrow")

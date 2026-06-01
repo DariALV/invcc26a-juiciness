@@ -142,6 +142,7 @@ position = Vector2(0, 0.5)
 shape = SubResource("RectangleShape2D_8akj5")
 
 [node name="Bow" parent="." unique_id=1429034469 instance=ExtResource("6_8akj5")]
+arrow_speed = 500.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=400388305]
 position = Vector2(1, -1.5)
