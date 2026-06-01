@@ -1,3 +1,5 @@
 extends Node2D
 
-@onready var juicy_camera = $JuicyCamera
+func _ready():
+	pass
+	#Database.add_test({"test_column": "Testing 1"})

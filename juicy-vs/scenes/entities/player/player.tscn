@@ -5,7 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://bje7baj4w6uoq" path="res://scenes/components/movement_component.tscn" id="3_ps70n"]
 [ext_resource type="Texture2D" uid="uid://bt6rlohnxsodf" path="res://assets/player/player.png" id="4_8akj5"]
 [ext_resource type="PackedScene" uid="uid://c36afys2uuw6j" path="res://scenes/components/hurtbox_component.tscn" id="4_v4i73"]
-[ext_resource type="PackedScene" uid="uid://cxf4edrndpg50" path="res://scenes/components/stats_component.tscn" id="7_1murt"]
+[ext_resource type="PackedScene" uid="uid://gep8qtf0r4qr" path="res://scenes/entities/weapons/bow.tscn" id="6_8akj5"]
+[ext_resource type="PackedScene" uid="uid://deegvhib634fp" path="res://scenes/components/collector_component.tscn" id="7_bj7e2"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bj7e2"]
 atlas = ExtResource("4_8akj5")
@@ -107,29 +108,46 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8akj5"]
 size = Vector2(10, 13)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bj7e2"]
+size = Vector2(12, 15)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1murt"]
+
 [node name="Player" type="CharacterBody2D" unique_id=1914702113 groups=["player"]]
+collision_mask = 16
 script = ExtResource("1_sjsxr")
 
 [node name="HealthComponent" parent="." unique_id=100227969 instance=ExtResource("2_acvb7")]
+current_health = 20.0
+max_health = 20.0
 
-[node name="MovementComponent" parent="." unique_id=105582040 node_paths=PackedStringArray("stats") instance=ExtResource("3_ps70n")]
-stats = NodePath("../StatsComponent")
+[node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("3_ps70n")]
+max_speed = 100.0
+max_force = 100.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=675567514]
 y_sort_enabled = true
 texture_filter = 1
 position = Vector2(1, -4.75)
 sprite_frames = SubResource("SpriteFrames_knby6")
-animation = &"running"
+animation = &"idle"
 
 [node name="HurtboxComponent" parent="." unique_id=1017695766 node_paths=PackedStringArray("health") instance=ExtResource("4_v4i73")]
-collision_mask = 2
-knockback_on_damage = true
+collision_mask = 6
 health = NodePath("../HealthComponent")
+one_hit_per_area = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent" unique_id=903693394]
 position = Vector2(0, 0.5)
 shape = SubResource("RectangleShape2D_8akj5")
 
-[node name="StatsComponent" parent="." unique_id=1746734201 instance=ExtResource("7_1murt")]
-max_speed = 100.0
+[node name="Bow" parent="." unique_id=1429034469 instance=ExtResource("6_8akj5")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=400388305]
+position = Vector2(1, -1.5)
+shape = SubResource("RectangleShape2D_bj7e2")
+
+[node name="CollectorComponent" parent="." unique_id=1214097122 instance=ExtResource("7_bj7e2")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CollectorComponent" unique_id=1717601853]
+shape = SubResource("CircleShape2D_1murt")

@@ -1,0 +1,45 @@
+[gd_resource type="Theme" format=3 uid="uid://db2frg1r4ma83"]
+
+[ext_resource type="FontFile" uid="uid://nqwwc3owb16g" path="res://fonts/MatchupPro.ttf" id="1_xcd4p"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ucql"]
+bg_color = Color(0.598, 0.6084, 0.65, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 2
+border_color = Color(0.1764706, 0.1764706, 0.19215687, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xcd4p"]
+bg_color = Color(0.1764706, 0.1764706, 0.19215687, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+corner_detail = 1
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xcd4p"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qu16q"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5a0qb"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_beiod"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8t3tr"]
+
+[resource]
+default_font = ExtResource("1_xcd4p")
+LineEdit/font_sizes/font_size = 16
+LineEdit/styles/normal = SubResource("StyleBoxFlat_8ucql")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_xcd4p")
+VScrollBar/styles/grabber = SubResource("StyleBoxEmpty_xcd4p")
+VScrollBar/styles/grabber_highlight = SubResource("StyleBoxEmpty_qu16q")
+VScrollBar/styles/grabber_pressed = SubResource("StyleBoxEmpty_5a0qb")
+VScrollBar/styles/scroll = SubResource("StyleBoxEmpty_beiod")
+VScrollBar/styles/scroll_focus = SubResource("StyleBoxEmpty_8t3tr")

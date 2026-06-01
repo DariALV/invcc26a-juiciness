@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://ca2d3m5rccnmh"]
+
+[ext_resource type="Script" uid="uid://b4va2ghma8uwa" path="res://scenes/entities/projectiles/arrow.gd" id="1_amoax"]
+[ext_resource type="PackedScene" uid="uid://bje7baj4w6uoq" path="res://scenes/components/movement_component.tscn" id="1_vil5i"]
+[ext_resource type="PackedScene" uid="uid://ditq6dg2xyyij" path="res://scenes/components/steering_behaviors/seek_behavior.tscn" id="2_ep73y"]
+[ext_resource type="PackedScene" uid="uid://bd81puu85l1x7" path="res://scenes/components/hitbox_component.tscn" id="5_t8u88"]
+[ext_resource type="PackedScene" uid="uid://d3og7njf4dm7y" path="res://scenes/components/steering_behaviors/force_component.tscn" id="5_trlbl"]
+[ext_resource type="Texture2D" uid="uid://buj8lil8tjcjf" path="res://assets/projectiles/arrow.png" id="6_trlbl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rl1hc"]
+size = Vector2(18, 8)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_t8u88"]
+
+[node name="Arrow" type="CharacterBody2D" unique_id=1476809189]
+collision_layer = 8
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_amoax")
+
+[node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("1_vil5i")]
+max_speed = 500.0
+max_force = 1000.0
+top_speed_when_no_force = true
+
+[node name="ForceComponent" parent="." unique_id=147930361 node_paths=PackedStringArray("movement") instance=ExtResource("5_trlbl")]
+movement = NodePath("../MovementComponent")
+
+[node name="SeekBehavior" parent="ForceComponent" unique_id=1838009483 instance=ExtResource("2_ep73y")]
+
+[node name="HitboxComponent" parent="." unique_id=920064139 instance=ExtResource("5_t8u88")]
+collision_layer = 8
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent" unique_id=284861411]
+visible = false
+position = Vector2(1, 0)
+shape = SubResource("RectangleShape2D_rl1hc")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1792508921]
+texture_filter = 1
+rotation = -0.7853982
+scale = Vector2(0.99999994, 0.99999994)
+texture = ExtResource("6_trlbl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=630529500]
+visible = false
+shape = SubResource("CircleShape2D_t8u88")

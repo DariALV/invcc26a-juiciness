@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dirm2f18gdlpn"]
+
+[ext_resource type="Script" uid="uid://buhchq0fb8y4t" path="res://globals/database.gd" id="1_3e1bt"]
+
+[node name="Database" type="Node" unique_id=1879050613]
+script = ExtResource("1_3e1bt")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=1657766336]

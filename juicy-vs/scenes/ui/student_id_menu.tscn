@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://r3k34ov61d04"]
+
+[ext_resource type="Script" uid="uid://cod3yc76gjvu8" path="res://scenes/ui/student_id_menu.gd" id="1_bxs7y"]
+[ext_resource type="Texture2D" uid="uid://dqd4vct61c77u" path="res://assets/ui/upgrade_nodes.png" id="2_y0n44"]
+[ext_resource type="Theme" uid="uid://db2frg1r4ma83" path="res://themes/id_ui_theme.tres" id="3_6dbv1"]
+[ext_resource type="PackedScene" uid="uid://d0rq2os053rod" path="res://scenes/ui/student_id_container.tscn" id="4_e2fm3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6dbv1"]
+atlas = ExtResource("2_y0n44")
+region = Rect2(192, 0, 32, 32)
+
+[node name="StudentIDMenu" type="Control" unique_id=1998790542]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bxs7y")
+student_id_scene = ExtResource("4_e2fm3")
+
+[node name="NinePatchRect" type="NinePatchRect" parent="." unique_id=1409775093]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.4
+anchor_top = 0.1
+anchor_right = 0.6
+anchor_bottom = 0.9
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_6dbv1")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
+
+[node name="MarginContainer" type="MarginContainer" parent="NinePatchRect" unique_id=234440659]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="NinePatchRect/MarginContainer" unique_id=1808878771]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="NinePatchRect/MarginContainer/VBoxContainer" unique_id=820098193]
+layout_mode = 2
+theme = ExtResource("3_6dbv1")
+placeholder_text = "Buscar carné"
+alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="NinePatchRect/MarginContainer/VBoxContainer" unique_id=1957590878]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("3_6dbv1")
+
+[node name="MarginContainer" type="MarginContainer" parent="NinePatchRect/MarginContainer/VBoxContainer/PanelContainer" unique_id=1484482075]
+layout_mode = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 4
+
+[node name="ScrollContainer" type="ScrollContainer" parent="NinePatchRect/MarginContainer/VBoxContainer/PanelContainer/MarginContainer" unique_id=91957134]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("3_6dbv1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="NinePatchRect/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/ScrollContainer" unique_id=703728347]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

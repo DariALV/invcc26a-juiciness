@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://4j8x1qhwugtm"]
+
+[ext_resource type="Script" uid="uid://bddrfmbo1hr6x" path="res://scenes/ui/upgrade_description.gd" id="1_7xax1"]
+[ext_resource type="FontFile" uid="uid://nqwwc3owb16g" path="res://fonts/MatchupPro.ttf" id="1_p5d0k"]
+
+[sub_resource type="Theme" id="Theme_c6ban"]
+
+[node name="UpgradeDescription" type="Label" unique_id=747377405]
+texture_filter = 1
+offset_right = 40.0
+offset_bottom = 23.0
+theme = SubResource("Theme_c6ban")
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 4
+theme_override_constants/shadow_outline_size = 2
+theme_override_fonts/font = ExtResource("1_p5d0k")
+text = "Upgrade Description"
+script = ExtResource("1_7xax1")

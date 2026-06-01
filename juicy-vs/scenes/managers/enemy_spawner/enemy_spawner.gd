@@ -1,4 +1,10 @@
-extends Node
+class_name EnemySpawner extends Node
+
+signal waves_completed
+
+@export var node_spawn_position : Node2D = null
+
+@export var waves: Array[Wave]
 
 @export var enemy_scene : PackedScene
 @export var spawn_cooldown : float = 1
@@ -6,27 +12,20 @@ extends Node
 
 @onready var timer : Timer = $Timer
 
+var current_wave: int = 0
+
 func _ready():
 	timer.wait_time = spawn_cooldown
-	timer.timeout.connect(spawn_slime)
+	timer.timeout.connect(spawn_enemy_from_current_wave)
 
-func spawn_slime():
-	var enemy : Enemy = enemy_scene.instantiate() as Enemy
-	enemy.global_position = get_spawn_position()
-	get_parent().add_child(enemy)
+func spawn_enemy_from_current_wave():
+	if not waves.is_empty() and node_spawn_position:
+		waves[current_wave].spawn_random_enemy(node_spawn_position, spawn_distance)
+		if waves[current_wave].is_wave_completed():
+			go_to_next_wave()
 
-func get_spawn_position():
-	var player : Player = get_tree().get_first_node_in_group("player") as Player
-	var player_pos : Vector2 = player.global_position
-	var angle = randf() * 2 * PI
-	var spawn_direction : Vector2 = polar_to_cartesian(angle, spawn_distance)
-	return player_pos + spawn_direction
-
-#TODO: Aislar a clase global
-func polar_to_cartesian(angle : float, length : float) -> Vector2:
-	# sin(angle) = y/h => y = h * sin(angle)
-	var y = length * sin(angle)
-	# cos(angle) = x/h => x = h * cos(angle)
-	var x = length * cos(angle)
-	return Vector2(x, y)
-	
+func go_to_next_wave():
+	if current_wave < waves.size():
+		current_wave += 1
+	else:
+		waves_completed.emit()
