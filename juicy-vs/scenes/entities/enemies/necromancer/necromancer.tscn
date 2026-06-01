@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://dgyta4g3na5b5"]
+
+[ext_resource type="PackedScene" uid="uid://cqssh800nxt7g" path="res://scenes/entities/enemies/base_enemy/base_enemy.tscn" id="1_cfrnl"]
+[ext_resource type="Script" uid="uid://u2rg6psm8mpc" path="res://scenes/entities/enemies/necromancer/necromancer.gd" id="2_a3fi8"]
+[ext_resource type="Texture2D" uid="uid://dd4tdl0yyvv37" path="res://assets/enemies/necromancer.png" id="3_i7ecg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ehukw"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(0, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iqm7s"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(24, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_86he7"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(48, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tf5td"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(72, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ax1ai"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(96, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uf7gx"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(120, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qwi33"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(144, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fb3t0"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(168, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7m341"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(0, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n72dw"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(24, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wf8fl"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(48, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f4s7a"]
+atlas = ExtResource("3_i7ecg")
+region = Rect2(72, 24, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ifoy7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ehukw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iqm7s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_86he7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tf5td")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ax1ai")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uf7gx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qwi33")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fb3t0")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7m341")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n72dw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wf8fl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f4s7a")
+}],
+"loop": true,
+"name": &"running",
+"speed": 6.0
+}]
+
+[node name="Necromancer" unique_id=894921972 instance=ExtResource("1_cfrnl")]
+script = ExtResource("2_a3fi8")
+
+[node name="HealthComponent" parent="." index="0" unique_id=100227969]
+current_health = 15.0
+max_health = 15.0
+
+[node name="AnimatedSprite2D" parent="." index="5" unique_id=478188072]
+sprite_frames = SubResource("SpriteFrames_ifoy7")
+animation = &"running"

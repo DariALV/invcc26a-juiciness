@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://cyxpxwvh5irvr"]
+
+[ext_resource type="Script" uid="uid://crqug0otbou33" path="res://globals/upgrade_manager.gd" id="1_hsx4w"]
+[ext_resource type="Script" uid="uid://bj1a5vxi7rr0f" path="res://upgrades/upgrade.gd" id="2_4pqef"]
+[ext_resource type="PackedScene" uid="uid://cubd5bc38jlsw" path="res://scenes/entities/items/upgrade_item.tscn" id="2_lft0v"]
+[ext_resource type="Script" uid="uid://dsdyneerf4mjq" path="res://upgrades/projectile/pierce_projectile_upgrade.gd" id="3_cco4e"]
+[ext_resource type="Script" uid="uid://ds6qx2fdebwak" path="res://upgrades/weapon/shoot_weapon_upgrade.gd" id="5_bau4d"]
+[ext_resource type="Script" uid="uid://ccom3upmduyc4" path="res://upgrades/weapon/speed_weapon_upgrade.gd" id="6_bwf02"]
+
+[sub_resource type="Resource" id="Resource_njh4l"]
+script = ExtResource("3_cco4e")
+description = "+1 penetración"
+type = 3
+metadata/_custom_type_script = "uid://dsdyneerf4mjq"
+
+[sub_resource type="Resource" id="Resource_bau4d"]
+script = ExtResource("5_bau4d")
+description = "+1 flecha"
+metadata/_custom_type_script = "uid://ds6qx2fdebwak"
+
+[sub_resource type="Resource" id="Resource_bwf02"]
+script = ExtResource("6_bwf02")
+description = "+10% velocidad de disparo"
+type = 2
+metadata/_custom_type_script = "uid://ccom3upmduyc4"
+
+[node name="UpgradeManager" type="Node" unique_id=1679145504]
+script = ExtResource("1_hsx4w")
+upgrade_item_scene = ExtResource("2_lft0v")
+available_upgrades = Array[ExtResource("2_4pqef")]([SubResource("Resource_njh4l"), SubResource("Resource_bau4d"), SubResource("Resource_bwf02")])

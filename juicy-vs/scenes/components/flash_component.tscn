@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://dl76br4g6nuw6"]
+
+[ext_resource type="Script" uid="uid://bt00tqoa0r8sf" path="res://scenes/components/flash_component.gd" id="1_1ifkk"]
+
+[sub_resource type="Shader" id="Shader_1ifkk"]
+code = "shader_type canvas_item;
+
+uniform vec4 tint : source_color = vec4(1.0, 1.0, 1.0, 0.0);
+
+void fragment() {
+    vec4 tex = texture(TEXTURE, UV);
+    COLOR.rgb = mix(tex.rgb, tint.rgb, tint.a);
+    COLOR.a = tex.a;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cdhsb"]
+shader = SubResource("Shader_1ifkk")
+shader_parameter/tint = Color(1, 1, 1, 1)
+
+[node name="FlashComponent" type="Node" unique_id=504433400]
+script = ExtResource("1_1ifkk")
+material = SubResource("ShaderMaterial_cdhsb")
+duration = 0.4

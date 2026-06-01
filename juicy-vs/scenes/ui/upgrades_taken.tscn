@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://fvhqbs7rjllb"]
+
+[ext_resource type="Script" uid="uid://h3nup7gh3vgb" path="res://scenes/ui/upgrades_taken.gd" id="1_pergu"]
+[ext_resource type="PackedScene" uid="uid://4j8x1qhwugtm" path="res://scenes/ui/upgrade_description.tscn" id="2_v3d7s"]
+
+[node name="UpgradesTaken" type="Control" unique_id=63141944]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pergu")
+upgrade_desc_scene = ExtResource("2_v3d7s")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1769081977]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -20.0
+offset_right = 150.0
+offset_bottom = 20.0
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1826520779]
+layout_mode = 2

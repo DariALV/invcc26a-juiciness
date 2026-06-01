@@ -1,0 +1,198 @@
+[gd_scene format=3 uid="uid://bp5yxegmnc33t"]
+
+[ext_resource type="PackedScene" uid="uid://d2tr3o63o4sgf" path="res://scenes/components/health_component.tscn" id="1_7b5yp"]
+[ext_resource type="Script" uid="uid://cfdmfsonvxen8" path="res://scenes/entities/enemies/archer/archer.gd" id="1_aguqu"]
+[ext_resource type="PackedScene" uid="uid://bje7baj4w6uoq" path="res://scenes/components/movement_component.tscn" id="2_aguqu"]
+[ext_resource type="PackedScene" uid="uid://c36afys2uuw6j" path="res://scenes/components/hurtbox_component.tscn" id="3_lghk4"]
+[ext_resource type="PackedScene" uid="uid://bd81puu85l1x7" path="res://scenes/components/hitbox_component.tscn" id="4_yge1c"]
+[ext_resource type="Texture2D" uid="uid://rnwmns5cmyl3" path="res://assets/enemies/archer.png" id="6_lghk4"]
+[ext_resource type="PackedScene" uid="uid://d3og7njf4dm7y" path="res://scenes/components/steering_behaviors/force_component.tscn" id="6_t5g7a"]
+[ext_resource type="PackedScene" uid="uid://ditq6dg2xyyij" path="res://scenes/components/steering_behaviors/seek_behavior.tscn" id="7_2urax"]
+[ext_resource type="Script" uid="uid://7fxr2h4qkmcp" path="res://scripts/steering_target.gd" id="8_hx5tq"]
+[ext_resource type="PackedScene" uid="uid://chtjo8gl2o2ke" path="res://scenes/components/steering_behaviors/flee_behavior.tscn" id="9_5i6cl"]
+[ext_resource type="PackedScene" uid="uid://dl76br4g6nuw6" path="res://scenes/components/flash_component.tscn" id="10_7vysn"]
+[ext_resource type="PackedScene" uid="uid://gep8qtf0r4qr" path="res://scenes/entities/weapons/bow.tscn" id="12_lghk4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nwwrk"]
+size = Vector2(14, 17.75)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x2qjm"]
+size = Vector2(11.75, 7.75)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c8i75"]
+size = Vector2(12, 15)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yge1c"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(0, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rjrar"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(24, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t5g7a"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(48, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2urax"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(72, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hx5tq"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(96, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5i6cl"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(120, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7vysn"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(144, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nwwrk"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(168, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x2qjm"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(0, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c8i75"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(24, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uocy6"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(48, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gx5wo"]
+atlas = ExtResource("6_lghk4")
+region = Rect2(72, 24, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_uocy6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yge1c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rjrar")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t5g7a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2urax")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hx5tq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5i6cl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7vysn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nwwrk")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x2qjm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c8i75")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uocy6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gx5wo")
+}],
+"loop": true,
+"name": &"running",
+"speed": 6.0
+}]
+
+[sub_resource type="Resource" id="Resource_3iqdk"]
+script = ExtResource("8_hx5tq")
+target_group = "player"
+radius = 1000.0
+force_multiplier = 2.0
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[sub_resource type="Resource" id="Resource_8y8ib"]
+script = ExtResource("8_hx5tq")
+target_group = "enemy"
+radius = 32.0
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[sub_resource type="Resource" id="Resource_7b5yp"]
+script = ExtResource("8_hx5tq")
+target_group = "player"
+radius = 300.0
+force_multiplier = 3.0
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[node name="Archer" type="CharacterBody2D" unique_id=1897410631]
+collision_layer = 2
+collision_mask = 16
+script = ExtResource("1_aguqu")
+
+[node name="HealthComponent" parent="." unique_id=100227969 instance=ExtResource("1_7b5yp")]
+current_health = 1.0
+max_health = 1.0
+
+[node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("2_aguqu")]
+max_speed = 60.0
+max_force = 160.0
+friction = 0.99
+
+[node name="HurtboxComponent" parent="." unique_id=1017695766 node_paths=PackedStringArray("health") instance=ExtResource("3_lghk4")]
+collision_layer = 2
+collision_mask = 8
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent" unique_id=1318524783]
+position = Vector2(1, -2.125)
+shape = SubResource("RectangleShape2D_nwwrk")
+debug_color = Color(0.54324436, 0.5615491, 0.2196221, 0.41960785)
+
+[node name="HitboxComponent" parent="." unique_id=920064139 instance=ExtResource("4_yge1c")]
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent" unique_id=185986281]
+position = Vector2(-0.125, 1.125)
+shape = SubResource("RectangleShape2D_x2qjm")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1538154643]
+position = Vector2(1, -1.5)
+shape = SubResource("RectangleShape2D_c8i75")
+debug_color = Color(0.8438416, 0.2777098, 0.6588825, 0.41960785)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1474516136]
+y_sort_enabled = true
+texture_filter = 1
+position = Vector2(1, -4.75)
+sprite_frames = SubResource("SpriteFrames_uocy6")
+animation = &"running"
+
+[node name="FlashComponent" parent="AnimatedSprite2D" unique_id=504433400 instance=ExtResource("10_7vysn")]
+
+[node name="ForceComponent" parent="." unique_id=147930361 node_paths=PackedStringArray("movement") instance=ExtResource("6_t5g7a")]
+movement = NodePath("../MovementComponent")
+
+[node name="SeekBehavior" parent="ForceComponent" unique_id=1838009483 instance=ExtResource("7_2urax")]
+targets = Array[ExtResource("8_hx5tq")]([SubResource("Resource_3iqdk")])
+
+[node name="FleeBehavior" parent="ForceComponent" unique_id=1963351202 instance=ExtResource("9_5i6cl")]
+targets = Array[ExtResource("8_hx5tq")]([SubResource("Resource_8y8ib"), SubResource("Resource_7b5yp")])
+
+[node name="Bow" parent="." unique_id=1429034469 instance=ExtResource("12_lghk4")]
+shoot_speed = 3.0
+target_group = "player"

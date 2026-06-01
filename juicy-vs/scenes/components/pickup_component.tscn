@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://qc2btqppkajj"]
+
+[ext_resource type="Script" uid="uid://bls701g4gk56b" path="res://scenes/components/pickup_component.gd" id="1_m0j72"]
+
+[node name="PickupComponent" type="Area2D" unique_id=1248919156]
+collision_layer = 32
+collision_mask = 64
+script = ExtResource("1_m0j72")

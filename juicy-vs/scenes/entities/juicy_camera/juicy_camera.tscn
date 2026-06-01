@@ -3,4 +3,10 @@
 [ext_resource type="Script" uid="uid://c1uyotxib3m2f" path="res://scenes/entities/juicy_camera/juicy_camera.gd" id="1_q6qcl"]
 
 [node name="JuicyCamera" type="Camera2D" unique_id=1308731280]
+limit_left = -800
+limit_top = -800
+limit_right = 800
+limit_bottom = 800
+limit_smoothed = true
+position_smoothing_enabled = true
 script = ExtResource("1_q6qcl")

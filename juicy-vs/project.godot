@@ -17,7 +17,20 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-QuadTreePartitioning="*uid://chatvbsrx3y0v"
+EventBus="*uid://b0q1x1i8hc4pf"
+Database="*uid://dirm2f18gdlpn"
+GlobalData="*uid://dpuaye154jddy"
+ParticleManager="*uid://yiimdj41sgwg"
+SpatialManager="*uid://ei0dy414v2hh"
+NodeCounter="*uid://di55q7by7vmkr"
+UpgradeManager="*uid://cyxpxwvh5irvr"
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=360
+window/size/always_on_top=true
+window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
@@ -59,6 +72,11 @@ down={
 
 2d_physics/layer_1="player"
 2d_physics/layer_2="enemies"
+2d_physics/layer_3="enemy_projectiles"
+2d_physics/layer_4="player_projectiles"
+2d_physics/layer_5="decorations"
+2d_physics/layer_6="pickup"
+2d_physics/layer_7="collector"
 
 [physics]
 

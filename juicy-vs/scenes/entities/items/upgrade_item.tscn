@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://cubd5bc38jlsw"]
+
+[ext_resource type="Script" uid="uid://bglpjrrv4eooe" path="res://scenes/entities/items/upgrade_item.gd" id="1_dfowp"]
+[ext_resource type="PackedScene" uid="uid://bje7baj4w6uoq" path="res://scenes/components/movement_component.tscn" id="1_ykj3t"]
+[ext_resource type="PackedScene" uid="uid://d3og7njf4dm7y" path="res://scenes/components/steering_behaviors/force_component.tscn" id="2_dfowp"]
+[ext_resource type="PackedScene" uid="uid://ditq6dg2xyyij" path="res://scenes/components/steering_behaviors/seek_behavior.tscn" id="3_mi0tf"]
+[ext_resource type="Script" uid="uid://7fxr2h4qkmcp" path="res://scripts/steering_target.gd" id="4_cxqyu"]
+[ext_resource type="PackedScene" uid="uid://qc2btqppkajj" path="res://scenes/components/pickup_component.tscn" id="5_hg6la"]
+
+[sub_resource type="Resource" id="Resource_q6c2p"]
+script = ExtResource("4_cxqyu")
+target_group = "player"
+radius = 200.0
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fnk6u"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ykj3t"]
+size = Vector2(16, 16)
+
+[node name="UpgradeItem" type="CharacterBody2D" unique_id=1681441481]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_dfowp")
+
+[node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("1_ykj3t")]
+max_speed = 200.0
+max_force = 50.0
+friction = 0.99
+
+[node name="ForceComponent" parent="." unique_id=147930361 node_paths=PackedStringArray("movement") instance=ExtResource("2_dfowp")]
+movement = NodePath("../MovementComponent")
+
+[node name="SeekBehavior" parent="ForceComponent" unique_id=1838009483 instance=ExtResource("3_mi0tf")]
+targets = Array[ExtResource("4_cxqyu")]([SubResource("Resource_q6c2p")])
+
+[node name="PickupComponent" parent="." unique_id=1248919156 instance=ExtResource("5_hg6la")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupComponent" unique_id=1631770229]
+shape = SubResource("CircleShape2D_fnk6u")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2075923355]
+texture_filter = 1
+texture = SubResource("PlaceholderTexture2D_ykj3t")
+flip_h = true

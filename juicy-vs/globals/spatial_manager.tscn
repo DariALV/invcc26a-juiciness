@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ei0dy414v2hh"]
+
+[ext_resource type="Script" uid="uid://d1fsq37k1awrm" path="res://globals/spatial_manager.gd" id="1_208kv"]
+
+[node name="SpatialManager" type="Node" unique_id=969007309]
+script = ExtResource("1_208kv")

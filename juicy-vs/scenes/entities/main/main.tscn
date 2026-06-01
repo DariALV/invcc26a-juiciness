@@ -1,20 +1,12 @@
 [gd_scene format=3 uid="uid://bui6efsrg6hap"]
 
 [ext_resource type="Script" uid="uid://hlup7ctg8m5o" path="res://scenes/entities/main/main.gd" id="1_p4vg3"]
-[ext_resource type="PackedScene" uid="uid://bd6clb2ukt70n" path="res://scenes/entities/player/player.tscn" id="1_tg0td"]
-[ext_resource type="PackedScene" uid="uid://bcifnfcc6igpj" path="res://scenes/managers/enemy_spawner/enemy_spawner.tscn" id="2_jhct2"]
-[ext_resource type="PackedScene" uid="uid://dm31kx0k84bwi" path="res://scenes/entities/juicy_camera/juicy_camera.tscn" id="3_qeduj"]
+[ext_resource type="PackedScene" uid="uid://r3k34ov61d04" path="res://scenes/ui/student_id_menu.tscn" id="2_jhct2"]
 
 [node name="Main" type="Node2D" unique_id=148708768]
-y_sort_enabled = true
 script = ExtResource("1_p4vg3")
 
-[node name="Player" parent="." unique_id=1914702113 instance=ExtResource("1_tg0td")]
-position = Vector2(535, 339)
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1671156158]
 
-[node name="EnemySpawner" parent="." unique_id=1794532682 instance=ExtResource("2_jhct2")]
-spawn_distance = 500.0
-
-[node name="JuicyCamera" parent="." unique_id=1308731280 node_paths=PackedStringArray("target") instance=ExtResource("3_qeduj")]
-zoom = Vector2(3, 3)
-target = NodePath("../Player")
+[node name="StudentIDMenu" parent="CanvasLayer" unique_id=1998790542 instance=ExtResource("2_jhct2")]
+ids = Array[String](["C60000", "C60001", "C60002", "C60003", "C60004", "C60005", "C60006", "C60007", "C60008", "C60009", "C60010", "C60011", "C60012", "C60013", "C60014", "C60015", "C60016", "C60017", "C60018", "C60019", "C60020"])
