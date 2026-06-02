@@ -2,16 +2,20 @@
 
 [ext_resource type="Script" uid="uid://dos474oel7lon" path="res://scenes/entities/weapons/bow.gd" id="1_y2n6a"]
 [ext_resource type="PackedScene" uid="uid://ca2d3m5rccnmh" path="res://scenes/entities/projectiles/arrow.tscn" id="2_5syuo"]
-[ext_resource type="Texture2D" uid="uid://c7xnundov7xhk" path="res://assets/weapons/wooden_bow.png" id="2_vdmvl"]
+[ext_resource type="Texture2D" uid="uid://dkct8rqx7hnbg" path="res://assets/weapons/crossbow.png" id="4_g3nsi"]
+[ext_resource type="PackedScene" path="res://scenes/components/shoot_component.tscn" id="4_shoot"]
 
 [node name="Bow" type="Node2D" unique_id=1429034469]
 script = ExtResource("1_y2n6a")
 arrow_scene = ExtResource("2_5syuo")
 
-[node name="ShootTimer" type="Timer" parent="." unique_id=1111643084]
-autostart = true
+[node name="ShootComponent" parent="." unique_id=1350641617 instance=ExtResource("4_shoot")]
+projectile_scene = ExtResource("2_5syuo")
+auto_start = false
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1462728118]
 texture_filter = 1
-rotation = -0.7853982
-texture = ExtResource("2_vdmvl")
+position = Vector2(0, 2.3841858e-07)
+rotation = 2.3561945
+scale = Vector2(0.6206583, 0.6206583)
+texture = ExtResource("4_g3nsi")

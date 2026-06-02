@@ -3,6 +3,12 @@
 [ext_resource type="PackedScene" uid="uid://cqssh800nxt7g" path="res://scenes/entities/enemies/base_enemy/base_enemy.tscn" id="1_cfrnl"]
 [ext_resource type="Script" uid="uid://u2rg6psm8mpc" path="res://scenes/entities/enemies/necromancer/necromancer.gd" id="2_a3fi8"]
 [ext_resource type="Texture2D" uid="uid://dd4tdl0yyvv37" path="res://assets/enemies/necromancer.png" id="3_i7ecg"]
+[ext_resource type="Script" uid="uid://7fxr2h4qkmcp" path="res://scripts/steering_target.gd" id="4_86he7"]
+[ext_resource type="PackedScene" path="res://scenes/components/shoot_component.tscn" id="4_ehukw"]
+[ext_resource type="PackedScene" uid="uid://dic4j8k3e2jyv" path="res://scenes/entities/projectiles/following_projectile.tscn" id="5_iqm7s"]
+[ext_resource type="PackedScene" path="res://scenes/components/spawner_component.tscn" id="7_uf7gx"]
+[ext_resource type="PackedScene" uid="uid://da6yp2wxbe27o" path="res://scenes/entities/enemies/zombie/zombie.tscn" id="8_qwi33"]
+[ext_resource type="Script" uid="uid://c86ldna7ytglq" path="res://scripts/circle.gd" id="9_fb3t0"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ehukw"]
 atlas = ExtResource("3_i7ecg")
@@ -101,6 +107,25 @@ animations = [{
 "speed": 6.0
 }]
 
+[sub_resource type="Resource" id="Resource_8y8ib"]
+script = ExtResource("4_86he7")
+target_group = "enemy"
+radius = 32.0
+force_multiplier = 4.0
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[sub_resource type="Resource" id="Resource_tf5td"]
+script = ExtResource("4_86he7")
+target_group = "player"
+radius = 200.0
+force_multiplier = 5.0
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[sub_resource type="Resource" id="Resource_7m341"]
+script = ExtResource("9_fb3t0")
+radius = 32.0
+metadata/_custom_type_script = "uid://c86ldna7ytglq"
+
 [node name="Necromancer" unique_id=894921972 instance=ExtResource("1_cfrnl")]
 script = ExtResource("2_a3fi8")
 
@@ -111,3 +136,19 @@ max_health = 15.0
 [node name="AnimatedSprite2D" parent="." index="5" unique_id=478188072]
 sprite_frames = SubResource("SpriteFrames_ifoy7")
 animation = &"running"
+
+[node name="FleeBehavior" parent="ForceComponent" parent_id_path=PackedInt32Array(147930361) index="1" unique_id=1963351202]
+targets = Array[ExtResource("4_86he7")]([SubResource("Resource_8y8ib"), SubResource("Resource_tf5td")])
+
+[node name="ShootComponent" parent="." index="7" unique_id=4986631 instance=ExtResource("4_ehukw")]
+projectile_scene = ExtResource("5_iqm7s")
+shoot_speed = 0.1
+projectile_speed = 300.0
+target_group = "player"
+
+[node name="SpawnerComponent" parent="." index="8" unique_id=913554047 instance=ExtResource("7_uf7gx")]
+scene = ExtResource("8_qwi33")
+spawn_circle = SubResource("Resource_7m341")
+speed = 0.067
+spawn_count = 5
+max_entities = 20

@@ -14,6 +14,12 @@
 [ext_resource type="PackedScene" uid="uid://g8mr0jg012tv" path="res://scenes/ui/level_ui.tscn" id="8_s5x0e"]
 [ext_resource type="PackedScene" uid="uid://bp5yxegmnc33t" path="res://scenes/entities/enemies/archer/archer.tscn" id="9_yb2vu"]
 [ext_resource type="Theme" uid="uid://db2frg1r4ma83" path="res://themes/id_ui_theme.tres" id="10_r33ei"]
+[ext_resource type="PackedScene" uid="uid://dgyta4g3na5b5" path="res://scenes/entities/enemies/necromancer/necromancer.tscn" id="10_s5x0e"]
+[ext_resource type="Resource" uid="uid://wave1ka01xqzm" path="res://waves/wave_1.tres" id="20_w1"]
+[ext_resource type="Resource" uid="uid://wave2kb02yrwn" path="res://waves/wave_2.tres" id="21_w2"]
+[ext_resource type="Resource" uid="uid://wave3kc03zsxp" path="res://waves/wave_3.tres" id="22_w3"]
+[ext_resource type="Resource" uid="uid://wave4kd04atyq" path="res://waves/wave_4.tres" id="23_w4"]
+[ext_resource type="Resource" uid="uid://wave5ke05buzr" path="res://waves/wave_5.tres" id="24_w5"]
 
 [sub_resource type="Resource" id="Resource_cd6u8"]
 script = ExtResource("2_oounm")
@@ -41,21 +47,37 @@ metadata/_custom_type_script = "uid://dbmta0nfatl81"
 
 [sub_resource type="Resource" id="Resource_62a7t"]
 script = ExtResource("6_yb2vu")
-amount = 500
-health_multiplier = 1.0
 scene = ExtResource("7_s5x0e")
+amount = 500
 metadata/_custom_type_script = "uid://cgs1a7yb064lb"
 
 [sub_resource type="Resource" id="Resource_s5x0e"]
 script = ExtResource("6_yb2vu")
-amount = 20
-health_multiplier = 1.0
 scene = ExtResource("9_yb2vu")
+amount = 3
 metadata/_custom_type_script = "uid://cgs1a7yb064lb"
+
+[sub_resource type="Resource" id="Resource_vcdbn"]
+script = ExtResource("6_yb2vu")
+scene = ExtResource("10_s5x0e")
+amount = 5
+metadata/_custom_type_script = "uid://cgs1a7yb064lb"
+
+[sub_resource type="Curve" id="Curve_yb2vu"]
+_data = [Vector2(0.16201118, 0), 0.0, 0.0, 0, 0, Vector2(0.61452514, 0.92168677), 0.0, 0.0, 0, 0, Vector2(0.944134, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_s5x0e"]
+_data = [Vector2(0.50558656, 0.23822564), 0.0, 4.885087, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="Resource" id="Resource_w370m"]
 script = ExtResource("8_4c717")
-enemies = Array[ExtResource("6_yb2vu")]([SubResource("Resource_62a7t"), SubResource("Resource_s5x0e")])
+enemies = Array[ExtResource("6_yb2vu")]([SubResource("Resource_62a7t"), SubResource("Resource_s5x0e"), SubResource("Resource_vcdbn")])
+base_spawn_rate = 5.0
+spawn_rate_curve = SubResource("Curve_s5x0e")
+spawn_amount_curve = SubResource("Curve_yb2vu")
+require_all_spawned = true
 metadata/_custom_type_script = "uid://585ndpli0d33"
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_62a7t"]
@@ -2054,6 +2076,17 @@ physics_layer_0/collision_layer = 16
 physics_layer_0/collision_mask = 3
 sources/0 = SubResource("TileSetAtlasSource_vcdbn")
 
+[sub_resource type="Environment" id="Environment_4c717"]
+background_mode = 3
+tonemap_mode = 1
+glow_enabled = true
+glow_intensity = 1.14
+glow_bloom = 0.1
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_62a7t"]
+
+[sub_resource type="Compositor" id="Compositor_w370m"]
+
 [node name="Level" type="Node2D" unique_id=712411918]
 script = ExtResource("1_oounm")
 
@@ -2067,9 +2100,9 @@ ground_layer = NodePath("../GroundLayer")
 
 [node name="EnemySpawner" parent="." unique_id=1794532682 node_paths=PackedStringArray("node_spawn_position") instance=ExtResource("4_cgpkm")]
 node_spawn_position = NodePath("../YSortEntities")
-waves = Array[ExtResource("8_4c717")]([SubResource("Resource_w370m")])
-spawn_cooldown = 0.1
+waves = Array[ExtResource("8_4c717")]([ExtResource("20_w1"), ExtResource("21_w2"), ExtResource("22_w3"), ExtResource("23_w4"), ExtResource("24_w5")])
 spawn_distance = 500.0
+delay_between_waves = 3.0
 
 [node name="JuicyCamera" parent="." unique_id=1308731280 node_paths=PackedStringArray("target") instance=ExtResource("5_xteuy")]
 target = NodePath("../YSortEntities/Player")
@@ -2194,7 +2227,7 @@ theme_override_constants/shadow_outline_size = 1
 text = "Test"
 horizontal_alignment = 1
 
-[node name="Timer" type="Timer" parent="." unique_id=1550036584]
-wait_time = 180.0
-one_shot = true
-autostart = true
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1039508699]
+environment = SubResource("Environment_4c717")
+camera_attributes = SubResource("CameraAttributesPractical_62a7t")
+compositor = SubResource("Compositor_w370m")

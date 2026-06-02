@@ -17,7 +17,6 @@ func modify_heart_sprite(heart_rect: TextureRect, current_health: float, heart_n
 	var atlas: AtlasTexture = heart_rect.texture
 	
 	var clamped_health: float = clamp(current_health, 0, 18)
-	print(clamped_health)
 	heart_num -= 1
 	# Vacio
 	if clamped_health <= 2 * heart_num:

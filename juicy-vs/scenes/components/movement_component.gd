@@ -61,8 +61,12 @@ func _physics_process(delta):
 		if current_speed.length_squared() < 25.0:
 			current_speed = Vector2.ZERO
 
+	# Exponemos la velocidad real en parent.velocity para que los steering
+	# behaviors (seek/flee) puedan amortiguar con su termino (desired - velocity);
+	# si quedara en cero, el seek se vuelve una fuerza centripeta constante y orbita.
 	if top_speed_when_no_force and current_force == Vector2.ZERO:
-		parent.global_position += current_speed.normalized() * max_speed * delta
+		parent.velocity = current_speed.normalized() * max_speed
 	else:
-		parent.global_position += current_speed * delta
+		parent.velocity = current_speed
+	parent.global_position += parent.velocity * delta
 	current_force = Vector2.ZERO

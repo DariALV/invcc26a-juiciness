@@ -32,7 +32,7 @@ func calculate(parent: CharacterBody2D, max_speed: float) -> Vector2:
 	return final_force
  
 func _get_player(parent: CharacterBody2D, t: SteeringTarget) -> Node2D:
-	var player := get_tree().get_first_node_in_group(PLAYER_GROUP) as Node2D
+	var player := LevelManager.player as Node2D
 	if player == null or player == parent:
 		return null
 	if parent.global_position.distance_squared_to(player.global_position) <= t.radius * t.radius:

@@ -1,41 +1,40 @@
 [gd_scene format=3 uid="uid://ca2d3m5rccnmh"]
 
-[ext_resource type="Script" uid="uid://b4va2ghma8uwa" path="res://scenes/entities/projectiles/arrow.gd" id="1_amoax"]
-[ext_resource type="PackedScene" uid="uid://bje7baj4w6uoq" path="res://scenes/components/movement_component.tscn" id="1_vil5i"]
-[ext_resource type="PackedScene" uid="uid://ditq6dg2xyyij" path="res://scenes/components/steering_behaviors/seek_behavior.tscn" id="2_ep73y"]
-[ext_resource type="PackedScene" uid="uid://bd81puu85l1x7" path="res://scenes/components/hitbox_component.tscn" id="5_t8u88"]
-[ext_resource type="PackedScene" uid="uid://d3og7njf4dm7y" path="res://scenes/components/steering_behaviors/force_component.tscn" id="5_trlbl"]
-[ext_resource type="Texture2D" uid="uid://buj8lil8tjcjf" path="res://assets/projectiles/arrow.png" id="6_trlbl"]
+[ext_resource type="Script" uid="uid://b4va2ghma8uwa" path="res://scenes/entities/projectiles/arrow.gd" id="1_arrow"]
+[ext_resource type="PackedScene" uid="uid://bq3prj0baseps" path="res://scenes/entities/projectiles/base_projectile.tscn" id="2_base"]
+[ext_resource type="Texture2D" uid="uid://buj8lil8tjcjf" path="res://assets/projectiles/arrow.png" id="3_tex"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rl1hc"]
 size = Vector2(18, 8)
 
-[node name="Arrow" type="CharacterBody2D" unique_id=1476809189]
-collision_layer = 0
-collision_mask = 0
-motion_mode = 1
-script = ExtResource("1_amoax")
+[sub_resource type="Curve" id="Curve_ep73y"]
+_data = [Vector2(0, 0.17853558), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("1_vil5i")]
+[node name="Arrow" unique_id=1100100100 instance=ExtResource("2_base")]
+motion_mode = 1
+script = ExtResource("1_arrow")
+
+[node name="MovementComponent" parent="." index="0" unique_id=105582040]
 max_speed = 500.0
 top_speed_when_no_force = true
 
-[node name="ForceComponent" parent="." unique_id=147930361 node_paths=PackedStringArray("movement") instance=ExtResource("5_trlbl")]
-movement = NodePath("../MovementComponent")
-
-[node name="SeekBehavior" parent="ForceComponent" unique_id=1838009483 instance=ExtResource("2_ep73y")]
-
-[node name="HitboxComponent" parent="." unique_id=920064139 instance=ExtResource("5_t8u88")]
+[node name="HitboxComponent" parent="." index="1" unique_id=920064139]
 collision_layer = 8
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent" unique_id=284861411]
-visible = false
+[node name="CollisionShape2D" parent="HitboxComponent" index="0" unique_id=1100100200]
 position = Vector2(1, 0)
 shape = SubResource("RectangleShape2D_rl1hc")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1792508921]
+[node name="Line2D" type="Line2D" parent="." index="2" unique_id=950507746]
+rotation = -0.7853982
+scale = Vector2(0.9999999, 0.9999999)
+points = PackedVector2Array(0, 0, -9.899496, -9.899496)
+width_curve = SubResource("Curve_ep73y")
+
+[node name="Sprite2D" type="Sprite2D" parent="." index="3" unique_id=1792508921]
 texture_filter = 1
 rotation = -0.7853982
 scale = Vector2(0.99999994, 0.99999994)
-texture = ExtResource("6_trlbl")
+texture = ExtResource("3_tex")

@@ -24,12 +24,13 @@ collision_mask = 0
 script = ExtResource("1_dfowp")
 
 [node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("1_ykj3t")]
-max_speed = 200.0
-max_force = 2000.0
+max_speed = 240.0
+max_force = 640.0
 friction = 0.999
 
 [node name="ForceComponent" parent="." unique_id=147930361 node_paths=PackedStringArray("movement") instance=ExtResource("2_dfowp")]
 movement = NodePath("../MovementComponent")
+update_interval = 1
 
 [node name="SeekBehavior" parent="ForceComponent" unique_id=1838009483 instance=ExtResource("3_mi0tf")]
 targets = Array[ExtResource("4_cxqyu")]([SubResource("Resource_q6c2p")])

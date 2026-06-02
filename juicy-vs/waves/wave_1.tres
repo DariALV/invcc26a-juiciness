@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="Wave" format=3 uid="uid://cxt13aoq7xd7s"]
+
+[ext_resource type="Script" uid="uid://585ndpli0d33" path="res://scripts/wave.gd" id="1_wave"]
+[ext_resource type="Script" uid="uid://cgs1a7yb064lb" path="res://scripts/wave_enemy.gd" id="2_we"]
+[ext_resource type="PackedScene" uid="uid://bw8e3y4qx1m1" path="res://scenes/entities/enemies/enemy/enemy.tscn" id="3_basic"]
+
+[sub_resource type="Resource" id="we_basic"]
+script = ExtResource("2_we")
+scene = ExtResource("3_basic")
+amount = 40
+metadata/_custom_type_script = "uid://cgs1a7yb064lb"
+
+[resource]
+script = ExtResource("1_wave")
+enemies = Array[ExtResource("2_we")]([SubResource("we_basic")])
+base_spawn_rate = 1.5
+max_alive = 25
+metadata/_custom_type_script = "uid://585ndpli0d33"

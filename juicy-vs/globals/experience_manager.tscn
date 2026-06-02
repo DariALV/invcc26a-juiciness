@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cf2ws63e7rwpp"]
+
+[ext_resource type="Script" uid="uid://cilul32sjh5rx" path="res://globals/experience_manager.gd" id="1_expmgr"]
+
+[node name="ExperienceManager" type="Node" unique_id=2137030202]
+script = ExtResource("1_expmgr")

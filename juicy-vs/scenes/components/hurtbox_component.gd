@@ -17,3 +17,6 @@ func _on_area_entered(area : Area2D):
 	if area is HitboxComponent and health and not health.isDead:
 		collision.emit(area)
 		health.apply_damage(area.damage)
+		# Avisa al hitbox que el golpe impacto, para que el proyectil se consuma
+		# solo cuando de verdad hizo daño (no si la entidad ya estaba muerta).
+		area.register_hit(self)

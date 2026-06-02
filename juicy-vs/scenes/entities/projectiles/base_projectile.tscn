@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bq3prj0baseps"]
+
+[ext_resource type="Script" path="res://scenes/entities/projectiles/base_projectile.gd" id="1_base"]
+[ext_resource type="PackedScene" uid="uid://bje7baj4w6uoq" path="res://scenes/components/movement_component.tscn" id="2_move"]
+[ext_resource type="PackedScene" uid="uid://bd81puu85l1x7" path="res://scenes/components/hitbox_component.tscn" id="3_hit"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
+size = Vector2(8, 8)
+
+[node name="BaseProjectile" type="CharacterBody2D" unique_id=1100100100]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_base")
+
+[node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("2_move")]
+
+[node name="HitboxComponent" parent="." unique_id=920064139 instance=ExtResource("3_hit")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent" unique_id=1100100200]
+shape = SubResource("RectangleShape2D_base")

@@ -8,12 +8,12 @@ signal collision_detected()
 
 var ignore_collision: Dictionary = {}
 
-func _ready():
-	area_entered.connect(_on_area_entered)
-
-func _on_area_entered(area : Area2D):
+# Lo invoca el HurtboxComponent cuando procesa el golpe (entidad viva, daño
+# aplicado). Asi el proyectil solo se "consume" si de verdad impacto algo: si la
+# entidad ya murio por otra flecha del mismo frame, esta no se gasta y sigue.
+func register_hit(hurtbox: Area2D) -> void:
 	if one_hit_per_area:
-		var id := area.get_instance_id()
+		var id := hurtbox.get_instance_id()
 		if ignore_collision.has(id):
 			return
 		ignore_collision[id] = true

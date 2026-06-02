@@ -113,8 +113,8 @@ metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
 [sub_resource type="Resource" id="Resource_ot1rv"]
 script = ExtResource("8_hx5tq")
 target_group = "player"
-radius = 400.0
-force_multiplier = 3.0
+radius = 200.0
+force_multiplier = 5.0
 metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
 
 [node name="Archer" unique_id=894921972 instance=ExtResource("1_pfdyp")]

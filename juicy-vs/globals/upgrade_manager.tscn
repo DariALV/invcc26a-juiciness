@@ -7,54 +7,221 @@
 [ext_resource type="Script" uid="uid://ds6qx2fdebwak" path="res://upgrades/weapon/shoot_weapon_upgrade.gd" id="5_bau4d"]
 [ext_resource type="Script" uid="uid://ccom3upmduyc4" path="res://upgrades/weapon/speed_weapon_upgrade.gd" id="6_bwf02"]
 [ext_resource type="Script" uid="uid://dl0q8ndmwvira" path="res://upgrades/upgrade_color.gd" id="7_bau4d"]
+[ext_resource type="Script" uid="uid://cwt08t0cuksqo" path="res://upgrades/player/luck_upgrade.gd" id="8_luck"]
+[ext_resource type="Texture2D" uid="uid://dqd4vct61c77u" path="res://assets/ui/upgrade_nodes.png" id="9_bhjxb"]
+[ext_resource type="Script" path="res://upgrades/projectile/damage_projectile_upgrade.gd" id="10_dmg"]
+[ext_resource type="Script" path="res://upgrades/player/max_health_upgrade.gd" id="15_mxhp"]
+[ext_resource type="Script" path="res://upgrades/player/move_speed_upgrade.gd" id="16_mvspd"]
+[ext_resource type="Script" path="res://upgrades/player/heal_upgrade.gd" id="17_heal"]
+[ext_resource type="Script" path="res://upgrades/player/xp_gain_upgrade.gd" id="19_xpgn"]
 
-[sub_resource type="Resource" id="Resource_njh4l"]
+[sub_resource type="Resource" id="dmg1"]
+script = ExtResource("10_dmg")
+flat_bonus = 1.0
+title = "Daño I"
+description = "+1 de dano por flecha"
+
+[sub_resource type="Resource" id="dmg2"]
+script = ExtResource("10_dmg")
+flat_bonus = 2.0
+title = "Dano II"
+description = "+2 de dano por flecha"
+rarity = 1
+
+[sub_resource type="Resource" id="dmg3"]
+script = ExtResource("10_dmg")
+multiplier = 1.5
+title = "Dano masivo"
+description = "+50% de dano por flecha"
+rarity = 2
+
+[sub_resource type="Resource" id="prc1"]
 script = ExtResource("3_cco4e")
-description = "+1 penetración"
-type = 3
+title = "Penetracion I"
+description = "+1 penetracion"
+rarity = 1
 metadata/_custom_type_script = "uid://dsdyneerf4mjq"
 
-[sub_resource type="Resource" id="Resource_bau4d"]
-script = ExtResource("5_bau4d")
-description = "+1 flecha"
-type = 3
-metadata/_custom_type_script = "uid://ds6qx2fdebwak"
+[sub_resource type="Resource" id="prc2"]
+script = ExtResource("3_cco4e")
+extra_pierce = 2
+title = "Penetracion II"
+description = "+2 penetracion"
+rarity = 2
+metadata/_custom_type_script = "uid://dsdyneerf4mjq"
 
-[sub_resource type="Resource" id="Resource_bwf02"]
+[sub_resource type="Resource" id="cad1"]
 script = ExtResource("6_bwf02")
+title = "Cadencia I"
 description = "+10% velocidad de disparo"
-type = 2
 metadata/_custom_type_script = "uid://ccom3upmduyc4"
 
-[sub_resource type="Resource" id="Resource_bhjxb"]
+[sub_resource type="Resource" id="cad2"]
+script = ExtResource("6_bwf02")
+speed_increase = 0.25
+title = "Cadencia II"
+description = "+25% velocidad de disparo"
+rarity = 1
+metadata/_custom_type_script = "uid://ccom3upmduyc4"
+
+[sub_resource type="Resource" id="cad3"]
+script = ExtResource("6_bwf02")
+speed_increase = 0.5
+title = "Disparo rapido"
+description = "+50% velocidad de disparo"
+rarity = 2
+metadata/_custom_type_script = "uid://ccom3upmduyc4"
+
+[sub_resource type="Resource" id="arr1"]
+script = ExtResource("5_bau4d")
+title = "Flecha extra"
+description = "+1 flecha por disparo"
+rarity = 2
+metadata/_custom_type_script = "uid://ds6qx2fdebwak"
+
+[sub_resource type="Resource" id="arr2"]
+script = ExtResource("5_bau4d")
+extra_arrow_count = 2
+title = "Lluvia de flechas"
+description = "+2 flechas por disparo"
+rarity = 3
+metadata/_custom_type_script = "uid://ds6qx2fdebwak"
+
+[sub_resource type="Resource" id="luk1"]
+script = ExtResource("8_luck")
+title = "Suerte"
+description = "+0.25 suerte"
+rarity = 2
+metadata/_custom_type_script = "uid://cwt08t0cuksqo"
+
+[sub_resource type="Resource" id="luk2"]
+script = ExtResource("8_luck")
+luck_increase = 0.5
+title = "Suerte mayor"
+description = "+0.5 suerte"
+rarity = 3
+metadata/_custom_type_script = "uid://cwt08t0cuksqo"
+
+[sub_resource type="Resource" id="vit1"]
+script = ExtResource("15_mxhp")
+flat_bonus = 5.0
+title = "Vitalidad I"
+description = "+5 vida maxima"
+
+[sub_resource type="Resource" id="vit2"]
+script = ExtResource("15_mxhp")
+flat_bonus = 10.0
+title = "Vitalidad II"
+description = "+10 vida maxima"
+rarity = 1
+
+[sub_resource type="Resource" id="vit3"]
+script = ExtResource("15_mxhp")
+multiplier = 1.5
+title = "Corazon de hierro"
+description = "+50% vida maxima"
+rarity = 2
+
+[sub_resource type="Resource" id="heal1"]
+script = ExtResource("17_heal")
+heal_amount = 10.0
+title = "Botiquin"
+description = "Cura 10 de vida"
+
+[sub_resource type="Resource" id="heal2"]
+script = ExtResource("17_heal")
+heal_full = true
+title = "Curacion total"
+description = "Restaura toda la vida"
+rarity = 3
+
+[sub_resource type="Resource" id="mv1"]
+script = ExtResource("16_mvspd")
+flat_bonus = 20.0
+title = "Botas ligeras"
+description = "+20 velocidad de movimiento"
+
+[sub_resource type="Resource" id="mv2"]
+script = ExtResource("16_mvspd")
+multiplier = 1.25
+title = "Botas veloces"
+description = "+25% velocidad de movimiento"
+rarity = 1
+
+[sub_resource type="Resource" id="xp1"]
+script = ExtResource("19_xpgn")
+title = "Codicia"
+description = "+20% experiencia ganada"
+rarity = 1
+
+[sub_resource type="Resource" id="xp2"]
+script = ExtResource("19_xpgn")
+multiplier_bonus = 0.5
+title = "Sabiduria"
+description = "+50% experiencia ganada"
+rarity = 2
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vm1sg"]
+atlas = ExtResource("9_bhjxb")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="Resource" id="Resource_common"]
 script = ExtResource("7_bau4d")
-outline_color = Color(0.94509804, 0.36078432, 0.39215687, 1)
-text_color = Color(0.6666667, 0.12941177, 0.30980393, 1)
+texture = SubResource("AtlasTexture_vm1sg")
+outline_color = Color(0.7, 0.72, 0.75, 1)
+text_color = Color(0.25, 0.27, 0.3, 1)
 metadata/_custom_type_script = "uid://dl0q8ndmwvira"
 
-[sub_resource type="Resource" id="Resource_vm1sg"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_bhjxb"]
+atlas = ExtResource("9_bhjxb")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="Resource" id="Resource_uncommon"]
 script = ExtResource("7_bau4d")
-type = 1
+rarity = 1
+texture = SubResource("AtlasTexture_bhjxb")
 outline_color = Color(0.2901961, 0.76862746, 0.35686275, 1)
 text_color = Color(0.12941177, 0.44313726, 0.34117648, 1)
 metadata/_custom_type_script = "uid://dl0q8ndmwvira"
 
-[sub_resource type="Resource" id="Resource_6478k"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_6478k"]
+atlas = ExtResource("9_bhjxb")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="Resource" id="Resource_rare"]
 script = ExtResource("7_bau4d")
-type = 2
+rarity = 2
+texture = SubResource("AtlasTexture_6478k")
 outline_color = Color(0.33333334, 0.7607843, 1, 1)
 text_color = Color(0.23529412, 0.37254903, 0.6509804, 1)
 metadata/_custom_type_script = "uid://dl0q8ndmwvira"
 
-[sub_resource type="Resource" id="Resource_jym6t"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_jym6t"]
+atlas = ExtResource("9_bhjxb")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="Resource" id="Resource_epic"]
 script = ExtResource("7_bau4d")
-type = 3
+rarity = 3
+texture = SubResource("AtlasTexture_jym6t")
 outline_color = Color(0.72156864, 0.27058825, 0.8980392, 1)
 text_color = Color(0.27450982, 0.050980393, 0.42745098, 1)
+metadata/_custom_type_script = "uid://dl0q8ndmwvira"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mxmm7"]
+atlas = ExtResource("9_bhjxb")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="Resource" id="Resource_legendary"]
+script = ExtResource("7_bau4d")
+rarity = 4
+texture = SubResource("AtlasTexture_mxmm7")
+outline_color = Color(1, 0.78, 0.25, 1)
+text_color = Color(0.45, 0.32, 0.05, 1)
 metadata/_custom_type_script = "uid://dl0q8ndmwvira"
 
 [node name="UpgradeManager" type="Node" unique_id=1679145504]
 script = ExtResource("1_hsx4w")
 upgrade_item_scene = ExtResource("2_lft0v")
-available_upgrades = Array[ExtResource("2_4pqef")]([SubResource("Resource_njh4l"), SubResource("Resource_bau4d"), SubResource("Resource_bwf02")])
-upgrade_type_colors = Array[ExtResource("7_bau4d")]([SubResource("Resource_bhjxb"), SubResource("Resource_vm1sg"), SubResource("Resource_6478k"), SubResource("Resource_jym6t")])
+available_upgrades = Array[ExtResource("2_4pqef")]([SubResource("dmg1"), SubResource("dmg2"), SubResource("dmg3"), SubResource("prc1"), SubResource("prc2"), SubResource("cad1"), SubResource("cad2"), SubResource("cad3"), SubResource("arr1"), SubResource("arr2"), SubResource("luk1"), SubResource("luk2"), SubResource("vit1"), SubResource("vit2"), SubResource("vit3"), SubResource("heal1"), SubResource("heal2"), SubResource("mv1"), SubResource("mv2"), SubResource("xp1"), SubResource("xp2")])
+rarity_colors = Array[ExtResource("7_bau4d")]([SubResource("Resource_common"), SubResource("Resource_uncommon"), SubResource("Resource_rare"), SubResource("Resource_epic"), SubResource("Resource_legendary")])

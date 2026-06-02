@@ -6,6 +6,9 @@ class_name BaseEnemy extends CharacterBody2D
 @onready var flash_component = $AnimatedSprite2D/FlashComponent
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent
 
+## Experience granted by this enemy on death.
+@export var xp_value: float = 1.0
+
 var particle_direction: Vector2 = Vector2(1, 0)
 
 func _ready():
@@ -15,7 +18,7 @@ func _ready():
 	
 
 func _process(delta):
-	var player = get_tree().get_first_node_in_group("player") as Player
+	var player = LevelManager.player
 	var direction = global_position.direction_to(player.global_position)
 	if (direction.x > 0):
 		animated_sprite.flip_h = false
@@ -27,8 +30,7 @@ func _process(delta):
 		animated_sprite.play("running")
 
 func on_died():
-	if randf() < 0.1:
-		UpgradeManager.spawn_upgrade_item(global_position)
+	ExperienceManager.add_xp(xp_value)
 	call_deferred("queue_free")
 
 func on_hurtbox_collision(area: Area2D):

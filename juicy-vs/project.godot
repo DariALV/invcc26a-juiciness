@@ -23,7 +23,9 @@ GlobalData="*uid://dpuaye154jddy"
 ParticleManager="*uid://yiimdj41sgwg"
 SpatialManager="*uid://ei0dy414v2hh"
 NodeCounter="*uid://di55q7by7vmkr"
+ExperienceManager="*res://globals/experience_manager.tscn"
 UpgradeManager="*uid://cyxpxwvh5irvr"
+LevelManager="*res://globals/level_manager.gd"
 
 [display]
 
@@ -40,6 +42,7 @@ enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg")
 
 player=""
 enemy=""
+following_projectile=""
 
 [input]
 
@@ -85,3 +88,4 @@ down={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+viewport/hdr_2d=true

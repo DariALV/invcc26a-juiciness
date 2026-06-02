@@ -1,0 +1,118 @@
+[gd_scene format=3 uid="uid://dic4j8k3e2jyv"]
+
+[ext_resource type="Script" uid="uid://jh7jysjo2rqu" path="res://scenes/entities/projectiles/following_projectile.gd" id="1_fp"]
+[ext_resource type="PackedScene" uid="uid://bq3prj0baseps" path="res://scenes/entities/projectiles/base_projectile.tscn" id="2_base"]
+[ext_resource type="Texture2D" uid="uid://dcr5vkqiejxeb" path="res://assets/projectiles/Bullet 24x24 Part 9B Free.png" id="3_tex"]
+[ext_resource type="PackedScene" uid="uid://d3og7njf4dm7y" path="res://scenes/components/steering_behaviors/force_component.tscn" id="4_force"]
+[ext_resource type="PackedScene" uid="uid://ditq6dg2xyyij" path="res://scenes/components/steering_behaviors/seek_behavior.tscn" id="5_seek"]
+[ext_resource type="Script" uid="uid://7fxr2h4qkmcp" path="res://scripts/steering_target.gd" id="6_target"]
+[ext_resource type="PackedScene" uid="uid://chtjo8gl2o2ke" path="res://scenes/components/steering_behaviors/flee_behavior.tscn" id="7_enwlq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_enwlq"]
+radius = 5.0990195
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wbgp0"]
+atlas = ExtResource("3_tex")
+region = Rect2(0, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t31md"]
+atlas = ExtResource("3_tex")
+region = Rect2(24, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hrqo0"]
+atlas = ExtResource("3_tex")
+region = Rect2(48, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0i3tw"]
+atlas = ExtResource("3_tex")
+region = Rect2(72, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7fwpp"]
+atlas = ExtResource("3_tex")
+region = Rect2(96, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lidvk"]
+atlas = ExtResource("3_tex")
+region = Rect2(120, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1nllv"]
+atlas = ExtResource("3_tex")
+region = Rect2(144, 144, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d5hjo"]
+atlas = ExtResource("3_tex")
+region = Rect2(168, 144, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_elro2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wbgp0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t31md")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hrqo0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0i3tw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7fwpp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lidvk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1nllv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d5hjo")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="Resource" id="Resource_qs30w"]
+script = ExtResource("6_target")
+target_group = "player"
+radius = 1000.0
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[sub_resource type="Resource" id="Resource_ilj16"]
+script = ExtResource("6_target")
+target_group = "following_projectile"
+radius = 20.0
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[node name="FollowingProjectile" unique_id=1100100100 groups=["following_projectile"] instance=ExtResource("2_base")]
+script = ExtResource("1_fp")
+lifespan = 30.0
+target_group = "player"
+
+[node name="MovementComponent" parent="." index="0" unique_id=105582040]
+max_speed = 300.0
+max_force = 150.0
+
+[node name="HitboxComponent" parent="." index="1" unique_id=920064139]
+collision_layer = 4
+
+[node name="CollisionShape2D" parent="HitboxComponent" index="0" unique_id=1100100200]
+shape = SubResource("CircleShape2D_enwlq")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." index="2" unique_id=1799091866]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_elro2")
+autoplay = "default"
+frame_progress = 0.30742323
+
+[node name="ForceComponent" parent="." index="3" unique_id=147930361 node_paths=PackedStringArray("movement") instance=ExtResource("4_force")]
+movement = NodePath("../MovementComponent")
+
+[node name="SeekBehavior" parent="ForceComponent" index="0" unique_id=1838009483 instance=ExtResource("5_seek")]
+targets = Array[ExtResource("6_target")]([SubResource("Resource_qs30w")])
+
+[node name="FleeBehavior" parent="ForceComponent" index="1" unique_id=1963351202 instance=ExtResource("7_enwlq")]
+targets = Array[ExtResource("6_target")]([SubResource("Resource_ilj16")])
