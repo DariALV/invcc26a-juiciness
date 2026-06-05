@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://gep8qtf0r4qr" path="res://scenes/entities/weapons/bow.tscn" id="6_8akj5"]
 [ext_resource type="PackedScene" uid="uid://deegvhib634fp" path="res://scenes/components/collector_component.tscn" id="7_bj7e2"]
 [ext_resource type="PackedScene" uid="uid://dcjjqaviq8blq" path="res://scenes/ui/health_bar.tscn" id="8_1murt"]
+[ext_resource type="Script" uid="uid://bdidijwq8sp65" path="res://scenes/entities/player/area_indicator.gd" id="9_area"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1murt"]
 atlas = ExtResource("4_bj7e2")
@@ -113,14 +114,15 @@ size = Vector2(10, 13)
 size = Vector2(12, 15)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1murt"]
+radius = 100.0
 
 [node name="Player" type="CharacterBody2D" unique_id=1914702113 groups=["player"]]
 collision_mask = 16
 script = ExtResource("1_sjsxr")
 
 [node name="HealthComponent" parent="." unique_id=100227969 instance=ExtResource("2_acvb7")]
-current_health = 20.0
-max_health = 20.0
+current_health = 50.0
+max_health = 50.0
 
 [node name="MovementComponent" parent="." unique_id=105582040 instance=ExtResource("3_ps70n")]
 max_speed = 100.0
@@ -154,8 +156,11 @@ shape = SubResource("RectangleShape2D_bj7e2")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CollectorComponent" unique_id=1717601853]
 shape = SubResource("CircleShape2D_1murt")
 
+[node name="AreaIndicator" type="Node2D" parent="." unique_id=2061187589]
+script = ExtResource("9_area")
+
 [node name="HealthBar" parent="." unique_id=622948143 instance=ExtResource("8_1murt")]
-offset_left = -19.0
-offset_top = -15.0
-offset_right = 20.0
+offset_left = -28.0
+offset_top = -19.0
+offset_right = 29.0
 offset_bottom = -11.0

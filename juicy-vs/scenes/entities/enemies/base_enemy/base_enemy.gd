@@ -8,13 +8,19 @@ class_name BaseEnemy extends CharacterBody2D
 
 ## Experience granted by this enemy on death.
 @export var xp_value: float = 1.0
+## Grupo de stats en GameConfig que aplica a esta entidad (enemy, zombie, ...).
+@export var config_key: String = "enemy"
 
 var particle_direction: Vector2 = Vector2(1, 0)
 
 func _ready():
 	health.died.connect(on_died)
 	health.health_changed.connect(on_health_changed)
+	health.damaged.connect(on_damaged)
 	hurtbox.collision.connect(on_hurtbox_collision)
+	GameConfig.bind(config_key, self)
+	GameConfig.bind_steering(config_key, self)
+	_apply_wave_damage_multiplier()
 	
 
 func _process(delta):
@@ -29,8 +35,20 @@ func _process(delta):
 	else:
 		animated_sprite.play("running")
 
+## Escala el dano de contacto del enemigo por el multiplicador de la oleada actual.
+func _apply_wave_damage_multiplier():
+	var hitbox = get_node_or_null("HitboxComponent")
+	if hitbox and GlobalData.wave_damage_multiplier != 1.0:
+		hitbox.damage *= GlobalData.wave_damage_multiplier
+
 func on_died():
-	ExperienceManager.add_xp(xp_value)
+	AudioManager.play_enemy_death()
+	# La experiencia ya no se otorga al instante: se suelta como un orbe recogible.
+	XpOrb.drop(global_position, xp_value)
+	var p := LevelManager.player
+	if is_instance_valid(p):
+		p.on_enemy_killed()
+		p.call_deferred("try_spawn_death_arrows", global_position)
 	call_deferred("queue_free")
 
 func on_hurtbox_collision(area: Area2D):
@@ -40,6 +58,11 @@ func on_health_changed(before: float, after: float):
 	if (before > after):
 		flash_component.apply_flash()
 		ParticleManager.spawn("hit_effect", global_position, particle_direction)
+		AudioManager.play_hit()
+
+## Muestra un numero de dano flotante (naranja si es fuego) sobre el enemigo.
+func on_damaged(amount: float, is_fire: bool):
+	DamageNumber.spawn(LevelManager.y_sort_entities, global_position, amount, is_fire)
 
 func _enter_tree():
 	NodeCounter.add_entity("base enemy")

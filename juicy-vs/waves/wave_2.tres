@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://cgs1a7yb064lb" path="res://scripts/wave_enemy.gd" id="2_we"]
 [ext_resource type="PackedScene" uid="uid://bw8e3y4qx1m1" path="res://scenes/entities/enemies/enemy/enemy.tscn" id="3_basic"]
 [ext_resource type="PackedScene" uid="uid://bp5yxegmnc33t" path="res://scenes/entities/enemies/archer/archer.tscn" id="4_archer"]
+[ext_resource type="PackedScene" uid="uid://dgyta4g3na5b5" path="res://scenes/entities/enemies/necromancer/necromancer.tscn" id="5_necro"]
 
 [sub_resource type="Resource" id="we_basic"]
 script = ExtResource("2_we")
@@ -16,13 +17,22 @@ metadata/_custom_type_script = "uid://cgs1a7yb064lb"
 [sub_resource type="Resource" id="we_archer"]
 script = ExtResource("2_we")
 scene = ExtResource("4_archer")
-amount = 8
-spawn_window_start = 0.25
+amount = 12
+spawn_window_start = 0.2
+metadata/_custom_type_script = "uid://cgs1a7yb064lb"
+
+[sub_resource type="Resource" id="we_necro"]
+script = ExtResource("2_we")
+scene = ExtResource("5_necro")
+amount = 2
+weight = 0.4
+spawn_window_start = 0.5
 metadata/_custom_type_script = "uid://cgs1a7yb064lb"
 
 [resource]
 script = ExtResource("1_wave")
-enemies = Array[ExtResource("2_we")]([SubResource("we_basic"), SubResource("we_archer")])
-duration = 35.0
-max_alive = 35
+enemies = Array[ExtResource("2_we")]([SubResource("we_basic"), SubResource("we_archer"), SubResource("we_necro")])
+base_spawn_rate = 5.0
+min_alive = 20
+max_alive = 50
 metadata/_custom_type_script = "uid://585ndpli0d33"

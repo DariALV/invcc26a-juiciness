@@ -2,14 +2,7 @@
 
 [ext_resource type="FontFile" uid="uid://nqwwc3owb16g" path="res://fonts/MatchupPro.ttf" id="1_qi2ti"]
 [ext_resource type="Script" uid="uid://b8bhbcvngo43l" path="res://scenes/ui/health_bar.gd" id="2_4rf34"]
-[ext_resource type="Shader" path="res://scenes/ui/health_bar_fill.gdshader" id="3_fill"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_fill"]
-shader = ExtResource("3_fill")
-shader_parameter/progress = 1.0
-shader_parameter/fill_color = Color(1, 0.34219015, 0.28635707, 1)
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fill"]
+[ext_resource type="Shader" uid="uid://ca6qlkiat8wa3" path="res://scenes/ui/health_bar_fill.gdshader" id="3_fill"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ucql"]
 bg_color = Color(0.598, 0.6084, 0.65, 1)
@@ -70,6 +63,13 @@ VScrollBar/styles/grabber_pressed = SubResource("StyleBoxEmpty_5a0qb")
 VScrollBar/styles/scroll = SubResource("StyleBoxEmpty_beiod")
 VScrollBar/styles/scroll_focus = SubResource("StyleBoxEmpty_8t3tr")
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fill"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fill"]
+shader = ExtResource("3_fill")
+shader_parameter/progress = 1.0
+shader_parameter/fill_color = Color(1, 0.34219015, 0.28635707, 1)
+
 [node name="HealthBar" type="ProgressBar" unique_id=622948143]
 texture_filter = 1
 offset_right = 150.0
@@ -92,3 +92,30 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 0.34219015, 0.28635707, 1)
+
+[node name="ValueLabel" type="Label" parent="." unique_id=34215854]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.497
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -7.550003
+offset_top = -4.0
+offset_right = 7.0
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 1
+theme_override_constants/outline_size = 3
+theme_override_constants/shadow_outline_size = 1
+theme_override_fonts/font = ExtResource("1_qi2ti")
+theme_override_font_sizes/font_size = 8
+text = "50/50"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -4,8 +4,12 @@ class_name WaveEnemy extends Resource
 @export var scene: PackedScene
 ## Total amount of this enemy spawned across the whole wave.
 @export var amount: int = 0
-## Multiplies the enemy's max and current health on spawn. 1.0 = unchanged.
+## OBSOLETO: la vida ahora se escala con el multiplicador GLOBAL por oleada
+## (GlobalData.wave_health_multiplier). Se conserva por compatibilidad con los .tres
+## y el menu de debug, pero ya no se aplica.
 @export var health_multiplier: float = 1.0
+## Multiplica la velocidad de movimiento del enemigo al spawnear. 1.0 = sin cambio.
+@export var move_speed_multiplier: float = 1.0
 ## Pick weight in the random draw. A weight of 3 spawns 3x as often as a weight of 1.
 @export var weight: float = 1.0
 ## Start of the wave-progress window (0..1) in which this type may spawn.
@@ -32,12 +36,20 @@ func spawn(parent_node: Node2D, spawn_distance: float) -> void:
 	var enemy = scene.instantiate() as CharacterBody2D
 	enemy.global_position = get_spawn_position(spawn_distance)
 	parent_node.add_child(enemy)
+	# Solo contamos los enemigos de la OLEADA (no los invocados por un SpawnerComponent,
+	# p. ej. los zombies de los necromantes, que no forman parte de la oleada).
 	GlobalData.enemies_alive += 1
 	if enemy.health and enemy.health is HealthComponent:
-		if health_multiplier != 1.0:
-			enemy.health.max_health *= health_multiplier
-			enemy.health.current_health *= health_multiplier
+		# Multiplicador GLOBAL de vida de la oleada (reemplaza al por-entidad).
+		var hp_mult: float = GlobalData.wave_health_multiplier
+		if hp_mult != 1.0:
+			enemy.health.max_health *= hp_mult
+			enemy.health.current_health *= hp_mult
 		enemy.health.died.connect(on_enemy_died)
+	if move_speed_multiplier != 1.0:
+		var mv = enemy.get_node_or_null("MovementComponent")
+		if mv:
+			mv.max_speed *= move_speed_multiplier
 
 func get_spawn_position(spawn_distance: float):
 	var player : Player = LevelManager.player

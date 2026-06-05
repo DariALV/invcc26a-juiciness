@@ -7,19 +7,17 @@
 [ext_resource type="PackedScene" uid="uid://bcifnfcc6igpj" path="res://scenes/managers/enemy_spawner/enemy_spawner.tscn" id="4_cgpkm"]
 [ext_resource type="PackedScene" uid="uid://dm31kx0k84bwi" path="res://scenes/entities/juicy_camera/juicy_camera.tscn" id="5_xteuy"]
 [ext_resource type="Texture2D" uid="uid://8v0ewfrv2jpk" path="res://assets/tilemaps/tilemap_1.png" id="6_48wvf"]
-[ext_resource type="Script" uid="uid://cgs1a7yb064lb" path="res://scripts/wave_enemy.gd" id="6_yb2vu"]
-[ext_resource type="PackedScene" uid="uid://bw8e3y4qx1m1" path="res://scenes/entities/enemies/enemy/enemy.tscn" id="7_s5x0e"]
 [ext_resource type="PackedScene" uid="uid://bd6clb2ukt70n" path="res://scenes/entities/player/player.tscn" id="7_yb2vu"]
 [ext_resource type="Script" uid="uid://585ndpli0d33" path="res://scripts/wave.gd" id="8_4c717"]
 [ext_resource type="PackedScene" uid="uid://g8mr0jg012tv" path="res://scenes/ui/level_ui.tscn" id="8_s5x0e"]
-[ext_resource type="PackedScene" uid="uid://bp5yxegmnc33t" path="res://scenes/entities/enemies/archer/archer.tscn" id="9_yb2vu"]
 [ext_resource type="Theme" uid="uid://db2frg1r4ma83" path="res://themes/id_ui_theme.tres" id="10_r33ei"]
-[ext_resource type="PackedScene" uid="uid://dgyta4g3na5b5" path="res://scenes/entities/enemies/necromancer/necromancer.tscn" id="10_s5x0e"]
-[ext_resource type="Resource" uid="uid://wave1ka01xqzm" path="res://waves/wave_1.tres" id="20_w1"]
-[ext_resource type="Resource" uid="uid://wave2kb02yrwn" path="res://waves/wave_2.tres" id="21_w2"]
-[ext_resource type="Resource" uid="uid://wave3kc03zsxp" path="res://waves/wave_3.tres" id="22_w3"]
-[ext_resource type="Resource" uid="uid://wave4kd04atyq" path="res://waves/wave_4.tres" id="23_w4"]
-[ext_resource type="Resource" uid="uid://wave5ke05buzr" path="res://waves/wave_5.tres" id="24_w5"]
+[ext_resource type="Resource" uid="uid://cxt13aoq7xd7s" path="res://waves/wave_1.tres" id="20_w1"]
+[ext_resource type="Resource" uid="uid://cxt14apq8ye4t" path="res://waves/wave_2.tres" id="21_w2"]
+[ext_resource type="Resource" uid="uid://cxt15aqra0f5v" path="res://waves/wave_3.tres" id="22_w3"]
+[ext_resource type="Resource" uid="uid://cxt16arrbag6w" path="res://waves/wave_4.tres" id="23_w4"]
+[ext_resource type="Resource" uid="uid://cxt17asrcbh7x" path="res://waves/wave_5.tres" id="24_w5"]
+[ext_resource type="Texture2D" uid="uid://dqd4vct61c77u" path="res://assets/ui/upgrade_nodes.png" id="30_nodes"]
+[ext_resource type="PackedScene" uid="uid://2am3q5nw0fgd" path="res://scenes/ui/how_to_play.tscn" id="40_htp"]
 
 [sub_resource type="Resource" id="Resource_cd6u8"]
 script = ExtResource("2_oounm")
@@ -44,41 +42,6 @@ metadata/_custom_type_script = "uid://cr6wm2a6ehfgi"
 script = ExtResource("3_r33ei")
 tile_offset_variations = Array[Vector2i]([Vector2i(26, 7)])
 metadata/_custom_type_script = "uid://dbmta0nfatl81"
-
-[sub_resource type="Resource" id="Resource_62a7t"]
-script = ExtResource("6_yb2vu")
-scene = ExtResource("7_s5x0e")
-amount = 500
-metadata/_custom_type_script = "uid://cgs1a7yb064lb"
-
-[sub_resource type="Resource" id="Resource_s5x0e"]
-script = ExtResource("6_yb2vu")
-scene = ExtResource("9_yb2vu")
-amount = 3
-metadata/_custom_type_script = "uid://cgs1a7yb064lb"
-
-[sub_resource type="Resource" id="Resource_vcdbn"]
-script = ExtResource("6_yb2vu")
-scene = ExtResource("10_s5x0e")
-amount = 5
-metadata/_custom_type_script = "uid://cgs1a7yb064lb"
-
-[sub_resource type="Curve" id="Curve_yb2vu"]
-_data = [Vector2(0.16201118, 0), 0.0, 0.0, 0, 0, Vector2(0.61452514, 0.92168677), 0.0, 0.0, 0, 0, Vector2(0.944134, 1), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="Curve" id="Curve_s5x0e"]
-_data = [Vector2(0.50558656, 0.23822564), 0.0, 4.885087, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="Resource" id="Resource_w370m"]
-script = ExtResource("8_4c717")
-enemies = Array[ExtResource("6_yb2vu")]([SubResource("Resource_62a7t"), SubResource("Resource_s5x0e"), SubResource("Resource_vcdbn")])
-base_spawn_rate = 5.0
-spawn_rate_curve = SubResource("Curve_s5x0e")
-spawn_amount_curve = SubResource("Curve_yb2vu")
-require_all_spawned = true
-metadata/_custom_type_script = "uid://585ndpli0d33"
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_62a7t"]
 texture = ExtResource("6_48wvf")
@@ -2076,6 +2039,14 @@ physics_layer_0/collision_layer = 16
 physics_layer_0/collision_mask = 3
 sources/0 = SubResource("TileSetAtlasSource_vcdbn")
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_w370m"]
+atlas = ExtResource("30_nodes")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_btnn"]
+atlas = ExtResource("30_nodes")
+region = Rect2(32, 0, 32, 32)
+
 [sub_resource type="Environment" id="Environment_4c717"]
 background_mode = 3
 tonemap_mode = 1
@@ -2102,7 +2073,9 @@ ground_layer = NodePath("../GroundLayer")
 node_spawn_position = NodePath("../YSortEntities")
 waves = Array[ExtResource("8_4c717")]([ExtResource("20_w1"), ExtResource("21_w2"), ExtResource("22_w3"), ExtResource("23_w4"), ExtResource("24_w5")])
 spawn_distance = 500.0
-delay_between_waves = 3.0
+damage_multiplier_per_wave = 0.0
+health_multiplier_per_wave = 0.25
+xp_multiplier_per_wave = 1.0
 
 [node name="JuicyCamera" parent="." unique_id=1308731280 node_paths=PackedStringArray("target") instance=ExtResource("5_xteuy")]
 target = NodePath("../YSortEntities/Player")
@@ -2141,8 +2114,41 @@ theme_override_constants/shadow_offset_x = 0
 theme_override_constants/shadow_offset_y = 2
 theme_override_constants/outline_size = 4
 theme_override_constants/shadow_outline_size = 1
-text = "Test"
+text = "00:00"
 horizontal_alignment = 1
+
+[node name="RoundLabel" type="Label" parent="CanvasLayer" unique_id=1408934427]
+texture_filter = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_right = -28.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme = ExtResource("10_r33ei")
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 4
+theme_override_constants/shadow_outline_size = 1
+text = "Ronda 1/5"
+horizontal_alignment = 2
+
+[node name="EnemiesLabel" type="Label" parent="CanvasLayer" unique_id=2017588697]
+texture_filter = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 28.0
+offset_right = 170.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme = ExtResource("10_r33ei")
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 4
+theme_override_constants/shadow_outline_size = 1
+text = "Enemigos: 0"
 
 [node name="Stats" type="Control" parent="CanvasLayer" unique_id=1760212325]
 visible = false
@@ -2153,21 +2159,27 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Stats" unique_id=1804997814]
-custom_minimum_size = Vector2(200, 100)
+[node name="ColorRect" type="NinePatchRect" parent="CanvasLayer/Stats" unique_id=1779603944]
+self_modulate = Color(1, 1, 1, 0.44705883)
+texture_filter = 1
+custom_minimum_size = Vector2(260, 220)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -50.0
-offset_top = -50.0
-offset_right = 50.0
-offset_bottom = 50.0
+offset_left = -130.0
+offset_top = -110.0
+offset_right = 130.0
+offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.20392157)
+texture = SubResource("AtlasTexture_w370m")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Stats" unique_id=34122499]
 layout_mode = 1
@@ -2226,6 +2238,46 @@ theme_override_constants/outline_size = 4
 theme_override_constants/shadow_outline_size = 1
 text = "Test"
 horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="CanvasLayer/Stats/VBoxContainer" unique_id=1533132199]
+self_modulate = Color(1, 1, 1, 0)
+texture_filter = 1
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 2
+theme = ExtResource("10_r33ei")
+theme_override_colors/font_color = Color(0.12, 0.12, 0.14, 1)
+theme_override_constants/outline_size = 4
+flat = true
+
+[node name="NinePatch" type="NinePatchRect" parent="CanvasLayer/Stats/VBoxContainer/RestartButton" unique_id=601631614]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_btnn")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
+
+[node name="Label" type="Label" parent="CanvasLayer/Stats/VBoxContainer/RestartButton/NinePatch" unique_id=976093622]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 4
+text = "Reiniciar nivel"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HowToPlay" parent="." unique_id=424180419 instance=ExtResource("40_htp")]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1039508699]
 environment = SubResource("Environment_4c717")

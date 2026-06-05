@@ -20,6 +20,9 @@ signal shot(projectile: BaseProjectile)
 @export var projectile_count: int = 1
 ## Speed of the projectiles.
 @export var projectile_speed: float = 100.0
+## Tinte (modulate) aplicado al sprite del proyectil al dispararlo. Blanco = sin
+## cambio. Sirve para distinguir disparos por fuente (p. ej. flechas de arquero en rojo).
+@export var projectile_modulate: Color = Color.WHITE
 ## Target group: "enemy" = player projectile, "player" = enemy projectile.
 @export var target_group: String = "enemy"
 ## Degrees of separation between consecutive projectiles in the fan.
@@ -66,6 +69,11 @@ func shoot():
 	var directions := _spread_circle.spread_points_in_edge(projectile_count, spread, shoot_direction.angle())
 	for dir in directions:
 		_spawn_projectile(dir, container)
+	# Solo el disparo del jugador (proyectiles que dañan enemigos) suena y da el
+	# retroceso de camara opuesto a la mira (respeta el flag de recoil de Supabase).
+	if target_group == "enemy":
+		AudioManager.play_shoot()
+		CameraJuice.recoil(-shoot_direction)
 
 func _spawn_projectile(dir: Vector2, container: Node):
 	var projectile : BaseProjectile = projectile_scene.instantiate() as BaseProjectile
@@ -76,11 +84,15 @@ func _spawn_projectile(dir: Vector2, container: Node):
 	container.add_child(projectile)
 	projectile.global_position = _origin.global_position
 	projectile.rotation = dir.angle()
+	projectile.modulate = projectile_modulate
 	projectile.movement_component.max_speed = projectile_speed
 	projectile.movement_component.current_speed = dir * projectile_speed
 	# Only player projectiles (target enemy) inherit the upgrades.
 	if target_group == "enemy":
 		UpgradeManager.apply_projectile_upgrades(projectile)
+		# Tirada de critico una vez por flecha, sobre el dano ya mejorado.
+		if projectile.crit_chance > 0.0 and randf() < projectile.crit_chance:
+			projectile.damage *= projectile.crit_multiplier
 	shot.emit(projectile)
 
 func _get_container() -> Node:

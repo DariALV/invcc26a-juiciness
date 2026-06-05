@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://g8mr0jg012tv"]
 
-[ext_resource type="PackedScene" uid="uid://dcjjqaviq8blq" path="res://scenes/ui/health_bar.tscn" id="1_po4yf"]
 [ext_resource type="PackedScene" uid="uid://fvhqbs7rjllb" path="res://scenes/ui/upgrades_taken.tscn" id="2_32a87"]
 [ext_resource type="PackedScene" uid="uid://bxweciyccqgde" path="res://scenes/ui/xp_bar.tscn" id="3_xpbar"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_selection.tscn" id="4_upsel"]
+[ext_resource type="PackedScene" uid="uid://cxyylf77dm8r" path="res://scenes/ui/pause_menu.tscn" id="5_pause"]
 
 [node name="LevelUI" type="Control" unique_id=1758930368]
 layout_mode = 3
@@ -13,28 +13,24 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HealthBar" parent="." unique_id=1427220477 instance=ExtResource("1_po4yf")]
-layout_mode = 1
-anchors_preset = -1
-offset_left = 20.0
-offset_top = 14.0
-offset_right = 170.0
-offset_bottom = 26.0
-max_value = 20.0
-step = 0.001
-value = 20.0
-
 [node name="XPBar" parent="." unique_id=2019397936 instance=ExtResource("3_xpbar")]
 layout_mode = 1
 anchors_preset = -1
-offset_left = 20.0
-offset_top = 30.0
-offset_right = 170.0
-offset_bottom = 42.0
+anchor_left = 0.5
+anchor_top = 0.05
+anchor_right = 0.5
+anchor_bottom = 0.05
+offset_left = -75.0
+offset_right = 75.0
+grow_horizontal = 2
+value = 0.0
 
 [node name="UpgradesTaken" parent="." unique_id=1947298652 instance=ExtResource("2_32a87")]
 visible = false
 layout_mode = 1
 
 [node name="UpgradeSelection" parent="." unique_id=1458355592 instance=ExtResource("4_upsel")]
+layout_mode = 1
+
+[node name="PauseMenu" parent="." unique_id=590711244 instance=ExtResource("5_pause")]
 layout_mode = 1

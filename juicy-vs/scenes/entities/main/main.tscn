@@ -9,4 +9,3 @@ script = ExtResource("1_p4vg3")
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1671156158]
 
 [node name="StudentIDMenu" parent="CanvasLayer" unique_id=1998790542 instance=ExtResource("2_jhct2")]
-ids = Array[String](["C60000", "C60001", "C60002", "C60003", "C60004", "C60005", "C60006", "C60007", "C60008", "C60009", "C60010", "C60011", "C60012", "C60013", "C60014", "C60015", "C60016", "C60017", "C60018", "C60019", "C60020"])

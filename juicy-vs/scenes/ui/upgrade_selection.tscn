@@ -1,7 +1,12 @@
-[gd_scene format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/upgrade_selection.gd" id="1_sel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_card.tscn" id="2_card"]
+[ext_resource type="Texture2D" uid="uid://dqd4vct61c77u" path="res://assets/ui/upgrade_nodes.png" id="3_nodes"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_btn"]
+atlas = ExtResource("3_nodes")
+region = Rect2(0, 0, 32, 32)
 
 [node name="UpgradeSelection" type="Control"]
 visible = false
@@ -42,6 +47,34 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Cards" type="HBoxContainer" parent="CardHolder/Center"]
+[node name="Layout" type="VBoxContainer" parent="CardHolder/Center"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Cards" type="HBoxContainer" parent="CardHolder/Center/Layout"]
 layout_mode = 2
 theme_override_constants/separation = 16
+
+[node name="RerollButton" type="Button" parent="CardHolder/Center/Layout"]
+custom_minimum_size = Vector2(132, 26)
+layout_mode = 2
+size_flags_horizontal = 8
+flat = true
+theme_override_colors/font_color = Color(0.12, 0.12, 0.14, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+text = "Rerolls restantes: 0"
+
+[node name="NinePatch" type="NinePatchRect" parent="CardHolder/Center/Layout/RerollButton"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("AtlasTexture_btn")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6

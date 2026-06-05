@@ -109,6 +109,7 @@ force_multiplier = 2.0
 metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
 
 [node name="Zombie" unique_id=894921972 instance=ExtResource("1_o7d34")]
+config_key = "zombie"
 
 [node name="MovementComponent" parent="." index="1" unique_id=105582040]
 max_speed = 200.0

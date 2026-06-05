@@ -1,5 +1,4 @@
 extends Node2D
 
-func _ready():
-	pass
-	#Database.add_test({"test_column": "Testing 1"})
+## Pantalla inicial: solo aloja el StudentIDMenu. El menu se encarga de buscar el carne
+## en Supabase, confirmar y entrar al nivel; aqui ya no se cambia de escena directamente.

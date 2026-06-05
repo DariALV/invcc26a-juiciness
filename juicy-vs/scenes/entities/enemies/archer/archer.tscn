@@ -129,4 +129,6 @@ targets = Array[ExtResource("8_hx5tq")]([SubResource("Resource_8y8ib"), SubResou
 
 [node name="Bow" parent="." index="7" unique_id=1429034469 instance=ExtResource("12_lghk4")]
 shoot_speed = 0.25
+arrow_speed = 250.0
 target_group = "player"
+projectile_modulate = Color(1, 0, 0, 1)

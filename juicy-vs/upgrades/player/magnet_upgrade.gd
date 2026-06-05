@@ -1,10 +1,9 @@
 class_name MagnetUpgrade extends PlayerUpgrade
 
-## Amplia el radio de recogida del jugador escalando el CollectorComponent
-## (la escala del Area2D arrastra a su forma de colision hija).
-@export var scale_multiplier: float = 1.3
+## Amplia el radio de recogida/area del jugador de forma ADITIVA: cada mejora suma
+## 'range_increase' (fraccion del radio base) al bono total. Tomar varias mejoras se
+## SUMA, no se multiplica: +0.6 +0.6 +0.6 = +180% (x2.8), no x1.6 x1.6 x1.6.
+@export var range_increase: float = 0.6
 
 func apply_upgrade() -> void:
-	var collector: Node = LevelManager.player.get_node_or_null("CollectorComponent")
-	if collector and collector is Node2D:
-		(collector as Node2D).scale *= scale_multiplier
+	LevelManager.player.add_pickup_range(range_increase)

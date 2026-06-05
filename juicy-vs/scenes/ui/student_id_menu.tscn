@@ -3,13 +3,29 @@
 [ext_resource type="Script" uid="uid://cod3yc76gjvu8" path="res://scenes/ui/student_id_menu.gd" id="1_bxs7y"]
 [ext_resource type="Texture2D" uid="uid://dqd4vct61c77u" path="res://assets/ui/upgrade_nodes.png" id="2_y0n44"]
 [ext_resource type="Theme" uid="uid://db2frg1r4ma83" path="res://themes/id_ui_theme.tres" id="3_6dbv1"]
-[ext_resource type="PackedScene" uid="uid://d0rq2os053rod" path="res://scenes/ui/student_id_container.tscn" id="4_e2fm3"]
+[ext_resource type="FontFile" uid="uid://nqwwc3owb16g" path="res://fonts/MatchupPro.ttf" id="4_font"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_6dbv1"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_e2fm3"]
 atlas = ExtResource("2_y0n44")
 region = Rect2(192, 0, 32, 32)
 
-[node name="StudentIDMenu" type="Control" unique_id=1998790542]
+[sub_resource type="AtlasTexture" id="AtlasTexture_panel"]
+atlas = ExtResource("2_y0n44")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aavkb"]
+atlas = ExtResource("2_y0n44")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x2lcv"]
+atlas = ExtResource("2_y0n44")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ftld"]
+atlas = ExtResource("2_y0n44")
+region = Rect2(160, 0, 32, 32)
+
+[node name="StudentIDMenu" type="Control" unique_id=1575280473]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,63 +33,257 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_bxs7y")
-student_id_scene = ExtResource("4_e2fm3")
 
-[node name="NinePatchRect" type="NinePatchRect" parent="." unique_id=1409775093]
+[node name="Panel" type="NinePatchRect" parent="." unique_id=1208950273]
 texture_filter = 1
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.4
-anchor_top = 0.1
-anchor_right = 0.6
-anchor_bottom = 0.9
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -130.0
+offset_right = 160.0
+offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = SubResource("AtlasTexture_6dbv1")
+texture = SubResource("AtlasTexture_e2fm3")
 patch_margin_left = 3
 patch_margin_top = 3
 patch_margin_right = 3
 patch_margin_bottom = 6
 
-[node name="MarginContainer" type="MarginContainer" parent="NinePatchRect" unique_id=234440659]
+[node name="Margin" type="MarginContainer" parent="Panel" unique_id=318553492]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 22
 
-[node name="VBoxContainer" type="VBoxContainer" parent="NinePatchRect/MarginContainer" unique_id=1808878771]
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin" unique_id=558505588]
 layout_mode = 2
+theme_override_constants/separation = 14
 
-[node name="LineEdit" type="LineEdit" parent="NinePatchRect/MarginContainer/VBoxContainer" unique_id=820098193]
+[node name="Title" type="Label" parent="Panel/Margin/VBox" unique_id=2002430167]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 22
+text = "Ingrese su carné"
+horizontal_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="Panel/Margin/VBox" unique_id=479193912]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme = ExtResource("3_6dbv1")
-placeholder_text = "Buscar carné"
+placeholder_text = "Carné"
+alignment = 1
+caret_blink = true
+
+[node name="Status" type="Label" parent="Panel/Margin/VBox" unique_id=1130426711]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.45, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SearchButtonBox" type="NinePatchRect" parent="Panel/Margin/VBox" unique_id=389756149]
+texture_filter = 1
+custom_minimum_size = Vector2(100, 44)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = SubResource("AtlasTexture_panel")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
+
+[node name="SearchButton" type="Button" parent="Panel/Margin/VBox/SearchButtonBox" unique_id=34358589]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Panel/Margin/VBox/SearchButtonBox" unique_id=1002873099]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 20
+text = "Buscar"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Popup" type="Control" parent="." unique_id=1645610040]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Popup" unique_id=948046129]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="PopupPanel" type="NinePatchRect" parent="Popup" unique_id=2092235687]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -90.0
+offset_right = 180.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_aavkb")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
+
+[node name="PopupMargin" type="MarginContainer" parent="Popup/PopupPanel" unique_id=1065622729]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 24
+
+[node name="PopupVBox" type="VBoxContainer" parent="Popup/PopupPanel/PopupMargin" unique_id=1574580348]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="PopupMessage" type="Label" parent="Popup/PopupPanel/PopupMargin/PopupVBox" unique_id=1422707383]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 24
+text = "Carné encontrado: C20413.
+¿Desea continuar?"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="Popup/PopupPanel/PopupMargin/PopupVBox" unique_id=2097180046]
+layout_mode = 2
+theme_override_constants/separation = 18
 alignment = 1
 
-[node name="PanelContainer" type="PanelContainer" parent="NinePatchRect/MarginContainer/VBoxContainer" unique_id=1957590878]
+[node name="YesBox" type="NinePatchRect" parent="Popup/PopupPanel/PopupMargin/PopupVBox/Buttons" unique_id=1544903673]
+texture_filter = 1
+custom_minimum_size = Vector2(110, 44)
 layout_mode = 2
-size_flags_vertical = 3
-theme = ExtResource("3_6dbv1")
+texture = SubResource("AtlasTexture_x2lcv")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
 
-[node name="MarginContainer" type="MarginContainer" parent="NinePatchRect/MarginContainer/VBoxContainer/PanelContainer" unique_id=1484482075]
-layout_mode = 2
-theme_override_constants/margin_left = 2
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 2
-theme_override_constants/margin_bottom = 4
+[node name="YesButton" type="Button" parent="Popup/PopupPanel/PopupMargin/PopupVBox/Buttons/YesBox" unique_id=1262133899]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="NinePatchRect/MarginContainer/VBoxContainer/PanelContainer/MarginContainer" unique_id=91957134]
-layout_mode = 2
-size_flags_vertical = 3
-theme = ExtResource("3_6dbv1")
+[node name="Label" type="Label" parent="Popup/PopupPanel/PopupMargin/PopupVBox/Buttons/YesBox" unique_id=1726791870]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 20
+text = "Sí"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="NinePatchRect/MarginContainer/VBoxContainer/PanelContainer/MarginContainer/ScrollContainer" unique_id=703728347]
+[node name="NoBox" type="NinePatchRect" parent="Popup/PopupPanel/PopupMargin/PopupVBox/Buttons" unique_id=1859367977]
+texture_filter = 1
+custom_minimum_size = Vector2(110, 44)
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
+texture = SubResource("AtlasTexture_4ftld")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
+
+[node name="NoButton" type="Button" parent="Popup/PopupPanel/PopupMargin/PopupVBox/Buttons/NoBox" unique_id=1124995034]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Popup/PopupPanel/PopupMargin/PopupVBox/Buttons/NoBox" unique_id=670060118]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 20
+text = "No"
+horizontal_alignment = 1
+vertical_alignment = 1

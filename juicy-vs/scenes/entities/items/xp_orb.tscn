@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://b7xporbxp0rb1"]
+
+[ext_resource type="Script" uid="uid://cgccwpu7y6uov" path="res://scenes/entities/items/xp_orb.gd" id="1_orb"]
+[ext_resource type="PackedScene" uid="uid://bje7baj4w6uoq" path="res://scenes/components/movement_component.tscn" id="2_move"]
+[ext_resource type="PackedScene" uid="uid://d3og7njf4dm7y" path="res://scenes/components/steering_behaviors/force_component.tscn" id="3_force"]
+[ext_resource type="PackedScene" uid="uid://ditq6dg2xyyij" path="res://scenes/components/steering_behaviors/seek_behavior.tscn" id="4_seek"]
+[ext_resource type="Script" uid="uid://7fxr2h4qkmcp" path="res://scripts/steering_target.gd" id="5_target"]
+
+[sub_resource type="Resource" id="Resource_qhw52"]
+resource_local_to_scene = true
+script = ExtResource("5_target")
+target_group = "player"
+radius = 80.0
+force_multiplier = 3.0
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[sub_resource type="Resource" id="Resource_s7e8b"]
+script = ExtResource("5_target")
+target_group = "player"
+radius = 10000.0
+force_multiplier = 0.2
+metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
+
+[node name="XpOrb" type="CharacterBody2D" unique_id=356566440 groups=["xp_orb"]]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_orb")
+
+[node name="MovementComponent" parent="." unique_id=462861718 instance=ExtResource("2_move")]
+max_speed = 360.0
+max_force = 2000.0
+friction = 0.999
+
+[node name="ForceComponent" parent="." unique_id=1742509695 node_paths=PackedStringArray("movement") instance=ExtResource("3_force")]
+movement = NodePath("../MovementComponent")
+update_interval = 2
+
+[node name="SeekBehavior" parent="ForceComponent" unique_id=1253202837 instance=ExtResource("4_seek")]
+targets = Array[ExtResource("5_target")]([SubResource("Resource_qhw52"), SubResource("Resource_s7e8b")])
+
+[node name="Gem" type="Polygon2D" parent="." unique_id=845034960]
+color = Color(0.61960787, 0.27450982, 0.88235295, 1)
+polygon = PackedVector2Array(0, -3.5, 3, 0, 0, 3.5, -3, 0)
+
+[node name="GemInner" type="Polygon2D" parent="." unique_id=264497178]
+color = Color(0.81960785, 0.6156863, 0.95686275, 1)
+polygon = PackedVector2Array(0, -3, 2.5, 0, 0, 3, -2.5, 0)

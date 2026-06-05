@@ -10,3 +10,6 @@ limit_bottom = 800
 limit_smoothed = true
 position_smoothing_enabled = true
 script = ExtResource("1_q6qcl")
+random_strength = 15.0
+zoom_punch_amount = 0.6
+zoom_punch_duration = 0.6

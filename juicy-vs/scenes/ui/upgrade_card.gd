@@ -28,7 +28,14 @@ func setup(u: Upgrade) -> void:
 		background.visible = true
 	else:
 		background.visible = false
-	description_label.text = _colorize(u.description)
+	var desc := _colorize(u.description)
+	# Las mejoras con niveles muestran "Nivel N/M" (o "Nivel N" si son infinitas)
+	# sobre la descripcion; las de un solo uso no muestran nada.
+	var level_label := UpgradeManager.get_level_label(u)
+	if level_label != "":
+		var level_color := color.outline_color if color else Color.WHITE
+		desc = "[color=#%s]%s[/color]\n%s" % [level_color.to_html(false), level_label, desc]
+	description_label.text = desc
 
 func _colorize(text: String) -> String:
 	var re := RegEx.new()

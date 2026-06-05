@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://c1c5v4m2nq4ua"]
+
+[ext_resource type="Script" uid="uid://km51xcm81sj8" path="res://globals/game_timer.gd" id="1_ekqhs"]
+
+[node name="GameTimer" type="Timer" unique_id=1155577655]
+process_mode = 3
+wait_time = 600.0
+one_shot = true
+autostart = true
+ignore_time_scale = true
+script = ExtResource("1_ekqhs")

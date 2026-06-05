@@ -1,0 +1,280 @@
+[gd_scene format=3 uid="uid://cxyylf77dm8r"]
+
+[ext_resource type="Script" uid="uid://pl3hjmfq83q3" path="res://scenes/ui/pause_menu.gd" id="1_pause"]
+[ext_resource type="Theme" uid="uid://db2frg1r4ma83" path="res://themes/id_ui_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" uid="uid://cp4y4p5e2kxsf" path="res://assets/ui/pause_button.png" id="3_8uki6"]
+[ext_resource type="Texture2D" uid="uid://dqd4vct61c77u" path="res://assets/ui/upgrade_nodes.png" id="3_nodes"]
+[ext_resource type="Texture2D" uid="uid://bm15g1mmgujww" path="res://assets/ui/grabber.png" id="5_8fwbo"]
+[ext_resource type="Texture2D" uid="uid://bol7dk6m2ey4c" path="res://assets/ui/slider.png" id="6_2rlsb"]
+[ext_resource type="Texture2D" uid="uid://bcwdlxsao7ktr" path="res://assets/ui/slider_area.png" id="7_coo1x"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2jkta"]
+atlas = ExtResource("3_nodes")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ht4ye"]
+content_margin_left = 0.0
+content_margin_right = 0.0
+texture = ExtResource("6_2rlsb")
+texture_margin_left = 4.0
+texture_margin_right = 4.0
+expand_margin_top = 8.0
+expand_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7yca1"]
+content_margin_left = 0.0
+content_margin_right = 0.0
+texture = ExtResource("7_coo1x")
+texture_margin_left = 6.0
+texture_margin_right = 6.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_btn"]
+atlas = ExtResource("3_nodes")
+region = Rect2(64, 0, 32, 32)
+
+[node name="PauseMenu" type="Control" unique_id=1956401924]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_pause")
+
+[node name="PauseButton" type="Button" parent="." unique_id=1467874963]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(26, 18)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -32.0
+offset_top = 4.0
+offset_bottom = 36.0
+grow_horizontal = 0
+tooltip_text = "Pausa (Esc / P)"
+theme_override_colors/font_color = Color(0.12, 0.12, 0.14, 1)
+flat = true
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="PauseButton" unique_id=975481913]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.9
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_bottom = -32.0
+grow_horizontal = 0
+texture = ExtResource("3_8uki6")
+
+[node name="Overlay" type="Control" parent="." unique_id=482768418]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Overlay" unique_id=410172355]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="Center" type="CenterContainer" parent="Overlay" unique_id=936404491]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="NinePatchRect" parent="Overlay/Center" unique_id=1751297864]
+texture_filter = 1
+custom_minimum_size = Vector2(500, 300)
+layout_mode = 2
+texture = SubResource("AtlasTexture_2jkta")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
+
+[node name="Margin" type="MarginContainer" parent="Overlay/Center/Panel" unique_id=958785139]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="Body" type="HBoxContainer" parent="Overlay/Center/Panel/Margin" unique_id=844744635]
+layout_mode = 2
+theme_override_constants/separation = 28
+alignment = 1
+
+[node name="Left" type="VBoxContainer" parent="Overlay/Center/Panel/Margin/Body" unique_id=214209878]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="Overlay/Center/Panel/Margin/Body/Left" unique_id=2098969830]
+layout_mode = 2
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+text = "Estadísticas"
+
+[node name="StatsList" type="VBoxContainer" parent="Overlay/Center/Panel/Margin/Body/Left" unique_id=1700060021]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Sep" type="VSeparator" parent="Overlay/Center/Panel/Margin/Body" unique_id=2071805504]
+layout_mode = 2
+
+[node name="Right" type="VBoxContainer" parent="Overlay/Center/Panel/Margin/Body" unique_id=1035337901]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Overlay/Center/Panel/Margin/Body/Right" unique_id=1620365585]
+layout_mode = 2
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+text = "Pausa"
+horizontal_alignment = 1
+
+[node name="Volumes" type="VBoxContainer" parent="Overlay/Center/Panel/Margin/Body/Right" unique_id=443369474]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Master" type="HBoxContainer" parent="Overlay/Center/Panel/Margin/Body/Right/Volumes" unique_id=517373715]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Overlay/Center/Panel/Margin/Body/Right/Volumes/Master" unique_id=1243753466]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 16
+text = "Master"
+
+[node name="MasterSlider" type="HSlider" parent="Overlay/Center/Panel/Margin/Body/Right/Volumes/Master" unique_id=64539413]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_icons/grabber = ExtResource("5_8fwbo")
+theme_override_icons/grabber_highlight = ExtResource("5_8fwbo")
+theme_override_icons/grabber_disabled = ExtResource("5_8fwbo")
+theme_override_icons/tick = ExtResource("5_8fwbo")
+theme_override_styles/slider = SubResource("StyleBoxTexture_ht4ye")
+theme_override_styles/grabber_area = SubResource("StyleBoxTexture_7yca1")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxTexture_7yca1")
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Music" type="HBoxContainer" parent="Overlay/Center/Panel/Margin/Body/Right/Volumes" unique_id=44630011]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Overlay/Center/Panel/Margin/Body/Right/Volumes/Music" unique_id=1316462169]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 16
+text = "Música"
+
+[node name="MusicSlider" type="HSlider" parent="Overlay/Center/Panel/Margin/Body/Right/Volumes/Music" unique_id=397540184]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_icons/grabber = ExtResource("5_8fwbo")
+theme_override_icons/grabber_highlight = ExtResource("5_8fwbo")
+theme_override_icons/grabber_disabled = ExtResource("5_8fwbo")
+theme_override_icons/tick = ExtResource("5_8fwbo")
+theme_override_styles/slider = SubResource("StyleBoxTexture_ht4ye")
+theme_override_styles/grabber_area = SubResource("StyleBoxTexture_7yca1")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxTexture_7yca1")
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Sfx" type="HBoxContainer" parent="Overlay/Center/Panel/Margin/Body/Right/Volumes" unique_id=875966597]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Overlay/Center/Panel/Margin/Body/Right/Volumes/Sfx" unique_id=1895059879]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 16
+text = "Efectos"
+
+[node name="SfxSlider" type="HSlider" parent="Overlay/Center/Panel/Margin/Body/Right/Volumes/Sfx" unique_id=1045996645]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_icons/grabber = ExtResource("5_8fwbo")
+theme_override_icons/grabber_highlight = ExtResource("5_8fwbo")
+theme_override_icons/grabber_disabled = ExtResource("5_8fwbo")
+theme_override_icons/tick = ExtResource("5_8fwbo")
+theme_override_styles/slider = SubResource("StyleBoxTexture_ht4ye")
+theme_override_styles/grabber_area = SubResource("StyleBoxTexture_7yca1")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxTexture_7yca1")
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="ResumeButton" type="Button" parent="Overlay/Center/Panel/Margin/Body/Right" unique_id=442741121]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.12, 0.14, 1)
+flat = true
+
+[node name="NinePatch" type="NinePatchRect" parent="Overlay/Center/Panel/Margin/Body/Right/ResumeButton" unique_id=811529522]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_btn")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
+
+[node name="Label" type="Label" parent="Overlay/Center/Panel/Margin/Body/Right/ResumeButton/NinePatch" unique_id=2010257633]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 24
+text = "Reanudar"
+horizontal_alignment = 1
+vertical_alignment = 1

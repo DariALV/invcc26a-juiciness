@@ -14,3 +14,8 @@ func remove_entity(type: String) -> void:
 
 func _get_count(type: String) -> int:
 	return _counts.get(type, 0)
+
+## Conteo publico de entidades vivas de un tipo (lo lleva _enter_tree/_exit_tree, asi
+## que es simetrico y fiable: cuenta TODOS los enemigos, de oleada e invocados).
+func get_count(type: String) -> int:
+	return _counts.get(type, 0)

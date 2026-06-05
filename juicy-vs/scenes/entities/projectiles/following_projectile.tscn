@@ -7,6 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://ditq6dg2xyyij" path="res://scenes/components/steering_behaviors/seek_behavior.tscn" id="5_seek"]
 [ext_resource type="Script" uid="uid://7fxr2h4qkmcp" path="res://scripts/steering_target.gd" id="6_target"]
 [ext_resource type="PackedScene" uid="uid://chtjo8gl2o2ke" path="res://scenes/components/steering_behaviors/flee_behavior.tscn" id="7_enwlq"]
+[ext_resource type="PackedScene" uid="uid://d2tr3o63o4sgf" path="res://scenes/components/health_component.tscn" id="8_health"]
+[ext_resource type="PackedScene" uid="uid://c36afys2uuw6j" path="res://scenes/components/hurtbox_component.tscn" id="9_hurt"]
+[ext_resource type="PackedScene" uid="uid://dl76br4g6nuw6" path="res://scenes/components/flash_component.tscn" id="10_flash"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_enwlq"]
 radius = 5.0990195
@@ -87,6 +90,9 @@ target_group = "following_projectile"
 radius = 20.0
 metadata/_custom_type_script = "uid://7fxr2h4qkmcp"
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_hurt"]
+radius = 6.0
+
 [node name="FollowingProjectile" unique_id=1100100100 groups=["following_projectile"] instance=ExtResource("2_base")]
 script = ExtResource("1_fp")
 lifespan = 30.0
@@ -108,6 +114,8 @@ sprite_frames = SubResource("SpriteFrames_elro2")
 autoplay = "default"
 frame_progress = 0.30742323
 
+[node name="FlashComponent" parent="AnimatedSprite2D" index="0" unique_id=1705069858 instance=ExtResource("10_flash")]
+
 [node name="ForceComponent" parent="." index="3" unique_id=147930361 node_paths=PackedStringArray("movement") instance=ExtResource("4_force")]
 movement = NodePath("../MovementComponent")
 
@@ -116,3 +124,15 @@ targets = Array[ExtResource("6_target")]([SubResource("Resource_qs30w")])
 
 [node name="FleeBehavior" parent="ForceComponent" index="1" unique_id=1963351202 instance=ExtResource("7_enwlq")]
 targets = Array[ExtResource("6_target")]([SubResource("Resource_ilj16")])
+
+[node name="HealthComponent" parent="." index="4" unique_id=820827249 instance=ExtResource("8_health")]
+current_health = 5.0
+max_health = 5.0
+
+[node name="HurtboxComponent" parent="." index="5" unique_id=1885960914 node_paths=PackedStringArray("health") instance=ExtResource("9_hurt")]
+collision_layer = 2
+collision_mask = 8
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent" index="0" unique_id=57440646]
+shape = SubResource("CircleShape2D_hurt")

@@ -1,0 +1,132 @@
+[gd_scene format=3 uid="uid://2am3q5nw0fgd"]
+
+[ext_resource type="Script" uid="uid://qowj6s6pjxbp" path="res://scenes/ui/how_to_play.gd" id="1_htp"]
+[ext_resource type="Texture2D" uid="uid://003p22q2rbfq" path="res://assets/ui/controls.png" id="2_ctrl"]
+[ext_resource type="Texture2D" uid="uid://dqd4vct61c77u" path="res://assets/ui/upgrade_nodes.png" id="3_mfe6v"]
+[ext_resource type="Theme" uid="uid://db2frg1r4ma83" path="res://themes/id_ui_theme.tres" id="3_theme"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d56r8"]
+atlas = ExtResource("3_mfe6v")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hnuh7"]
+atlas = ExtResource("3_mfe6v")
+region = Rect2(64, 0, 32, 32)
+
+[node name="HowToPlay" type="CanvasLayer" unique_id=1071083454]
+layer = 10
+script = ExtResource("1_htp")
+
+[node name="Dim" type="ColorRect" parent="." unique_id=1533484653]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Center" type="CenterContainer" parent="." unique_id=1045252978]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="NinePatchRect" parent="Center" unique_id=291753185]
+custom_minimum_size = Vector2(360, 230)
+layout_mode = 2
+theme = ExtResource("3_theme")
+texture = SubResource("AtlasTexture_d56r8")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
+
+[node name="Margin" type="MarginContainer" parent="Center/Panel" unique_id=1691848471]
+layout_mode = 0
+offset_right = 360.0
+offset_bottom = 223.0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Center/Panel/Margin" unique_id=1236206375]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ObjetivoTitle" type="Label" parent="Center/Panel/Margin/VBox" unique_id=1208223471]
+texture_filter = 1
+layout_mode = 2
+theme = ExtResource("3_theme")
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "Objetivo"
+horizontal_alignment = 1
+
+[node name="ObjetivoText" type="Label" parent="Center/Panel/Margin/VBox" unique_id=1027147142]
+texture_filter = 1
+layout_mode = 2
+theme = ExtResource("3_theme")
+theme_override_constants/outline_size = 4
+text = "Sobrevive y derrota las 5 oleadas de enemigos para ganar."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Sep" type="HSeparator" parent="Center/Panel/Margin/VBox" unique_id=1750275985]
+layout_mode = 2
+
+[node name="ControlesTitle" type="Label" parent="Center/Panel/Margin/VBox" unique_id=1423374743]
+texture_filter = 1
+layout_mode = 2
+theme = ExtResource("3_theme")
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+text = "Controles"
+horizontal_alignment = 1
+
+[node name="Controls" type="TextureRect" parent="Center/Panel/Margin/VBox" unique_id=1239418262]
+texture_filter = 1
+custom_minimum_size = Vector2(300, 76)
+layout_mode = 2
+texture = ExtResource("2_ctrl")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ContinueButton" type="Button" parent="Center/Panel/Margin/VBox" unique_id=1769052066]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+texture_filter = 1
+custom_minimum_size = Vector2(100, 26)
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("3_theme")
+theme_override_colors/font_color = Color(0.12, 0.12, 0.14, 1)
+theme_override_constants/outline_size = 4
+
+[node name="NinePatchRect" type="NinePatchRect" parent="Center/Panel/Margin/VBox/ContinueButton" unique_id=1128969846]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_hnuh7")
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 6
+
+[node name="Label" type="Label" parent="Center/Panel/Margin/VBox/ContinueButton/NinePatchRect" unique_id=1899843023]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 4
+text = "Continuar"
+horizontal_alignment = 1
+vertical_alignment = 1

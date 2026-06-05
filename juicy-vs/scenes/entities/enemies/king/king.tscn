@@ -1,0 +1,122 @@
+[gd_scene format=3 uid="uid://crto4kybuxajh"]
+
+[ext_resource type="PackedScene" uid="uid://cqssh800nxt7g" path="res://scenes/entities/enemies/base_enemy/base_enemy.tscn" id="1_base"]
+[ext_resource type="Script" uid="uid://bunsxd8c2qnki" path="res://scenes/entities/enemies/king/king.gd" id="2_scr"]
+[ext_resource type="Texture2D" uid="uid://sve8ujkpx5i5" path="res://assets/enemies/king.png" id="3_dm571"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_axays"]
+atlas = ExtResource("3_dm571")
+region = Rect2(0, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_apmw8"]
+atlas = ExtResource("3_dm571")
+region = Rect2(24, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8jmrx"]
+atlas = ExtResource("3_dm571")
+region = Rect2(48, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aquin"]
+atlas = ExtResource("3_dm571")
+region = Rect2(72, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ilrf3"]
+atlas = ExtResource("3_dm571")
+region = Rect2(96, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vi3fh"]
+atlas = ExtResource("3_dm571")
+region = Rect2(120, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0jfxh"]
+atlas = ExtResource("3_dm571")
+region = Rect2(144, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_70s3d"]
+atlas = ExtResource("3_dm571")
+region = Rect2(168, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_trry8"]
+atlas = ExtResource("3_dm571")
+region = Rect2(0, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r60oe"]
+atlas = ExtResource("3_dm571")
+region = Rect2(24, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jrdnl"]
+atlas = ExtResource("3_dm571")
+region = Rect2(48, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t57pi"]
+atlas = ExtResource("3_dm571")
+region = Rect2(72, 24, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bwkgb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_axays")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_apmw8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8jmrx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_aquin")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ilrf3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vi3fh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0jfxh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_70s3d")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_trry8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r60oe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jrdnl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t57pi")
+}],
+"loop": true,
+"name": &"running",
+"speed": 6.0
+}]
+
+[node name="King" unique_id=811837033 instance=ExtResource("1_base")]
+scale = Vector2(2.2, 2.2)
+script = ExtResource("2_scr")
+xp_value = 50.0
+config_key = "king"
+
+[node name="HealthComponent" parent="." index="0" unique_id=100227969]
+current_health = 200.0
+max_health = 200.0
+regen_per_second = 0.5
+
+[node name="MovementComponent" parent="." index="1" unique_id=105582040]
+max_speed = 45.0
+max_force = 120.0
+
+[node name="AnimatedSprite2D" parent="." index="5" unique_id=478188072]
+modulate = Color(1, 0.85, 0.3, 1)
+sprite_frames = SubResource("SpriteFrames_bwkgb")
+animation = &"running"

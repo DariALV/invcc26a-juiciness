@@ -40,6 +40,10 @@ class_name MovementComponent extends Node
 @export var friction: float = 0
 @export var top_speed_when_no_force: bool = false
 
+## Multiplicador temporal de velocidad (1.0 = normal). Lo usan los efectos de
+## estado como la congelacion para ralentizar a la entidad sin tocar 'max_speed'.
+var speed_scale: float = 1.0
+
 var current_speed: Vector2 = Vector2.ZERO
 var current_force: Vector2 = Vector2.ZERO
 var parent: CharacterBody2D = null
@@ -52,9 +56,11 @@ func _physics_process(delta):
 	if current_force.length_squared() > max_force * max_force:
 		current_force = current_force.limit_length(max_force)
 
+	var effective_max: float = max_speed * speed_scale
+
 	current_speed += current_force * delta
-	if current_speed.length_squared() > max_speed * max_speed:
-		current_speed = current_speed.limit_length(max_speed)
+	if current_speed.length_squared() > effective_max * effective_max:
+		current_speed = current_speed.limit_length(effective_max)
 
 	if current_force == Vector2.ZERO:
 		current_speed -= current_speed * friction * delta
@@ -65,7 +71,7 @@ func _physics_process(delta):
 	# behaviors (seek/flee) puedan amortiguar con su termino (desired - velocity);
 	# si quedara en cero, el seek se vuelve una fuerza centripeta constante y orbita.
 	if top_speed_when_no_force and current_force == Vector2.ZERO:
-		parent.velocity = current_speed.normalized() * max_speed
+		parent.velocity = current_speed.normalized() * effective_max
 	else:
 		parent.velocity = current_speed
 	parent.global_position += parent.velocity * delta

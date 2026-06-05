@@ -36,6 +36,18 @@ func current_rate(t: float) -> float:
 	var factor := spawn_rate_curve.sample(t) if spawn_rate_curve else 1.0
 	return base_spawn_rate * factor
 
+## Tasa de spawn segun la cantidad de enemigos vivos, interpolando linealmente:
+##   alive = min_alive  -> base_spawn_rate (maximo)
+##   alive = max_alive  -> 0
+## Si hay menos de min_alive, extrapola (t > 1): la tasa sigue creciendo por encima
+## del maximo para arrancar la oleada mas rapido. Si no hay tope util (max_alive <=
+## min_alive) se usa base_spawn_rate constante.
+func spawn_rate_for(alive: int) -> float:
+	if max_alive <= 0 or max_alive <= min_alive:
+		return base_spawn_rate
+	var rate := base_spawn_rate * float(max_alive - alive) / float(max_alive - min_alive)
+	return maxf(0.0, rate)
+
 func batch_size(t: float) -> int:
 	if spawn_amount_curve:
 		return maxi(1, roundi(spawn_amount_curve.sample(t)))

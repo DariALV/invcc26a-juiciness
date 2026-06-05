@@ -128,6 +128,7 @@ metadata/_custom_type_script = "uid://c86ldna7ytglq"
 
 [node name="Necromancer" unique_id=894921972 instance=ExtResource("1_cfrnl")]
 script = ExtResource("2_a3fi8")
+config_key = "necromancer"
 
 [node name="HealthComponent" parent="." index="0" unique_id=100227969]
 current_health = 15.0
@@ -142,13 +143,13 @@ targets = Array[ExtResource("4_86he7")]([SubResource("Resource_8y8ib"), SubResou
 
 [node name="ShootComponent" parent="." index="7" unique_id=4986631 instance=ExtResource("4_ehukw")]
 projectile_scene = ExtResource("5_iqm7s")
-shoot_speed = 0.1
+shoot_speed = 0.0667
 projectile_speed = 300.0
 target_group = "player"
 
 [node name="SpawnerComponent" parent="." index="8" unique_id=913554047 instance=ExtResource("7_uf7gx")]
 scene = ExtResource("8_qwi33")
 spawn_circle = SubResource("Resource_7m341")
-speed = 0.067
-spawn_count = 5
+speed = 0.0628
+spawn_count = 3
 max_entities = 20

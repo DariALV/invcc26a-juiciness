@@ -31,6 +31,9 @@ func on_mouse_exited():
 
 func on_button_pressed():
 	Database.selected_id = text
+	# Carga los flags de efectos de camara del participante (shake/zoom/recoil) desde
+	# Supabase; el autoload persiste a traves del cambio de escena.
+	CameraJuice.load_config(text)
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/entities/levels/level.tscn")
 	
 	

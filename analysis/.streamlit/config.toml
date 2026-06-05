@@ -1,0 +1,11 @@
+# Tema pastel del dashboard.
+[theme]
+base = "light"
+primaryColor = "#A8C7E7"          # azul pastel
+backgroundColor = "#FBFAFD"       # casi blanco con tinte lila
+secondaryBackgroundColor = "#F0ECF7"  # lila muy claro (sidebar / tarjetas)
+textColor = "#3A3A4A"             # gris azulado oscuro
+font = "sans serif"
+
+[server]
+headless = true

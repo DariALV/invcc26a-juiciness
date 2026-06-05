@@ -12,64 +12,91 @@
 [ext_resource type="Script" path="res://upgrades/projectile/damage_projectile_upgrade.gd" id="10_dmg"]
 [ext_resource type="Script" path="res://upgrades/player/max_health_upgrade.gd" id="15_mxhp"]
 [ext_resource type="Script" path="res://upgrades/player/move_speed_upgrade.gd" id="16_mvspd"]
-[ext_resource type="Script" path="res://upgrades/player/heal_upgrade.gd" id="17_heal"]
 [ext_resource type="Script" path="res://upgrades/player/xp_gain_upgrade.gd" id="19_xpgn"]
+[ext_resource type="Script" uid="uid://o53qmk71w1o5" path="res://upgrades/projectile/burn_projectile_upgrade.gd" id="21_brn"]
+[ext_resource type="Script" uid="uid://b7yi651bwmn1l" path="res://upgrades/player/death_arrows_upgrade.gd" id="22_dth"]
+[ext_resource type="Script" uid="uid://t2dgu4iwf2bh" path="res://upgrades/player/regen_upgrade.gd" id="23_reg"]
+[ext_resource type="Script" uid="uid://b53grfqoybxog" path="res://upgrades/projectile/crit_projectile_upgrade.gd" id="24_crt"]
+[ext_resource type="Script" uid="uid://ciipxca0glq7f" path="res://upgrades/player/life_on_kill_upgrade.gd" id="25_lif"]
+[ext_resource type="Script" uid="uid://vbvmlfj5iciy" path="res://upgrades/projectile/chain_projectile_upgrade.gd" id="26_chn"]
+[ext_resource type="Script" uid="uid://buuljibpkv5mx" path="res://upgrades/player/invulnerability_upgrade.gd" id="27_inv"]
+[ext_resource type="Script" uid="uid://bp58e8ay0tx7k" path="res://upgrades/player/dodge_upgrade.gd" id="29_dod"]
+[ext_resource type="Script" uid="uid://n71xf1dtfnin" path="res://upgrades/player/magnet_upgrade.gd" id="30_mag"]
+[ext_resource type="Script" uid="uid://djoe6tdwp17tf" path="res://upgrades/player/area_damage_upgrade.gd" id="31_adm"]
+[ext_resource type="Script" uid="uid://dft6ol7xtkd4h" path="res://upgrades/player/area_rate_upgrade.gd" id="32_art"]
+[ext_resource type="Script" uid="uid://dion3a3uo2u3u" path="res://upgrades/player/area_targets_upgrade.gd" id="33_atg"]
 
 [sub_resource type="Resource" id="dmg1"]
 script = ExtResource("10_dmg")
 flat_bonus = 1.0
 title = "Daño I"
-description = "+1 de dano por flecha"
+description = "+1 de daño por flecha"
+infinite = true
 
 [sub_resource type="Resource" id="dmg2"]
 script = ExtResource("10_dmg")
 flat_bonus = 2.0
-title = "Dano II"
-description = "+2 de dano por flecha"
+title = "Daño II"
+description = "+2 de daño por flecha"
 rarity = 1
+infinite = true
 
 [sub_resource type="Resource" id="dmg3"]
 script = ExtResource("10_dmg")
 multiplier = 1.5
-title = "Dano masivo"
-description = "+50% de dano por flecha"
+title = "Daño masivo"
+description = "+50% de daño por flecha"
 rarity = 2
+max_taken = 3
 
-[sub_resource type="Resource" id="prc1"]
-script = ExtResource("3_cco4e")
-title = "Penetracion I"
-description = "+1 penetracion"
-rarity = 1
-metadata/_custom_type_script = "uid://dsdyneerf4mjq"
+[sub_resource type="Resource" id="dmg4"]
+script = ExtResource("10_dmg")
+multiplier = 1.75
+title = "Furia"
+description = "+75% de daño por flecha"
+rarity = 3
+max_taken = 2
 
-[sub_resource type="Resource" id="prc2"]
-script = ExtResource("3_cco4e")
-extra_pierce = 2
-title = "Penetracion II"
-description = "+2 penetracion"
-rarity = 2
-metadata/_custom_type_script = "uid://dsdyneerf4mjq"
+[sub_resource type="Resource" id="dmg5"]
+script = ExtResource("10_dmg")
+flat_bonus = 4.0
+multiplier = 1.8
+title = "Aniquilación"
+description = "+80% y +4 de daño por flecha"
+rarity = 4
 
 [sub_resource type="Resource" id="cad1"]
 script = ExtResource("6_bwf02")
+speed_increase = 0.25
 title = "Cadencia I"
-description = "+10% velocidad de disparo"
+description = "+25% velocidad de disparo"
+infinite = true
 metadata/_custom_type_script = "uid://ccom3upmduyc4"
 
 [sub_resource type="Resource" id="cad2"]
 script = ExtResource("6_bwf02")
-speed_increase = 0.25
+speed_increase = 0.5
 title = "Cadencia II"
-description = "+25% velocidad de disparo"
+description = "+50% velocidad de disparo"
 rarity = 1
+infinite = true
 metadata/_custom_type_script = "uid://ccom3upmduyc4"
 
 [sub_resource type="Resource" id="cad3"]
 script = ExtResource("6_bwf02")
-speed_increase = 0.5
-title = "Disparo rapido"
-description = "+50% velocidad de disparo"
+speed_increase = 0.75
+title = "Disparo rápido"
+description = "+75% velocidad de disparo"
 rarity = 2
+max_taken = 3
+metadata/_custom_type_script = "uid://ccom3upmduyc4"
+
+[sub_resource type="Resource" id="cad4"]
+script = ExtResource("6_bwf02")
+speed_increase = 2.0
+title = "Ráfaga infinita"
+description = "+200% velocidad de disparo"
+rarity = 4
 metadata/_custom_type_script = "uid://ccom3upmduyc4"
 
 [sub_resource type="Resource" id="arr1"]
@@ -77,6 +104,7 @@ script = ExtResource("5_bau4d")
 title = "Flecha extra"
 description = "+1 flecha por disparo"
 rarity = 2
+max_taken = 4
 metadata/_custom_type_script = "uid://ds6qx2fdebwak"
 
 [sub_resource type="Resource" id="arr2"]
@@ -85,61 +113,172 @@ extra_arrow_count = 2
 title = "Lluvia de flechas"
 description = "+2 flechas por disparo"
 rarity = 3
+max_taken = 2
 metadata/_custom_type_script = "uid://ds6qx2fdebwak"
+
+[sub_resource type="Resource" id="arr3"]
+script = ExtResource("5_bau4d")
+extra_arrow_count = 3
+title = "Tormenta de flechas"
+description = "+3 flechas por disparo"
+rarity = 4
+metadata/_custom_type_script = "uid://ds6qx2fdebwak"
+
+[sub_resource type="Resource" id="dth1"]
+script = ExtResource("22_dth")
+damage_bonus = 0.05
+title = "Venganza I"
+description = "+5% de daño. Al morir un enemigo, +1% de prob. de lanzar flechas en círculo"
+max_taken = 2
+
+[sub_resource type="Resource" id="dth2"]
+script = ExtResource("22_dth")
+chance_increase = 0.03
+damage_bonus = 0.07
+title = "Venganza II"
+description = "+7% de daño. Al morir un enemigo, +3% de prob. de lanzar flechas en círculo"
+rarity = 1
+max_taken = 2
+
+[sub_resource type="Resource" id="dth3"]
+script = ExtResource("22_dth")
+chance_increase = 0.05
+damage_bonus = 0.09
+title = "Venganza III"
+description = "+9% de daño. Al morir un enemigo, +5% de prob. de lanzar flechas en círculo"
+rarity = 2
+
+[sub_resource type="Resource" id="dth4"]
+script = ExtResource("22_dth")
+chance_increase = 0.07
+damage_bonus = 0.12
+title = "Venganza IV"
+description = "+12% de daño. Al morir un enemigo, +7% de prob. de lanzar flechas en círculo"
+rarity = 3
+
+[sub_resource type="Resource" id="dth5"]
+script = ExtResource("22_dth")
+chance_increase = 0.1
+damage_bonus = 0.15
+title = "Venganza letal"
+description = "+15% de daño. Al morir un enemigo, +10% de prob. de lanzar flechas en círculo"
+rarity = 4
+
+[sub_resource type="Resource" id="luk_c"]
+script = ExtResource("8_luck")
+title = "Suerte menor"
+description = "+0.25 suerte"
+max_taken = 3
+metadata/_custom_type_script = "uid://cwt08t0cuksqo"
+
+[sub_resource type="Resource" id="luk_u"]
+script = ExtResource("8_luck")
+luck_increase = 0.5
+title = "Trébol"
+description = "+0.50 suerte"
+rarity = 1
+max_taken = 3
+metadata/_custom_type_script = "uid://cwt08t0cuksqo"
 
 [sub_resource type="Resource" id="luk1"]
 script = ExtResource("8_luck")
+luck_increase = 0.75
 title = "Suerte"
-description = "+0.25 suerte"
+description = "+0.75 suerte"
 rarity = 2
+max_taken = 3
 metadata/_custom_type_script = "uid://cwt08t0cuksqo"
 
 [sub_resource type="Resource" id="luk2"]
 script = ExtResource("8_luck")
-luck_increase = 0.5
+luck_increase = 1.0
 title = "Suerte mayor"
-description = "+0.5 suerte"
+description = "+1 suerte"
 rarity = 3
+max_taken = 2
+metadata/_custom_type_script = "uid://cwt08t0cuksqo"
+
+[sub_resource type="Resource" id="luk3"]
+script = ExtResource("8_luck")
+luck_increase = 2.0
+title = "Fortuna legendaria"
+description = "+2 suerte"
+rarity = 4
 metadata/_custom_type_script = "uid://cwt08t0cuksqo"
 
 [sub_resource type="Resource" id="vit1"]
 script = ExtResource("15_mxhp")
-flat_bonus = 5.0
+flat_bonus = 10.0
 title = "Vitalidad I"
-description = "+5 vida maxima"
+description = "+10 vida máxima"
+infinite = true
 
 [sub_resource type="Resource" id="vit2"]
 script = ExtResource("15_mxhp")
-flat_bonus = 10.0
+flat_bonus = 25.0
 title = "Vitalidad II"
-description = "+10 vida maxima"
+description = "+25 vida máxima"
 rarity = 1
+infinite = true
 
 [sub_resource type="Resource" id="vit3"]
 script = ExtResource("15_mxhp")
 multiplier = 1.5
-title = "Corazon de hierro"
-description = "+50% vida maxima"
+title = "Corazón de hierro"
+description = "+50% vida máxima"
 rarity = 2
+max_taken = 3
 
-[sub_resource type="Resource" id="heal1"]
-script = ExtResource("17_heal")
-heal_amount = 10.0
-title = "Botiquin"
-description = "Cura 10 de vida"
+[sub_resource type="Resource" id="vit4"]
+script = ExtResource("15_mxhp")
+multiplier = 2.0
+title = "Vitalidad legendaria"
+description = "+100% vida máxima"
+rarity = 4
 
-[sub_resource type="Resource" id="heal2"]
-script = ExtResource("17_heal")
-heal_full = true
-title = "Curacion total"
-description = "Restaura toda la vida"
+[sub_resource type="Resource" id="reg1"]
+script = ExtResource("23_reg")
+regen_increase = 0.15
+title = "Regeneración I"
+description = "+0.15 vida por segundo"
+max_taken = 3
+
+[sub_resource type="Resource" id="reg2"]
+script = ExtResource("23_reg")
+regen_increase = 0.2
+title = "Regeneración II"
+description = "+0.2 vida por segundo"
+rarity = 1
+max_taken = 3
+
+[sub_resource type="Resource" id="reg3"]
+script = ExtResource("23_reg")
+regen_increase = 0.3
+title = "Regeneración III"
+description = "+0.3 vida por segundo"
+rarity = 2
+max_taken = 2
+
+[sub_resource type="Resource" id="reg4"]
+script = ExtResource("23_reg")
+regen_increase = 0.4
+title = "Regeneración IV"
+description = "+0.4 vida por segundo"
 rarity = 3
+max_taken = 2
+
+[sub_resource type="Resource" id="reg5"]
+script = ExtResource("23_reg")
+title = "Regeneración legendaria"
+description = "+0.5 vida por segundo"
+rarity = 4
 
 [sub_resource type="Resource" id="mv1"]
 script = ExtResource("16_mvspd")
 flat_bonus = 20.0
 title = "Botas ligeras"
 description = "+20 velocidad de movimiento"
+infinite = true
 
 [sub_resource type="Resource" id="mv2"]
 script = ExtResource("16_mvspd")
@@ -147,19 +286,277 @@ multiplier = 1.25
 title = "Botas veloces"
 description = "+25% velocidad de movimiento"
 rarity = 1
+max_taken = 3
 
 [sub_resource type="Resource" id="xp1"]
 script = ExtResource("19_xpgn")
+multiplier_bonus = 0.5
 title = "Codicia"
-description = "+20% experiencia ganada"
+description = "+50% experiencia ganada"
 rarity = 1
+infinite = true
 
 [sub_resource type="Resource" id="xp2"]
 script = ExtResource("19_xpgn")
-multiplier_bonus = 0.5
-title = "Sabiduria"
-description = "+50% experiencia ganada"
+multiplier_bonus = 1.0
+title = "Sabiduría"
+description = "+100% experiencia ganada"
 rarity = 2
+max_taken = 3
+
+[sub_resource type="Resource" id="brn1"]
+script = ExtResource("21_brn")
+duration = 4.0
+dps = 0.25
+title = "Flecha ardiente"
+description = "Las flechas queman: +0.25 de daño por segundo durante 4s"
+rarity = 2
+
+[sub_resource type="Resource" id="brn2"]
+script = ExtResource("21_brn")
+duration = 4.0
+dps = 2.5
+title = "Infierno"
+description = "Las flechas queman: +0.5 de daño por segundo durante 4s"
+rarity = 3
+
+[sub_resource type="Resource" id="brn3"]
+script = ExtResource("21_brn")
+duration = 5.0
+dps = 5.0
+title = "Llama eterna"
+description = "Las flechas queman: +1 de daño por segundo durante 5s"
+rarity = 4
+
+[sub_resource type="Resource" id="crt1"]
+script = ExtResource("24_crt")
+title = "Puntería I"
+description = "+10% de probabilidad de golpe crítico (×2 daño)"
+rarity = 1
+max_taken = 4
+
+[sub_resource type="Resource" id="crt2"]
+script = ExtResource("24_crt")
+multiplier = 3.0
+title = "Puntería II"
+description = "+10% de crítico y eleva el crítico a ×3 daño"
+rarity = 2
+max_taken = 3
+
+[sub_resource type="Resource" id="crt3"]
+script = ExtResource("24_crt")
+chance_increase = 0.25
+multiplier = 4.0
+title = "Ojo certero"
+description = "+25% de crítico y eleva el crítico a ×4 daño"
+rarity = 4
+
+[sub_resource type="Resource" id="lif1"]
+script = ExtResource("25_lif")
+heal_increase = 0.01
+title = "Vampirismo I"
+description = "Cura +0.01 de vida por enemigo derrotado"
+max_taken = 3
+
+[sub_resource type="Resource" id="lif2"]
+script = ExtResource("25_lif")
+heal_increase = 0.02
+title = "Vampirismo II"
+description = "Cura +0.02 de vida por enemigo derrotado"
+rarity = 1
+max_taken = 3
+
+[sub_resource type="Resource" id="lif3"]
+script = ExtResource("25_lif")
+heal_increase = 0.02
+title = "Vampirismo III"
+description = "Cura +0.02 de vida por enemigo derrotado"
+rarity = 2
+max_taken = 2
+
+[sub_resource type="Resource" id="lif4"]
+script = ExtResource("25_lif")
+heal_increase = 0.03
+title = "Vampirismo IV"
+description = "Cura +0.03 de vida por enemigo derrotado"
+rarity = 3
+max_taken = 2
+
+[sub_resource type="Resource" id="lif5"]
+script = ExtResource("25_lif")
+heal_increase = 0.05
+title = "Sed de sangre"
+description = "Cura +0.05 de vida por enemigo derrotado"
+rarity = 4
+
+[sub_resource type="Resource" id="chn1"]
+script = ExtResource("26_chn")
+chain_range = 280.0
+title = "Rebote"
+description = "Tras impactar, la flecha rebota al enemigo más cercano (mientras le quede daño)"
+rarity = 3
+
+[sub_resource type="Resource" id="inv4"]
+script = ExtResource("27_inv")
+invuln_time = 0.22
+knockback_force = 100.0
+knockback_range = 120.0
+title = "Bastión"
+description = "Al ser golpeado: +0.22s invulnerable y onda de empuje amplia"
+rarity = 3
+
+[sub_resource type="Resource" id="inv5"]
+script = ExtResource("27_inv")
+invuln_time = 0.3
+knockback_force = 150.0
+knockback_range = 160.0
+title = "Aura divina"
+description = "Al ser golpeado: +0.3s invulnerable y gran onda de empuje"
+rarity = 4
+
+[sub_resource type="Resource" id="dod1"]
+script = ExtResource("29_dod")
+chance_increase = 0.05
+title = "Esquiva I"
+description = "+5% de probabilidad de esquivar el daño"
+
+[sub_resource type="Resource" id="dod2"]
+script = ExtResource("29_dod")
+chance_increase = 0.05
+title = "Esquiva II"
+description = "+5% de probabilidad de esquivar el daño"
+rarity = 1
+
+[sub_resource type="Resource" id="dod3"]
+script = ExtResource("29_dod")
+chance_increase = 0.07
+title = "Reflejos felinos"
+description = "+7% de probabilidad de esquivar el daño"
+rarity = 2
+
+[sub_resource type="Resource" id="dod4"]
+script = ExtResource("29_dod")
+chance_increase = 0.1
+title = "Viento esquivo"
+description = "+10% de probabilidad de esquivar el daño"
+rarity = 3
+
+[sub_resource type="Resource" id="dod5"]
+script = ExtResource("29_dod")
+chance_increase = 0.15
+title = "Intangible"
+description = "+15% de probabilidad de esquivar el daño"
+rarity = 4
+
+[sub_resource type="Resource" id="mag1"]
+script = ExtResource("30_mag")
+range_increase = 0.1
+title = "Imán I"
+description = "+10% de rango de recogida"
+max_taken = 3
+
+[sub_resource type="Resource" id="mag2"]
+script = ExtResource("30_mag")
+range_increase = 0.3
+title = "Imán II"
+description = "+30% de rango de recogida"
+rarity = 1
+max_taken = 3
+
+[sub_resource type="Resource" id="mag3"]
+script = ExtResource("30_mag")
+title = "Campo magnético"
+description = "+60% de rango de recogida"
+rarity = 2
+max_taken = 2
+
+[sub_resource type="Resource" id="mag4"]
+script = ExtResource("30_mag")
+range_increase = 1.0
+title = "Singularidad"
+description = "+100% de rango de recogida"
+rarity = 4
+
+[sub_resource type="Resource" id="adm1"]
+script = ExtResource("31_adm")
+title = "Aura I"
+description = "+0.1 de daño de aura"
+
+[sub_resource type="Resource" id="adm2"]
+script = ExtResource("31_adm")
+damage_increase = 0.25
+title = "Aura II"
+description = "+0.25 de daño de aura"
+rarity = 1
+
+[sub_resource type="Resource" id="adm3"]
+script = ExtResource("31_adm")
+damage_increase = 0.5
+title = "Aura intensa"
+description = "+0.5 de daño de aura"
+rarity = 2
+
+[sub_resource type="Resource" id="adm4"]
+script = ExtResource("31_adm")
+damage_increase = 1.0
+title = "Aura legendaria"
+description = "+1 de daño de aura"
+rarity = 4
+
+[sub_resource type="Resource" id="art1"]
+script = ExtResource("32_art")
+title = "Pulso I"
+description = "+25% de frecuencia de ataque del aura"
+
+[sub_resource type="Resource" id="art2"]
+script = ExtResource("32_art")
+rate_increase = 0.5
+title = "Pulso II"
+description = "+50% de frecuencia de ataque del aura"
+rarity = 2
+
+[sub_resource type="Resource" id="art3"]
+script = ExtResource("32_art")
+rate_increase = 1.0
+title = "Pulso legendario"
+description = "+100% de frecuencia de ataque del aura"
+rarity = 4
+
+[sub_resource type="Resource" id="atg1"]
+script = ExtResource("33_atg")
+title = "Alcance I"
+description = "+3 enemigos alcanzados por el aura"
+max_taken = 3
+
+[sub_resource type="Resource" id="atg2"]
+script = ExtResource("33_atg")
+targets_increase = 5
+title = "Alcance II"
+description = "+5 enemigos alcanzados por el aura"
+rarity = 1
+max_taken = 3
+
+[sub_resource type="Resource" id="atg3"]
+script = ExtResource("33_atg")
+targets_increase = 10
+title = "Onda expansiva"
+description = "+10 enemigos alcanzados por el aura"
+rarity = 2
+max_taken = 2
+
+[sub_resource type="Resource" id="atg4"]
+script = ExtResource("33_atg")
+targets_increase = 15
+title = "Onda mayor"
+description = "+15 enemigos alcanzados por el aura"
+rarity = 3
+
+[sub_resource type="Resource" id="atg5"]
+script = ExtResource("33_atg")
+targets_increase = 20
+title = "Tormenta de área"
+description = "+20 enemigos alcanzados por el aura"
+rarity = 4
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vm1sg"]
 atlas = ExtResource("9_bhjxb")
@@ -223,5 +620,6 @@ metadata/_custom_type_script = "uid://dl0q8ndmwvira"
 [node name="UpgradeManager" type="Node" unique_id=1679145504]
 script = ExtResource("1_hsx4w")
 upgrade_item_scene = ExtResource("2_lft0v")
-available_upgrades = Array[ExtResource("2_4pqef")]([SubResource("dmg1"), SubResource("dmg2"), SubResource("dmg3"), SubResource("prc1"), SubResource("prc2"), SubResource("cad1"), SubResource("cad2"), SubResource("cad3"), SubResource("arr1"), SubResource("arr2"), SubResource("luk1"), SubResource("luk2"), SubResource("vit1"), SubResource("vit2"), SubResource("vit3"), SubResource("heal1"), SubResource("heal2"), SubResource("mv1"), SubResource("mv2"), SubResource("xp1"), SubResource("xp2")])
+available_upgrades = Array[ExtResource("2_4pqef")]([SubResource("dmg1"), SubResource("dmg2"), SubResource("dmg3"), SubResource("dmg4"), SubResource("dmg5"), SubResource("cad1"), SubResource("cad2"), SubResource("cad3"), SubResource("cad4"), SubResource("arr1"), SubResource("arr2"), SubResource("arr3"), SubResource("dth1"), SubResource("dth2"), SubResource("dth3"), SubResource("dth4"), SubResource("dth5"), SubResource("luk_c"), SubResource("luk_u"), SubResource("luk1"), SubResource("luk2"), SubResource("luk3"), SubResource("vit2"), SubResource("vit3"), SubResource("vit4"), SubResource("reg1"), SubResource("reg2"), SubResource("reg3"), SubResource("reg4"), SubResource("reg5"), SubResource("mv1"), SubResource("mv2"), SubResource("xp1"), SubResource("xp2"), SubResource("brn1"), SubResource("brn2"), SubResource("brn3"), SubResource("crt1"), SubResource("crt2"), SubResource("crt3"), SubResource("lif1"), SubResource("lif2"), SubResource("lif3"), SubResource("lif4"), SubResource("lif5"), SubResource("chn1"), SubResource("inv4"), SubResource("inv5"), SubResource("dod1"), SubResource("dod2"), SubResource("dod3"), SubResource("dod4"), SubResource("dod5"), SubResource("mag1"), SubResource("mag2"), SubResource("mag3"), SubResource("mag4"), SubResource("adm1"), SubResource("adm2"), SubResource("adm3"), SubResource("adm4"), SubResource("art1"), SubResource("art2"), SubResource("art3"), SubResource("atg1"), SubResource("atg2"), SubResource("atg3"), SubResource("atg4"), SubResource("atg5")])
 rarity_colors = Array[ExtResource("7_bau4d")]([SubResource("Resource_common"), SubResource("Resource_uncommon"), SubResource("Resource_rare"), SubResource("Resource_epic"), SubResource("Resource_legendary")])
+rarity_weights = Array[float]([50.0, 35.0, 10.0, 4.0, 1.0])

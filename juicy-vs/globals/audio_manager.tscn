@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bd54w1p6m0ixm"]
+
+[ext_resource type="Script" uid="uid://1brj6tk2qmme" path="res://globals/audio_manager.gd" id="1_audio"]
+[ext_resource type="AudioStream" uid="uid://c6h3m82aklssg" path="res://sounds/music/music.wav" id="2_4m8wf"]
+[ext_resource type="AudioStream" uid="uid://hxpkarur8etb" path="res://sounds/effects/ArrowShot1.wav" id="3_8ak76"]
+[ext_resource type="AudioStream" uid="uid://yjcdxsns78jk" path="res://sounds/effects/Power Hit.mp3" id="4_nvroi"]
+[ext_resource type="AudioStream" uid="uid://1iabbiuoc0r6" path="res://sounds/effects/UpgradeBuy.wav" id="5_ay5dq"]
+
+[node name="AudioManager" type="Node" unique_id=1375496055]
+script = ExtResource("1_audio")
+music = ExtResource("2_4m8wf")
+sfx_shoot = ExtResource("3_8ak76")
+sfx_hit = ExtResource("4_nvroi")
+sfx_player_hit = ExtResource("4_nvroi")
+sfx_upgrade_chosen = ExtResource("5_ay5dq")

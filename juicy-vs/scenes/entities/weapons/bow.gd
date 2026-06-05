@@ -26,6 +26,12 @@ class_name Bow
 		target_group = value
 		if shoot_component:
 			shoot_component.target_group = value
+## Tinte del proyectil disparado (se delega al ShootComponent). Blanco = sin cambio.
+@export var projectile_modulate : Color = Color.WHITE:
+	set(value):
+		projectile_modulate = value
+		if shoot_component:
+			shoot_component.projectile_modulate = value
 
 @onready var shoot_component : ShootComponent = $ShootComponent
 
@@ -41,5 +47,6 @@ func _ready():
 	shoot_component.projectile_count = arrow_count
 	shoot_component.projectile_speed = arrow_speed
 	shoot_component.target_group = target_group
+	shoot_component.projectile_modulate = projectile_modulate
 	shoot_component.shoot_direction = shoot_direction
 	shoot_component.start()
