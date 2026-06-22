@@ -1,0 +1,68 @@
+ANOVA assumptions and alternatives - Hard Clean
+Telemetry runs original: 178
+Telemetry runs removed by Hard Clean: 45
+Telemetry runs retained: 133
+GIQ responses with condition mapping: 125
+
+Normality check uses Shapiro-Wilk on ANOVA residuals, not raw variables.
+Variance check uses Brown-Forsythe by factorial condition cell.
+
+Residual normality failures (p < .05):
+  - GIQ engagement: W=0.940, p=0.0000
+  - Supervivencia: W=0.974, p=0.0123
+  - Kills/s: W=0.469, p=0.0000
+  - Inputs/s: W=0.621, p=0.0000
+  - Dano recibido/s: W=0.891, p=0.0000
+  - Jitter/s: W=0.725, p=0.0000
+  - Distancia/s: W=0.799, p=0.0000
+  - Distancia a enemigo: W=0.839, p=0.0000
+  - Proporcion HP bajo: W=0.557, p=0.0000
+
+Brown-Forsythe variance failures (p < .05):
+  - Supervivencia: p=0.0214
+
+Type III Wald ANOVA nominal effects (p < .05):
+  - Supervivencia / Recoil: F=6.00, p=0.0157, eta_p2=0.046
+  - Inputs/s / Shake:Recoil: F=5.28, p=0.0232, eta_p2=0.041
+  - Kills/s / Shake:Recoil: F=4.53, p=0.0353, eta_p2=0.035
+  - GIQ total / Shake:Zoom: F=4.30, p=0.0403, eta_p2=0.035
+  - Proporcion HP bajo / Recoil: F=4.09, p=0.0453, eta_p2=0.032
+
+Type III Wald ANOVA effects after BH-FDR (q < .05):
+  None.
+
+Permutation ANOVA nominal effects (p < .05; 999 permutations):
+  - Inputs/s / Shake:Recoil: F=5.28, p_perm=0.0150, p_param=0.0232
+  - Kills/s / Shake:Recoil: F=4.53, p_perm=0.0170, p_param=0.0353
+  - Supervivencia / Recoil: F=6.00, p_perm=0.0180, p_param=0.0157
+  - Kills/s / Shake:Zoom: F=3.83, p_perm=0.0310, p_param=0.0525
+  - Proporcion HP bajo / Recoil: F=4.09, p_perm=0.0410, p_param=0.0453
+  - GIQ total / Shake:Zoom: F=4.30, p_perm=0.0470, p_param=0.0403
+  - GIQ engagement / Shake:Zoom:Recoil: F=3.89, p_perm=0.0480, p_param=0.0508
+
+Permutation ANOVA effects after BH-FDR (q < .05):
+  None.
+
+Count-model nominal effects (p < .05):
+  - Kills con offset por duracion / negative binomial count model with duration offset / Shake:Recoil: p=0.0007, dispersion=96.32
+  - Kills con offset por duracion / negative binomial count model with duration offset / Shake:Zoom: p=0.0021, dispersion=96.32
+  - Inputs con offset por duracion / negative binomial count model with duration offset / Shake:Recoil: p=0.0032, dispersion=175.44
+  - Kills con offset por duracion / quasi-Poisson count model with duration offset / Shake:Recoil: p=0.0158, dispersion=96.32
+  - Inputs con offset por duracion / quasi-Poisson count model with duration offset / Shake:Recoil: p=0.0211, dispersion=175.44
+  - Inputs con offset por duracion / quasi-Poisson count model with duration offset / Recoil: p=0.0264, dispersion=175.44
+  - Golpes recibidos con offset por duracion / quasi-Poisson count model with duration offset / Shake: p=0.0334, dispersion=64.22
+
+Count-model effects after BH-FDR (q < .05):
+  - Kills con offset por duracion / negative binomial count model with duration offset / Shake:Recoil: p=0.0007, q=0.0419
+
+Cox survival model nominal effects (p < .05):
+  None.
+
+Recommended interpretation:
+  1. Keep the Hard Clean set as the primary dataset.
+  2. Report Shapiro-Wilk residual diagnostics before ANOVA.
+  3. Treat the current ANOVA as descriptive/sensitivity when residual normality fails.
+  4. Prefer Type III or permutation ANOVA for the unbalanced Hard Clean factorial design.
+  5. For kills, inputs, hits, and damage events, prefer count models with duration offset over raw rate ANOVA.
+  6. For survival time, prefer a survival model when win/death censoring matters.
+  7. FPS is excluded from ANOVA and used only as a technical quality control.

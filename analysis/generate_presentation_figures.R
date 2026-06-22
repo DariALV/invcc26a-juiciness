@@ -8,11 +8,13 @@
 suppressPackageStartupMessages({
   library(stats)
   library(grDevices)
+  library(emmeans)
 })
 
 output_dir <- file.path("analysis", "images", "presentation_figures")
+listings_dir <- file.path("analysis", "listings")
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(file.path("analysis", "listings"), recursive = TRUE, showWarnings = FALSE)
+dir.create(listings_dir, recursive = TRUE, showWarnings = FALSE)
 
 FIG_WIDTH <- 2400
 FIG_HEIGHT <- 1267
@@ -24,17 +26,34 @@ desc_path <- file.path(data_dir, "descriptives_by_condition.csv")
 anova_path <- file.path(data_dir, "factorial_anova_results.csv")
 dunnett_path <- file.path(data_dir, "dunnett_vs_baseline.csv")
 form_path <- "Formulario Integrado InvCC26a Experimentos .csv"
+if (!file.exists(form_path)) {
+  form_path <- file.path("analysis", "Formulario Integrado InvCC26a Experimentos .csv")
+}
 cfg_path <- file.path("supabase_data", "PlayerIDConfig_rows.csv")
 
 stopifnot(file.exists(run_level_path), file.exists(desc_path), file.exists(anova_path))
 stopifnot(file.exists(form_path), file.exists(cfg_path))
 
 run_level <- read.csv(run_level_path, check.names = FALSE, stringsAsFactors = FALSE)
+run_level$row_number <- seq_len(nrow(run_level))
 descriptives <- read.csv(desc_path, check.names = FALSE, stringsAsFactors = FALSE)
 anova <- read.csv(anova_path, check.names = FALSE, stringsAsFactors = FALSE)
 dunnett <- if (file.exists(dunnett_path)) read.csv(dunnett_path, check.names = FALSE, stringsAsFactors = FALSE) else NULL
 form <- read.csv(form_path, check.names = FALSE, stringsAsFactors = FALSE)
 cfg <- read.csv(cfg_path, check.names = FALSE, stringsAsFactors = FALSE)
+
+hard_clean_rules <- c(
+  "duration_lt_30s",
+  "zero_input_total",
+  "zero_kills_after_120s",
+  "fps_min_lt_15_or_drop_gt_10pct"
+)
+flags_path <- file.path("analysis", "problematic_flags_long.csv")
+if (file.exists(flags_path)) {
+  flags <- read.csv(flags_path, check.names = FALSE, stringsAsFactors = FALSE)
+  hard_clean_rows <- unique(flags$row_number[flags$rule %in% hard_clean_rules])
+  run_level <- run_level[!run_level$row_number %in% hard_clean_rows, ]
+}
 
 condition_levels <- c(
   "C0_baseline", "C1_shake", "C2_zoom", "C3_recoil",
@@ -57,7 +76,6 @@ condition_full_labels <- c(
 metric_labels <- c(
   duration_seconds = "Duración (s)",
   final_level = "Nivel final",
-  xp_rate = "XP/s",
   damage_taken_rate = "Daño recibido/s",
   hits_rate = "Golpes recibidos/s",
   kill_rate = "Kills/s",
@@ -91,7 +109,7 @@ scale_metric <- function(variable, values) {
 is_nonnegative_metric <- function(variable) {
   variable %in% c(
     "duration_seconds", "final_round", "final_level", "damage_taken_rate",
-    "hits_rate", "total_damage_taken", "kill_rate", "xp_rate", "jitter_rate",
+    "hits_rate", "total_damage_taken", "kill_rate", "jitter_rate",
     "input_rate", "distance_rate", "speed_mean", "enemies_alive_mean",
     "enemies_alive_max", "nearest_enemy_dist_mean", "projectiles_alive_mean",
     "low_hp_ratio", "fps_mean", "fps_min", "fps_drop_ratio"
@@ -120,6 +138,7 @@ figure_names <- c(
   "08_distance_rate_by_condition.png" = "Figura · Distancia recorrida",
   "09_jitter_rate_by_condition.png" = "Figura · Jitter de control",
   "10_enemy_distance_by_condition.png" = "Figura · Presión espacial",
+  "11_metrics_summary_04_10.png" = "Figura · Síntesis de métricas de gameplay",
   "12_factorial_anova_effect_map.png" = "Figura · ANOVA factorial: mapa de efectos",
   "12_factorial_anova_boxplots.png" = "Figura · ANOVA factorial",
   "12a_anova_kill_rate_shake_zoom.png" = "Figura · ANOVA factorial: Kills/s por Shake×Zoom",
@@ -352,6 +371,126 @@ condition_interval_plot <- function(variable, filename, title, subtitle = NULL) 
   draw_jittered_points(df$condition, df$value, groups)
   draw_boxplot_summaries(df$condition, df$value, groups, means, lo, hi, marker = "mean")
   draw_title(title, subtitle)
+  box(col = theme$grid)
+  close_png()
+}
+
+gameplay_metrics_summary <- function() {
+  metrics <- c(
+    "duration_seconds",
+    "kill_rate",
+    "damage_taken_rate",
+    "input_rate",
+    "distance_rate",
+    "jitter_rate",
+    "nearest_enemy_dist_mean"
+  )
+  row_labels <- c(
+    "Supervivencia",
+    "Kills/s",
+    "Daño/s",
+    "Inputs/s",
+    "Distancia/s",
+    "Jitter/s",
+    "Dist. enemigo"
+  )
+
+  mat <- matrix(
+    NA_real_,
+    nrow = length(metrics),
+    ncol = length(condition_levels),
+    dimnames = list(row_labels, condition_labels)
+  )
+  mean_text <- matrix("", nrow = nrow(mat), ncol = ncol(mat), dimnames = dimnames(mat))
+  sig_text <- matrix("", nrow = nrow(mat), ncol = ncol(mat), dimnames = dimnames(mat))
+
+  for (r in seq_along(metrics)) {
+    variable <- metrics[r]
+    df <- run_level[is.finite(run_level[[variable]]) & !is.na(run_level$condition), ]
+    df$condition <- factor(df$condition, levels = condition_levels)
+    df$value <- scale_metric(variable, df[[variable]])
+    pooled_sd <- sd(df$value, na.rm = TRUE)
+    if (!is.finite(pooled_sd) || pooled_sd == 0) pooled_sd <- 1
+    base <- df$value[df$condition == "C0_baseline"]
+    base_mean <- mean(base, na.rm = TRUE)
+    base_var <- var(base, na.rm = TRUE)
+    base_n <- sum(is.finite(base))
+
+    for (c in seq_along(condition_levels)) {
+      condition <- condition_levels[c]
+      x <- df$value[df$condition == condition]
+      n <- sum(is.finite(x))
+      m <- mean(x, na.rm = TRUE)
+      mat[r, c] <- (m - base_mean) / pooled_sd
+      mean_text[r, c] <- if (abs(m) >= 100) sprintf("%.0f", m) else sprintf("%.2f", m)
+
+      if (condition != "C0_baseline" && n > 1 && base_n > 1) {
+        se <- sqrt(var(x, na.rm = TRUE) / n + base_var / base_n)
+        lo <- (m - base_mean - 1.96 * se) / pooled_sd
+        hi <- (m - base_mean + 1.96 * se) / pooled_sd
+        if (is.finite(lo) && is.finite(hi) && (lo > 0 || hi < 0)) {
+          sig_text[r, c] <- "●"
+        }
+      }
+    }
+    mat[r, 1] <- 0
+  }
+
+  open_png("11_metrics_summary_04_10.png")
+  par(mar = c(7.2, 8.8, 5.8, 2.0), xaxs = "i", yaxs = "i")
+  max_abs <- max(abs(mat), na.rm = TRUE)
+  if (!is.finite(max_abs) || max_abs == 0) max_abs <- 1
+  max_abs <- max(1, max_abs)
+  pal <- colorRampPalette(c("#485346", "white", theme$accent))(101)
+  image(
+    x = seq_len(ncol(mat)),
+    y = seq_len(nrow(mat)),
+    z = t(mat[nrow(mat):1, ]),
+    col = pal,
+    zlim = c(-max_abs, max_abs),
+    axes = FALSE,
+    xlab = "",
+    ylab = ""
+  )
+  axis(1, at = seq_len(ncol(mat)), labels = condition_axis_labels, tick = FALSE, cex.axis = 0.76)
+  axis(2, at = seq_len(nrow(mat)), labels = rev(rownames(mat)), tick = FALSE, las = 1, cex.axis = 0.90)
+  abline(v = seq(0.5, ncol(mat) + 0.5, by = 1), col = theme$grid, lwd = 1)
+  abline(h = seq(0.5, nrow(mat) + 0.5, by = 1), col = theme$grid, lwd = 1)
+
+  for (r in seq_len(nrow(mat))) {
+    for (c in seq_len(ncol(mat))) {
+      yy <- nrow(mat) - r + 1
+      if (!is.finite(mat[r, c])) next
+      label <- if (c == 1) {
+        paste0("Base\n", mean_text[r, c])
+      } else {
+        paste0(
+          ifelse(mat[r, c] > 0, "+", ""),
+          sprintf("%.2f", mat[r, c]),
+          "\n",
+          mean_text[r, c],
+          sig_text[r, c]
+        )
+      }
+      text(c, yy, label, cex = 0.68, font = ifelse(nzchar(sig_text[r, c]), 2, 1), col = theme$ink)
+    }
+  }
+
+  draw_title(
+    "Síntesis de métricas de gameplay",
+    "Color = diferencia estandarizada vs C0; texto = Δz y media; ● = IC 95% no cruza C0"
+  )
+
+  par(xpd = NA)
+  legend_y <- -1.03
+  rect(1.0, legend_y, 1.34, legend_y + 0.22, col = "#485346", border = theme$border)
+  text(1.43, legend_y + 0.11, "Menor que C0", adj = 0, cex = 0.78, col = theme$ink)
+  rect(3.15, legend_y, 3.49, legend_y + 0.22, col = "white", border = theme$border)
+  text(3.58, legend_y + 0.11, "Similar a C0", adj = 0, cex = 0.78, col = theme$ink)
+  rect(5.25, legend_y, 5.59, legend_y + 0.22, col = theme$accent, border = theme$border)
+  text(5.68, legend_y + 0.11, "Mayor que C0", adj = 0, cex = 0.78, col = theme$ink)
+  text(7.15, legend_y + 0.11, "● Diferencia con IC 95%", adj = 0, cex = 0.78, col = theme$ink)
+  par(xpd = FALSE)
   box(col = theme$grid)
   close_png()
 }
@@ -755,16 +894,16 @@ draw_factor_effect_box_ci_panel <- function(variable, effect) {
 }
 
 factorial_anova_boxplot_figure <- function() {
-  sig <- anova[
-    is.finite(anova$p_value) &
-      anova$p_value < 0.05 &
-      anova$effect != "Residuals" &
-      anova$variable %in% c("kill_rate", "input_rate"),
+  sig <- build_factorial_anova_research_summary(build_giq())
+  sig <- sig[
+    is.finite(sig$p_value) &
+      sig$p_value < 0.05 &
+      sig$variable %in% c("kill_rate", "input_rate"),
   ]
-  sig <- sig[order(sig$variable, sig$partial_eta_squared, decreasing = TRUE), ]
+  sig <- sig[order(sig$variable, -sig$partial_eta_squared), ]
   write.csv(
     sig,
-    file.path("LaTeX", "listings", "anova_significant_effects_ranked.csv"),
+    file.path(listings_dir, "anova_significant_effects_ranked.csv"),
     row.names = FALSE,
     na = ""
   )
@@ -876,8 +1015,7 @@ build_factorial_anova_research_summary <- function(giq) {
     damage_taken_rate = "Daño recibido/s",
     input_rate = "Inputs/s",
     jitter_rate = "Jitter de control",
-    low_hp_ratio = "HP bajo (%)",
-    fps_mean = "FPS promedio"
+    low_hp_ratio = "HP bajo (%)"
   )
 
   results <- list()
@@ -913,7 +1051,7 @@ plot_factorial_anova_effect_map <- function(giq) {
 
   write.csv(
     anova_research,
-    file.path("LaTeX", "listings", "factorial_anova_research_summary.csv"),
+    file.path(listings_dir, "factorial_anova_research_summary.csv"),
     row.names = FALSE,
     na = ""
   )
@@ -1011,16 +1149,32 @@ plot_factorial_anova_effect_map <- function(giq) {
 }
 
 dunnett_figure <- function() {
-  if (is.null(dunnett) || nrow(dunnett) == 0) return(invisible(NULL))
-  keep <- dunnett[dunnett$p.value < 0.05, ]
-  keep <- keep[keep$variable %in% c("duration_seconds", "kill_rate", "input_rate", "jitter_rate", "damage_taken_rate", "xp_rate", "nearest_enemy_dist_mean"), ]
-  keep <- keep[order(keep$p.value), ]
+  variables <- intersect(
+    c("duration_seconds", "kill_rate", "input_rate", "jitter_rate", "damage_taken_rate", "nearest_enemy_dist_mean"),
+    names(run_level)
+  )
+  keep <- data.frame()
+  for (variable in variables) {
+    df <- run_level[is.finite(run_level[[variable]]) & !is.na(run_level$condition), ]
+    df$condition <- factor(df$condition, levels = condition_levels)
+    if (nrow(df) < 16 || length(unique(df$condition)) < 2) next
+    fit <- lm(as.formula(paste(variable, "~ condition")), data = df)
+    emm <- emmeans(fit, ~ condition)
+    ct <- as.data.frame(contrast(emm, method = "trt.vs.ctrl", ref = "C0_baseline", adjust = "dunnettx"))
+    names(ct)[names(ct) == "p.value"] <- "p_value"
+    metric_sd <- sd(df[[variable]], na.rm = TRUE)
+    if (!is.finite(metric_sd) || metric_sd == 0) next
+    ct$variable <- variable
+    ct$estimate_std <- ct$estimate / metric_sd
+    ct$lo <- (ct$estimate - 1.96 * ct$SE) / metric_sd
+    ct$hi <- (ct$estimate + 1.96 * ct$SE) / metric_sd
+    keep <- rbind(keep, ct)
+  }
   if (nrow(keep) == 0) return(invisible(NULL))
-  metric_sd <- sapply(keep$variable, function(v) sd(run_level[[v]], na.rm = TRUE))
-  metric_sd[!is.finite(metric_sd) | metric_sd == 0] <- NA_real_
-  keep$estimate_std <- keep$estimate / metric_sd
-  keep$lo <- (keep$estimate - 1.96 * keep$SE) / metric_sd
-  keep$hi <- (keep$estimate + 1.96 * keep$SE) / metric_sd
+  keep <- keep[is.finite(keep$p_value) & keep$p_value < 0.05, ]
+  keep <- keep[order(keep$p_value), ]
+  if (nrow(keep) == 0) return(invisible(NULL))
+
   contrast_condition <- gsub(" - C0_baseline", "", keep$contrast)
   contrast_condition <- condition_full_labels[match(contrast_condition, condition_levels)]
   metric_name <- metric_labels[keep$variable]
@@ -1031,7 +1185,7 @@ dunnett_figure <- function() {
   keep$axis_label <- gsub("Shake\\+Recoil", "S+R", keep$axis_label)
   keep$axis_label <- gsub("Dist\\. enemigo", "Dist. enem.", keep$axis_label)
   keep <- keep[is.finite(keep$estimate_std) & is.finite(keep$lo) & is.finite(keep$hi), ]
-  keep$p_label <- format_p(keep$p.value)
+  keep$p_label <- format_p(keep$p_value)
   keep <- keep[order(keep$estimate_std), ]
 
   open_png("13_dunnett_significant_vs_c0.png")
@@ -1063,7 +1217,7 @@ dunnett_figure <- function() {
   text(par("usr")[1], max(y) + 0.62, "Métrica / contraste", adj = 0, cex = 0.86, font = 2, col = theme$ink, xpd = NA)
   text(p_x, max(y) + 0.62, "p-value", adj = 0, cex = 0.86, font = 2, col = theme$ink, xpd = NA)
   mtext("Valores positivos indican mayor valor que C0.", side = 1, line = 5.2, adj = 1, cex = 0.86, col = theme$border)
-  draw_title("Dunnett vs C0", "Forest plot horizontal; puntos = diferencia estandarizada, barras = IC 95%")
+  draw_title("Dunnett vs C0", "Hard-clean dataset; puntos = diferencia estandarizada, barras = IC 95%")
   box(col = theme$grid)
   close_png()
 }
@@ -1407,6 +1561,7 @@ condition_interval_plot(
   "La distancia al enemigo contextualiza la presión",
   "Distribución de distancia al enemigo más cercano"
 )
+gameplay_metrics_summary()
 plot_factorial_anova_effect_map(giq)
 factorial_anova_boxplot_figure()
 dunnett_figure()
