@@ -1,0 +1,70 @@
+id,title,description,category,rarity,rarity_name,max_taken,infinite,dmg_flat,dmg_mult,fire_rate_pct,arrows_add,crit_chance_add,crit_mult,burn_dps,burn_duration,chain_range,vengeance_dmg_pct,vengeance_proc_pct,aura_dmg_add,aura_rate_pct,aura_targets_add,maxhp_flat,maxhp_mult,regen_add,lifesteal_add,dodge_chance_add,invuln_time_add,knockback_force_add,knockback_range,move_flat,move_mult,luck_add,xp_mult_add,magnet_range_pct,created_at
+0181771a-da81-4cc3-a6fb-a56504110ccf,Tormenta de flechas,+3 flechas por disparo,arrows,4,Legendario,1,false,,,,3,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+044867e3-2d17-41e9-b3ec-9024e95d1926,Vampirismo III,Cura +0.02 de vida por enemigo derrotado,lifesteal,2,Raro,2,false,,,,,,,,,,,,,,,,,,0.02,,,,,,,,,,2026-06-06 07:24:35.707771+00
+09d8a532-17d5-4f09-8f7c-e3e8f9610e67,Vitalidad II,+25 vida máxima,health,1,Poco común,1,true,,,,,,,,,,,,,,,25.0,1.0,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+0b3d6f40-137f-4e5d-b8f3-b302384e8bd7,Venganza IV,+12% de daño. +7% de prob. de flechas en círculo,vengeance,3,Épico,1,false,,,,,,,,,,0.12,0.07,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+0d6d3b48-a353-4dab-b021-bf6d5b3f3258,Daño masivo,+50% de daño por flecha,damage,2,Raro,3,false,0.0,1.5,,,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+0dabe23b-acef-46be-90ae-773b59aca556,Rebote,"Tras impactar, la flecha rebota al enemigo más cercano",chain,3,Épico,1,false,,,,,,,,,280.0,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+1054a91f-8de7-4ecb-a232-291e2bdba813,Suerte mayor,+1 suerte,luck,3,Épico,2,false,,,,,,,,,,,,,,,,,,,,,,,,,1.0,,,2026-06-06 07:24:35.707771+00
+1319393c-d56c-4407-a754-93d08edb64aa,Aura divina,Al ser golpeado: +0.3s invulnerable y gran onda de empuje,invuln,4,Legendario,1,false,,,,,,,,,,,,,,,,,,,,0.30,150.0,160.0,,,,,,2026-06-06 07:24:35.707771+00
+138f9a8d-04af-4611-a397-d1a7151e933b,Daño I,+1 de daño por flecha,damage,0,Común,1,true,1.0,1.0,,,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+1c765e28-22dd-47df-abe8-62abc8d011aa,Regeneración I,+0.15 vida por segundo,regen,0,Común,3,false,,,,,,,,,,,,,,,,,0.15,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+246018b7-940b-46ea-8a32-40d5921c57dd,Viento esquivo,+10% de probabilidad de esquivar el daño,dodge,3,Épico,1,false,,,,,,,,,,,,,,,,,,,0.10,,,,,,,,,2026-06-06 07:24:35.707771+00
+27b73529-37cd-435e-b40c-9d3fdac090d1,Botas veloces,+25% velocidad de movimiento,move_speed,1,Poco común,3,false,,,,,,,,,,,,,,,,,,,,,,,0.0,1.25,,,,2026-06-06 07:24:35.707771+00
+28238eef-3f6e-4aaf-83e1-53a7a6d53874,Regeneración II,+0.2 vida por segundo,regen,1,Poco común,3,false,,,,,,,,,,,,,,,,,0.20,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+2f1ce194-8d7c-4834-8d77-1b0af09e1fdf,Daño II,+2 de daño por flecha,damage,1,Poco común,1,true,2.0,1.0,,,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+345ccd51-a4bc-47cb-8345-7c59602ecb74,Imán II,+30% de rango de recogida,magnet,1,Poco común,3,false,,,,,,,,,,,,,,,,,,,,,,,,,,,0.30,2026-06-06 07:24:35.707771+00
+357fdac2-c798-4fa7-bc9d-997386009538,Onda expansiva,+10 enemigos alcanzados por el aura,aura_targets,2,Raro,2,false,,,,,,,,,,,,,,10,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+363d8241-d402-4d67-b54e-f1630a7d8f90,Botas ligeras,+20 velocidad de movimiento,move_speed,0,Común,1,true,,,,,,,,,,,,,,,,,,,,,,,20.0,1.0,,,,2026-06-06 07:24:35.707771+00
+3889cfbf-d353-43c5-8748-9cd75e1b5ea7,Infierno,Las flechas queman (valor real 2.5 dps) durante 4s,burn,3,Épico,1,false,,,,,,,2.5,4.0,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+3c1f719e-487a-48bc-b6c6-b7b7441d889b,Esquiva II,+5% de probabilidad de esquivar el daño,dodge,1,Poco común,1,false,,,,,,,,,,,,,,,,,,,0.05,,,,,,,,,2026-06-06 07:24:35.707771+00
+3ec80697-bd97-4c9d-a852-0f37adab2fd5,Llama eterna,Las flechas queman (valor real 5 dps) durante 5s,burn,4,Legendario,1,false,,,,,,,5.0,5.0,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+3efd2b41-9c5f-442d-aa2c-bf60e0ef79be,Fortuna legendaria,+2 suerte,luck,4,Legendario,1,false,,,,,,,,,,,,,,,,,,,,,,,,,2.0,,,2026-06-06 07:24:35.707771+00
+4d1619ce-26c6-4302-ab44-87b6619b0573,Sed de sangre,Cura +0.05 de vida por enemigo derrotado,lifesteal,4,Legendario,1,false,,,,,,,,,,,,,,,,,,0.05,,,,,,,,,,2026-06-06 07:24:35.707771+00
+4e601942-420c-4bbe-be2c-bf63525dbcea,Singularidad,+100% de rango de recogida,magnet,4,Legendario,1,false,,,,,,,,,,,,,,,,,,,,,,,,,,,1.0,2026-06-06 07:24:35.707771+00
+4eb4b9e9-6eb6-47d6-9dc5-787cc479f6f8,Pulso II,+50% de frecuencia de ataque del aura,aura_rate,2,Raro,1,false,,,,,,,,,,,,,0.50,,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+4edc546b-b94a-43d4-955d-1413903ff88e,Vampirismo I,Cura +0.01 de vida por enemigo derrotado,lifesteal,0,Común,3,false,,,,,,,,,,,,,,,,,,0.01,,,,,,,,,,2026-06-06 07:24:35.707771+00
+568a8213-3297-4aab-b80a-e3bcbc9f1727,Pulso legendario,+100% de frecuencia de ataque del aura,aura_rate,4,Legendario,1,false,,,,,,,,,,,,,1.0,,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+5e8825ac-406f-4f24-b561-6a23ffc843b7,Ráfaga infinita,+200% velocidad de disparo,fire_rate,4,Legendario,1,false,,,2.0,,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+5f8b24b3-ec27-48d8-b1d2-570e3b2dfa51,Suerte,+0.75 suerte,luck,2,Raro,3,false,,,,,,,,,,,,,,,,,,,,,,,,,0.75,,,2026-06-06 07:24:35.707771+00
+63ce5238-cf74-4a21-9fe2-287501172b0b,Puntería I,+10% de probabilidad de golpe crítico (×2 daño),crit,1,Poco común,4,false,,,,,0.10,2.0,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+6525725c-0e67-49b6-96d6-1e2fc10b9a6f,Aura I,+0.1 de daño de aura,aura_damage,0,Común,1,false,,,,,,,,,,,,0.10,,,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+69c90fa4-2b88-4a39-848a-f99d6ae1b9e8,Suerte menor,+0.25 suerte,luck,0,Común,3,false,,,,,,,,,,,,,,,,,,,,,,,,,0.25,,,2026-06-06 07:24:35.707771+00
+763b6f0b-030d-4796-b911-7ad943e1e827,Regeneración IV,+0.4 vida por segundo,regen,3,Épico,2,false,,,,,,,,,,,,,,,,,0.40,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+7666bbd0-28df-4f88-ac78-3f6fb87ac0d8,Venganza I,"+5% de daño. Al morir un enemigo, +1% de prob. de flechas en círculo",vengeance,0,Común,2,false,,,,,,,,,,0.05,0.01,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+7896bfe7-9360-42c7-9b99-f5788eda3b22,Regeneración III,+0.3 vida por segundo,regen,2,Raro,2,false,,,,,,,,,,,,,,,,,0.30,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+79438bd0-a8a4-4974-a852-0ac281fcba00,Bastión,Al ser golpeado: +0.22s invulnerable y onda de empuje amplia,invuln,3,Épico,1,false,,,,,,,,,,,,,,,,,,,,0.22,100.0,120.0,,,,,,2026-06-06 07:24:35.707771+00
+79847426-7ad8-4658-98f3-6be498a036ea,Imán I,+10% de rango de recogida,magnet,0,Común,3,false,,,,,,,,,,,,,,,,,,,,,,,,,,,0.10,2026-06-06 07:24:35.707771+00
+7b8ba24b-fd09-4cfd-9e1e-7210c5e12306,Puntería II,+10% de crítico y eleva el crítico a ×3 daño,crit,2,Raro,3,false,,,,,0.10,3.0,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+7ceb15e4-2adf-4187-bc03-4523b80bba62,Vitalidad legendaria,+100% vida máxima,health,4,Legendario,1,false,,,,,,,,,,,,,,,0.0,2.0,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+7d05bbc6-e495-4231-9041-97705a272dff,Trébol,+0.50 suerte,luck,1,Poco común,3,false,,,,,,,,,,,,,,,,,,,,,,,,,0.50,,,2026-06-06 07:24:35.707771+00
+80429772-eb41-4c1b-8dfd-76b50c929203,Flecha ardiente,Las flechas queman: +0.25 de daño por segundo durante 4s,burn,2,Raro,1,false,,,,,,,0.25,4.0,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+8debd9bc-00a4-47cf-aa2b-639ab2f50102,Lluvia de flechas,+2 flechas por disparo,arrows,3,Épico,2,false,,,,2,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+904cc019-0b4a-4c92-9b4d-117d3ae79409,Ojo certero,+25% de crítico y eleva el crítico a ×4 daño,crit,4,Legendario,1,false,,,,,0.25,4.0,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+910d42dc-15df-4398-b4dd-e12d4f3d59e5,Aura legendaria,+1 de daño de aura,aura_damage,4,Legendario,1,false,,,,,,,,,,,,1.0,,,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+93bb8f1b-af07-4ce3-91ea-5ddcff74172d,Pulso I,+25% de frecuencia de ataque del aura,aura_rate,0,Común,1,false,,,,,,,,,,,,,0.25,,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+97341e48-ae91-422b-8ea3-00ddc4d22afb,Alcance I,+3 enemigos alcanzados por el aura,aura_targets,0,Común,3,false,,,,,,,,,,,,,,3,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+9cba0398-120c-4584-b736-ff2cf6b43979,Esquiva I,+5% de probabilidad de esquivar el daño,dodge,0,Común,1,false,,,,,,,,,,,,,,,,,,,0.05,,,,,,,,,2026-06-06 07:24:35.707771+00
+9eabe4e8-d5b2-4080-a290-b475e400106d,Aniquilación,+80% y +4 de daño por flecha,damage,4,Legendario,1,false,4.0,1.8,,,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+9ef1df94-1d0d-4872-b3cb-b109ad0c5504,Onda mayor,+15 enemigos alcanzados por el aura,aura_targets,3,Épico,1,false,,,,,,,,,,,,,,15,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+a2cfc65b-ed1a-49ca-b76c-353e318a6fde,Alcance II,+5 enemigos alcanzados por el aura,aura_targets,1,Poco común,3,false,,,,,,,,,,,,,,5,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+aad548d1-3021-4ae7-b468-87548fb025ec,Sabiduría,+100% experiencia ganada,xp,2,Raro,3,false,,,,,,,,,,,,,,,,,,,,,,,,,,1.0,,2026-06-06 07:24:35.707771+00
+ba3f56da-bca8-4f73-ae06-1f90993c1e19,Corazón de hierro,+50% vida máxima,health,2,Raro,3,false,,,,,,,,,,,,,,,0.0,1.5,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+c317b594-bb81-4c09-bb7f-1547a1c698da,Codicia,+50% experiencia ganada,xp,1,Poco común,1,true,,,,,,,,,,,,,,,,,,,,,,,,,,0.50,,2026-06-06 07:24:35.707771+00
+c37a5ab7-de03-48cc-89bd-511e3fb0293a,Furia,+75% de daño por flecha,damage,3,Épico,2,false,0.0,1.75,,,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+c569f49d-87aa-415b-af2f-980543b6482e,Campo magnético,+60% de rango de recogida,magnet,2,Raro,2,false,,,,,,,,,,,,,,,,,,,,,,,,,,,0.60,2026-06-06 07:24:35.707771+00
+c8395fe7-d2f3-4785-9d5a-4a584306a825,Vampirismo IV,Cura +0.03 de vida por enemigo derrotado,lifesteal,3,Épico,2,false,,,,,,,,,,,,,,,,,,0.03,,,,,,,,,,2026-06-06 07:24:35.707771+00
+c862fb4c-799a-4741-b69a-d3f1303ed17a,Flecha extra,+1 flecha por disparo,arrows,2,Raro,4,false,,,,1,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+ccd2ba5d-6bab-4662-83a6-ad9ece9cb780,Tormenta de área,+20 enemigos alcanzados por el aura,aura_targets,4,Legendario,1,false,,,,,,,,,,,,,,20,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+cf30b8b5-e60f-498f-bf2d-370a21f4b4b0,Venganza III,+9% de daño. +5% de prob. de flechas en círculo,vengeance,2,Raro,1,false,,,,,,,,,,0.09,0.05,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+d169e2db-92f3-4c5b-b35e-9e3e988198da,Vampirismo II,Cura +0.02 de vida por enemigo derrotado,lifesteal,1,Poco común,3,false,,,,,,,,,,,,,,,,,,0.02,,,,,,,,,,2026-06-06 07:24:35.707771+00
+da1ed137-3793-4b52-be91-5970501068ab,Intangible,+15% de probabilidad de esquivar el daño,dodge,4,Legendario,1,false,,,,,,,,,,,,,,,,,,,0.15,,,,,,,,,2026-06-06 07:24:35.707771+00
+db880f70-7d2f-44b0-9352-24d2792faf8a,Disparo rápido,+75% velocidad de disparo,fire_rate,2,Raro,3,false,,,0.75,,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+dbf9e2e6-b65b-4d20-9cac-0695a0ed5fbf,Venganza letal,+15% de daño. +10% de prob. de flechas en círculo,vengeance,4,Legendario,1,false,,,,,,,,,,0.15,0.10,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+de83d58a-a938-461d-92ab-fc397e84fe6d,Reflejos felinos,+7% de probabilidad de esquivar el daño,dodge,2,Raro,1,false,,,,,,,,,,,,,,,,,,,0.07,,,,,,,,,2026-06-06 07:24:35.707771+00
+e4733c19-0336-43e2-9ed7-0896949b6d96,Aura intensa,+0.5 de daño de aura,aura_damage,2,Raro,1,false,,,,,,,,,,,,0.50,,,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+ea5940db-059e-4ed3-b4e2-8a5d5ac79ac3,Regeneración legendaria,+0.5 vida por segundo,regen,4,Legendario,1,false,,,,,,,,,,,,,,,,,0.50,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+eea4496d-2be7-423a-8270-9ac84d803f2f,Cadencia II,+50% velocidad de disparo,fire_rate,1,Poco común,1,true,,,0.50,,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+f980bedf-03c2-49a9-bb75-6d45ae05851e,Aura II,+0.25 de daño de aura,aura_damage,1,Poco común,1,false,,,,,,,,,,,,0.25,,,,,,,,,,,,,,,,2026-06-06 07:24:35.707771+00
+fd9cdf05-dc92-4cb9-8f13-a73e1dc88734,Cadencia I,+25% velocidad de disparo,fire_rate,0,Común,1,true,,,0.25,,,,,,,,,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00
+fe92947d-74ef-44a6-a21e-f0e98c586591,Venganza II,+7% de daño. +3% de prob. de flechas en círculo al morir un enemigo,vengeance,1,Poco común,2,false,,,,,,,,,,0.07,0.03,,,,,,,,,,,,,,,,,2026-06-06 07:23:57.005786+00

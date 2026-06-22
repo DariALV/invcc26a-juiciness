@@ -1,0 +1,28 @@
+
+Input
+=====
+Input directory: supabase_data
+Output directory: supabase_data/r_outputs_existing_metrics
+
+Guarantee
+=========
+This analysis uses only variables measured by juicy-vs: condition flags, Run summaries, DamageTaken events, GameSnapshot telemetry, and optional RunFeedback responses if present. Upgrade tables and unmeasured metrics such as task_accuracy, reaction_time_ms, aim_shots, and aim_hits are intentionally excluded. 
+
+Runs By Condition
+=================
+
+    C0_baseline        C1_shake         C2_zoom       C3_recoil   C4_shake_zoom 
+             29              24              18              24              26 
+C5_shake_recoil  C6_zoom_recoil          C7_all 
+             20              18              19  
+
+Generated Files
+===============
+juicy_vs_existing_metrics_run_level.csv
+- descriptives_by_condition.csv
+- factorial_anova_results.csv
+- anova_assumption_checks.csv
+- kruskal_by_condition_results.csv
+- poisson_count_models.csv (if count models can be fit)
+- logistic_death_model.csv (if death has both classes)
+- dunnett_vs_baseline.csv (if emmeans is installed) 
