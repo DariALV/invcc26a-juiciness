@@ -9,6 +9,7 @@
 #   analysis/images/validation_figures/*.png
 #   analysis/validation_baseline_contrasts_no_xp.csv
 #   analysis/validation_tradeoff_spearman_no_xp.csv
+#   analysis/art_factorial_results_hard_clean.csv
 #   analysis/validation_summary_no_xp_no_fps_anova.txt
 
 suppressPackageStartupMessages({
@@ -36,6 +37,7 @@ required_outputs <- c(
   "analysis/anova_assumption_checks_hard_clean.csv",
   "analysis/anova_permutation_sensitivity_hard_clean.csv",
   "analysis/anova_type1_vs_type3_hard_clean.csv",
+  "analysis/art_factorial_results_hard_clean.csv",
   "analysis/count_model_alternatives_hard_clean.csv",
   "analysis/survival_model_alternative_hard_clean.csv"
 )
@@ -127,6 +129,12 @@ format_p <- function(p) {
   )
 }
 
+format_q <- function(q) {
+  ifelse(!is.finite(q), "",
+    ifelse(q < 0.001, "q<.001", sprintf("q=%.2f", q))
+  )
+}
+
 mean_ci <- function(x) {
   x <- x[is.finite(x)]
   if (length(x) == 0) return(c(mean = NA_real_, lo = NA_real_, hi = NA_real_, n = 0))
@@ -195,12 +203,14 @@ giq <- prepare_factors(build_giq(form, cfg))
 assumptions <- read.csv("analysis/anova_assumption_checks_hard_clean.csv", check.names = FALSE)
 permutation <- read.csv("analysis/anova_permutation_sensitivity_hard_clean.csv", check.names = FALSE)
 anova_compare <- read.csv("analysis/anova_type1_vs_type3_hard_clean.csv", check.names = FALSE)
+art_results <- read.csv("analysis/art_factorial_results_hard_clean.csv", check.names = FALSE)
 count_models <- read.csv("analysis/count_model_alternatives_hard_clean.csv", check.names = FALSE)
 survival_model <- read.csv("analysis/survival_model_alternative_hard_clean.csv", check.names = FALSE)
 
 assumptions <- assumptions[!grepl("XP|FPS", assumptions$metric_label, ignore.case = TRUE), ]
 permutation <- permutation[!grepl("XP|FPS", permutation$metric_label, ignore.case = TRUE), ]
 anova_compare <- anova_compare[!grepl("XP|FPS", anova_compare$metric_label, ignore.case = TRUE), ]
+art_results <- art_results[!grepl("XP|FPS", art_results$metric_label, ignore.case = TRUE), ]
 count_models <- count_models[!grepl("XP|FPS", count_models$metric_label, ignore.case = TRUE), ]
 
 plot_assumption_diagnostics <- function() {
@@ -299,7 +309,7 @@ plot_count_model_map <- function() {
     c <- match(selected$term[i], terms_order)
     if (!is.na(r) && !is.na(c)) {
       mat[r, c] <- -log10(pmax(selected$p_value[i], 1e-12))
-      labels[r, c] <- paste0(format_p(selected$p_value[i]), "\nq=", sprintf("%.2f", selected$q_value[i]))
+      labels[r, c] <- paste0(format_p(selected$p_value[i]), "\n", format_q(selected$q_value[i]))
     }
   }
 
@@ -307,17 +317,74 @@ plot_count_model_map <- function() {
   par(mar = c(6.8, 6.2, 4.8, 1.4), xaxs = "i", yaxs = "i")
   pal <- colorRampPalette(c("white", "#d9f0d3", theme$accent, theme$ink))(101)
   z <- mat[nrow(mat):1, , drop = FALSE]
-  image(seq_len(ncol(z)), seq_len(nrow(z)), t(z), col = pal, zlim = c(0, max(3, max(z, na.rm = TRUE))), axes = FALSE, xlab = "", ylab = "")
+  zmax <- max(3, max(z, na.rm = TRUE))
+  image(seq_len(ncol(z)), seq_len(nrow(z)), t(z), col = pal, zlim = c(0, zmax), axes = FALSE, xlab = "", ylab = "")
   axis(1, at = seq_len(ncol(mat)), labels = c("Shake", "Zoom", "Recoil", "SxZ", "SxR", "ZxR", "SxZxR"), tick = FALSE, cex.axis = 0.88)
   axis(2, at = seq_len(nrow(mat)), labels = rev(metrics_axis), las = 1, tick = FALSE, cex.axis = 0.90)
   for (r in seq_len(nrow(mat))) {
     rr <- nrow(mat) - r + 1
     for (c in seq_len(ncol(mat))) {
       if (labels[r, c] == "") next
-      text(c, rr, labels[r, c], cex = 0.70, font = ifelse(!is.na(mat[r, c]) && mat[r, c] > -log10(0.05), 2, 1))
+      label_col <- ifelse(!is.na(mat[r, c]) && mat[r, c] >= zmax * 0.55, "white", theme$ink)
+      text(c, rr, labels[r, c], cex = 0.70, font = ifelse(!is.na(mat[r, c]) && mat[r, c] > -log10(0.05), 2, 1), col = label_col)
     }
   }
   title("Modelos de conteo con offset por duracion", sub = "Binomial negativa cuando converge; quasi-Poisson como respaldo. XP excluido.", adj = 0, cex.main = 1.25, cex.sub = 0.88)
+  box(col = theme$grid)
+  close_png()
+}
+
+plot_art_factorial_map <- function() {
+  failed_metrics <- assumptions$metric[assumptions$residual_shapiro_p < 0.05]
+  d <- art_results[art_results$metric %in% failed_metrics, ]
+  if (nrow(d) == 0) return(invisible(NULL))
+
+  terms_order <- c("Shake", "Zoom", "Recoil", "Shake:Zoom", "Shake:Recoil", "Zoom:Recoil", "Shake:Zoom:Recoil")
+  terms_axis <- c("Shake", "Zoom", "Recoil", "SxZ", "SxR", "ZxR", "SxZxR")
+  metrics_order <- assumptions$metric_label[match(failed_metrics, assumptions$metric)]
+  metrics_order <- metrics_order[!is.na(metrics_order)]
+  metrics_axis <- metrics_order
+  metrics_axis <- gsub("GIQ engagement", "GIQ engage.", metrics_axis)
+  metrics_axis <- gsub("Dano recibido/s", "Dano/s", metrics_axis)
+  metrics_axis <- gsub("Distancia a enemigo", "Dist. enemigo", metrics_axis)
+  metrics_axis <- gsub("Proporcion HP bajo", "HP bajo", metrics_axis)
+
+  mat <- matrix(NA_real_, nrow = length(metrics_order), ncol = length(terms_order), dimnames = list(metrics_order, terms_order))
+  qmat <- matrix(NA_real_, nrow = length(metrics_order), ncol = length(terms_order), dimnames = list(metrics_order, terms_order))
+  labels <- matrix("", nrow = nrow(mat), ncol = ncol(mat), dimnames = dimnames(mat))
+  for (i in seq_len(nrow(d))) {
+    r <- match(d$metric_label[i], metrics_order)
+    c <- match(d$term[i], terms_order)
+    if (!is.na(r) && !is.na(c)) {
+      mat[r, c] <- d$partial_eta_squared_rank[i]
+      qmat[r, c] <- d$q_value[i]
+      labels[r, c] <- paste0(format_p(d$p_value[i]), "\n", format_q(d$q_value[i]))
+    }
+  }
+
+  open_png("07_art_factorial_effect_map.png", width = 2600, height = 1600)
+  par(mar = c(6.8, 7.4, 5.0, 1.4), xaxs = "i", yaxs = "i")
+  pal <- colorRampPalette(c("white", "#d9f0d3", theme$accent, theme$ink))(101)
+  z <- mat[nrow(mat):1, , drop = FALSE]
+  zmax <- max(0.14, max(z, na.rm = TRUE))
+  image(seq_len(ncol(z)), seq_len(nrow(z)), t(z), col = pal, zlim = c(0, zmax), axes = FALSE, xlab = "", ylab = "")
+  axis(1, at = seq_len(ncol(mat)), labels = terms_axis, tick = FALSE, cex.axis = 0.88)
+  axis(2, at = seq_len(nrow(mat)), labels = rev(metrics_axis), las = 1, tick = FALSE, cex.axis = 0.86)
+  for (r in seq_len(nrow(mat))) {
+    rr <- nrow(mat) - r + 1
+    for (c in seq_len(ncol(mat))) {
+      if (labels[r, c] == "") next
+      label_col <- ifelse(!is.na(mat[r, c]) && mat[r, c] >= zmax * 0.55, "white", theme$ink)
+      text(c, rr, labels[r, c], cex = 0.64, font = ifelse(!is.na(qmat[r, c]) && qmat[r, c] < 0.05, 2, 1), col = label_col)
+    }
+  }
+  title(
+    "ART factorial: métricas sin normalidad residual",
+    sub = "Color = eta parcial en rangos alineados; texto = p nominal y q FDR. XP excluido; FPS solo control técnico.",
+    adj = 0,
+    cex.main = 1.25,
+    cex.sub = 0.84
+  )
   box(col = theme$grid)
   close_png()
 }
@@ -421,7 +488,7 @@ plot_baseline_forest <- function(contrasts) {
   axis(2, at = y, labels = d$label, las = 1, tick = FALSE, cex.axis = 0.80)
   segments(d$lo_std, y, d$hi_std, y, col = theme$ink, lwd = 2.4)
   points(d$estimate_std, y, pch = 21, bg = ifelse(d$q_value < 0.05, theme$accent, theme$pale), col = theme$ink, cex = 1.55, lwd = 1.1)
-  text(xlim[2], y, paste0(format_p(d$p_value), "; q=", sprintf("%.2f", d$q_value)), adj = 1, cex = 0.74)
+  text(xlim[2], y, paste0(format_p(d$p_value), "; ", format_q(d$q_value)), adj = 1, cex = 0.74)
   title("Contrastes contra C0", sub = "Dunnett por condicion; XP excluido; FPS no evaluado en ANOVA", adj = 0, cex.main = 1.25, cex.sub = 0.88)
   mtext("Valores positivos indican mayor valor que C0.", side = 1, line = 4.2, adj = 1, cex = 0.82, col = theme$muted)
   box(col = theme$grid)
@@ -495,6 +562,7 @@ plot_tradeoff <- function(merged, spearman) {
 plot_assumption_diagnostics()
 plot_giq_interaction()
 plot_count_model_map()
+plot_art_factorial_map()
 plot_survival_cox()
 baseline <- baseline_contrasts()
 plot_baseline_forest(baseline)
@@ -515,10 +583,12 @@ summary_lines <- c(
   "  - analysis/images/validation_figures/04_survival_cox_curves.png",
   "  - analysis/images/validation_figures/05_baseline_forest_vs_c0.png",
   "  - analysis/images/validation_figures/06_tradeoff_giq_gameplay.png",
+  "  - analysis/images/validation_figures/07_art_factorial_effect_map.png",
   "",
   "Generated calculation tables:",
   "  - analysis/validation_baseline_contrasts_no_xp.csv",
-  "  - analysis/validation_tradeoff_spearman_no_xp.csv"
+  "  - analysis/validation_tradeoff_spearman_no_xp.csv",
+  "  - analysis/art_factorial_results_hard_clean.csv"
 )
 writeLines(summary_lines, "analysis/validation_summary_no_xp_no_fps_anova.txt")
 cat(paste(summary_lines, collapse = "\n"), "\n")

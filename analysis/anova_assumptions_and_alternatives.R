@@ -4,6 +4,7 @@
 #   analysis/anova_assumption_checks_hard_clean.csv
 #   analysis/anova_type1_vs_type3_hard_clean.csv
 #   analysis/anova_permutation_sensitivity_hard_clean.csv
+#   analysis/art_factorial_results_hard_clean.csv
 #   analysis/rank_anova_sensitivity_hard_clean.csv
 #   analysis/count_model_alternatives_hard_clean.csv
 #   analysis/survival_model_alternative_hard_clean.csv
@@ -265,6 +266,27 @@ rank_anova_table <- function(df, metric, metric_label) {
   out
 }
 
+art_factorial_table <- function(df, metric, metric_label) {
+  if (!requireNamespace("ARTool", quietly = TRUE)) return(NULL)
+  fit <- ARTool::art(Y ~ Shake * Zoom * Recoil, data = df)
+  tab <- as.data.frame(anova(fit))
+  if (nrow(tab) == 0) return(NULL)
+  data.frame(
+    metric = metric,
+    metric_label = metric_label,
+    model = "Aligned Rank Transform ANOVA",
+    term = tab$Term,
+    df_effect = tab$Df,
+    df_residual = tab$Df.res,
+    statistic = tab$`F value`,
+    p_value = tab$`Pr(>F)`,
+    sum_sq = tab$`Sum Sq`,
+    sum_sq_residual = tab$`Sum Sq.res`,
+    partial_eta_squared_rank = tab$`Sum Sq` / (tab$`Sum Sq` + tab$`Sum Sq.res`),
+    stringsAsFactors = FALSE
+  )
+}
+
 model_wald_terms <- function(fit, metric, metric_label, model_label, reference = c("F", "Chisq")) {
   reference <- match.arg(reference)
   beta <- coef(fit)
@@ -415,6 +437,7 @@ anova_rows <- list()
 type3_rows <- list()
 permutation_rows <- list()
 rank_rows <- list()
+art_rows <- list()
 
 for (spec in analysis_specs) {
   metric <- spec$metric
@@ -434,6 +457,7 @@ for (spec in analysis_specs) {
 
   permutation_rows[[metric]] <- permutation_table(df, metric, metric_label, B = 999)
   rank_rows[[metric]] <- rank_anova_table(df, metric, metric_label)
+  art_rows[[metric]] <- art_factorial_table(df, metric, metric_label)
 }
 
 assumptions_df <- do.call(rbind, assumptions)
@@ -441,11 +465,15 @@ anova_type1 <- do.call(rbind, anova_rows)
 anova_type3 <- do.call(rbind, type3_rows)
 permutation_df <- do.call(rbind, permutation_rows)
 rank_df <- do.call(rbind, rank_rows)
+art_df <- do.call(rbind, art_rows[!vapply(art_rows, is.null, logical(1))])
 
 anova_type1$q_value <- p.adjust(anova_type1$p_value, method = "BH")
 anova_type3$q_value <- p.adjust(anova_type3$p_value, method = "BH")
 permutation_df$q_value <- p.adjust(permutation_df$p_value, method = "BH")
 rank_df$q_value <- p.adjust(rank_df$p_value, method = "BH")
+if (!is.null(art_df) && nrow(art_df) > 0) {
+  art_df$q_value <- p.adjust(art_df$p_value, method = "BH")
+}
 
 anova_compare <- merge(
   anova_type1,
@@ -473,6 +501,9 @@ if (!is.null(survival_df)) {
 write.csv(assumptions_df, file.path(output_dir, "anova_assumption_checks_hard_clean.csv"), row.names = FALSE, na = "")
 write.csv(anova_compare, file.path(output_dir, "anova_type1_vs_type3_hard_clean.csv"), row.names = FALSE, na = "")
 write.csv(permutation_df, file.path(output_dir, "anova_permutation_sensitivity_hard_clean.csv"), row.names = FALSE, na = "")
+if (!is.null(art_df) && nrow(art_df) > 0) {
+  write.csv(art_df, file.path(output_dir, "art_factorial_results_hard_clean.csv"), row.names = FALSE, na = "")
+}
 write.csv(rank_df, file.path(output_dir, "rank_anova_sensitivity_hard_clean.csv"), row.names = FALSE, na = "")
 write.csv(count_df, file.path(output_dir, "count_model_alternatives_hard_clean.csv"), row.names = FALSE, na = "")
 if (!is.null(survival_df)) {
@@ -577,6 +608,37 @@ if (nrow(perm_q_sig) == 0) {
   ))
 }
 
+if (!is.null(art_df) && nrow(art_df) > 0) {
+  lines <- c(lines, "", "ART factorial ANOVA nominal effects (p < .05):")
+  art_sig <- sig_subset(art_df)
+  if (nrow(art_sig) == 0) {
+    lines <- c(lines, "  None.")
+  } else {
+    art_sig <- art_sig[order(art_sig$p_value), ]
+    lines <- c(lines, paste0(
+      "  - ", art_sig$metric_label,
+      " / ", art_sig$term,
+      ": F=", sprintf("%.2f", art_sig$statistic),
+      ", p=", sprintf("%.4f", art_sig$p_value),
+      ", rank_eta_p2=", sprintf("%.3f", art_sig$partial_eta_squared_rank)
+    ))
+  }
+
+  lines <- c(lines, "", "ART factorial ANOVA effects after BH-FDR (q < .05):")
+  art_q_sig <- art_df[is.finite(art_df$q_value) & art_df$q_value < 0.05, ]
+  if (nrow(art_q_sig) == 0) {
+    lines <- c(lines, "  None.")
+  } else {
+    art_q_sig <- art_q_sig[order(art_q_sig$q_value), ]
+    lines <- c(lines, paste0(
+      "  - ", art_q_sig$metric_label,
+      " / ", art_q_sig$term,
+      ": p=", sprintf("%.4f", art_q_sig$p_value),
+      ", q=", sprintf("%.4f", art_q_sig$q_value)
+    ))
+  }
+}
+
 lines <- c(lines, "", "Count-model nominal effects (p < .05):")
 count_sig <- sig_subset(count_df)
 if (nrow(count_sig) == 0) {
@@ -629,7 +691,7 @@ lines <- c(
   "  1. Keep the Hard Clean set as the primary dataset.",
   "  2. Report Shapiro-Wilk residual diagnostics before ANOVA.",
   "  3. Treat the current ANOVA as descriptive/sensitivity when residual normality fails.",
-  "  4. Prefer Type III or permutation ANOVA for the unbalanced Hard Clean factorial design.",
+  "  4. Use ART as the nonparametric factorial check for outcomes with non-normal residuals.",
   "  5. For kills, inputs, hits, and damage events, prefer count models with duration offset over raw rate ANOVA.",
   "  6. For survival time, prefer a survival model when win/death censoring matters.",
   "  7. FPS is excluded from ANOVA and used only as a technical quality control."

@@ -120,7 +120,7 @@ theme <- list(
   ink = "#212525",
   muted = "#677d64",
   border = "#485346",
-  accent = "#7fee64",
+  accent = "#55a868",
   soft = "#def0dd",
   pale = "#f5fbf3",
   grid = "#e2eadf",
@@ -128,34 +128,35 @@ theme <- list(
 )
 
 figure_names <- c(
-  "01_condition_matrix.png" = "Figura · Diseño factorial",
-  "02_giq_subscales.png" = "Figura · GIQ y subescalas",
-  "03_giq_by_condition.png" = "Figura · GIQ por condición",
-  "04_duration_by_condition.png" = "Figura · Supervivencia",
-  "05_kill_rate_by_condition.png" = "Figura · Kills por segundo",
-  "06_damage_rate_by_condition.png" = "Figura · Daño recibido",
-  "07_input_rate_by_condition.png" = "Figura · Input del jugador",
-  "08_distance_rate_by_condition.png" = "Figura · Distancia recorrida",
-  "09_jitter_rate_by_condition.png" = "Figura · Jitter de control",
-  "10_enemy_distance_by_condition.png" = "Figura · Presión espacial",
-  "11_metrics_summary_04_10.png" = "Figura · Síntesis de métricas de gameplay",
-  "12_factorial_anova_effect_map.png" = "Figura · ANOVA factorial: mapa de efectos",
-  "12_factorial_anova_boxplots.png" = "Figura · ANOVA factorial",
-  "12a_anova_kill_rate_shake_zoom.png" = "Figura · ANOVA factorial: Kills/s por Shake×Zoom",
-  "12b_anova_kill_rate_shake_recoil.png" = "Figura · ANOVA factorial: Kills/s por Shake×Recoil",
-  "12c_anova_input_rate_shake_zoom.png" = "Figura · ANOVA factorial: Inputs/s por Shake×Zoom",
-  "12d_anova_input_rate_shake_recoil.png" = "Figura · ANOVA factorial: Inputs/s por Shake×Recoil",
-  "13_dunnett_significant_vs_c0.png" = "Figura · Dunnett vs C0",
-  "14_immersion_control_matrix.png" = "Figura · Matriz inmersión-control",
-  "15_interaction_giq_total.png" = "Figura · Interacción: GIQ total",
-  "16_interaction_survival_time.png" = "Figura · Interacción: supervivencia",
-  "17_interaction_damage_rate.png" = "Figura · Interacción: daño recibido",
-  "18_interaction_jitter_rate.png" = "Figura · Interacción: jitter",
-  "19_forest_control_index_vs_c0.png" = "Figura · Efectos vs C0",
-  "20_tradeoff_giq_survival.png" = "Figura · Trade-off: GIQ y supervivencia",
-  "21_tradeoff_giq_damage.png" = "Figura · Trade-off: GIQ y daño",
-  "22_correlation_heatmap.png" = "Figura · Correlaciones",
-  "23_fps_technical_control.png" = "Figura · Control técnico FPS"
+  "01_condition_matrix.png" = "Diseño factorial",
+  "02_giq_subscales.png" = "GIQ y subescalas",
+  "03_giq_by_condition.png" = "GIQ por condición",
+  "04_duration_by_condition.png" = "Supervivencia",
+  "05_kill_rate_by_condition.png" = "Kills por segundo",
+  "06_damage_rate_by_condition.png" = "Daño recibido",
+  "07_input_rate_by_condition.png" = "Input del jugador",
+  "08_distance_rate_by_condition.png" = "Distancia recorrida",
+  "09_jitter_rate_by_condition.png" = "Jitter de control",
+  "10_enemy_distance_by_condition.png" = "Presión espacial",
+  "11_metrics_summary_04_10.png" = "Síntesis de métricas de gameplay",
+  "12_factorial_anova_effect_map.png" = "ANOVA factorial: mapa de efectos",
+  "12_factorial_anova_boxplots.png" = "ANOVA factorial",
+  "12a_anova_kill_rate_shake_zoom.png" = "ANOVA factorial: Kills/s por Shake×Zoom",
+  "12b_anova_kill_rate_shake_recoil.png" = "ANOVA factorial: Kills/s por Shake×Recoil",
+  "12c_anova_input_rate_shake_zoom.png" = "ANOVA factorial: Inputs/s por Shake×Zoom",
+  "12d_anova_input_rate_shake_recoil.png" = "ANOVA factorial: Inputs/s por Shake×Recoil",
+  "13_dunnett_significant_vs_c0.png" = "Dunnett vs C0",
+  "14_immersion_control_matrix.png" = "Matriz inmersión-control",
+  "15_interaction_giq_total.png" = "Interacción: GIQ total",
+  "16_interaction_survival_time.png" = "Interacción: supervivencia",
+  "17_interaction_damage_rate.png" = "Interacción: daño recibido",
+  "18_interaction_jitter_rate.png" = "Interacción: jitter",
+  "19_forest_control_index_vs_c0.png" = "Efectos vs C0",
+  "20_tradeoff_giq_survival.png" = "Trade-off: GIQ y supervivencia",
+  "21_tradeoff_giq_damage.png" = "Trade-off: GIQ y daño",
+  "22_correlation_heatmap.png" = "Correlaciones",
+  "23_fps_technical_control.png" = "Control técnico FPS",
+  "24_tukey_key_pairwise.png" = "Tukey HSD: comparaciones clave"
 )
 current_figure_label <- ""
 
@@ -472,7 +473,8 @@ gameplay_metrics_summary <- function() {
           sig_text[r, c]
         )
       }
-      text(c, yy, label, cex = 0.68, font = ifelse(nzchar(sig_text[r, c]), 2, 1), col = theme$ink)
+      label_col <- ifelse(abs(mat[r, c]) >= max_abs * 0.55, "white", theme$ink)
+      text(c, yy, label, cex = 0.68, font = ifelse(nzchar(sig_text[r, c]), 2, 1), col = label_col)
     }
   }
 
@@ -1117,7 +1119,8 @@ plot_factorial_anova_effect_map <- function(giq) {
       rr <- nrow(mat) - r + 1
       if (!is.finite(mat[r, c])) next
       label <- paste0("η²p=", sprintf("%.2f", mat[r, c]), "\n", "p=", ptext[r, c], stars[r, c])
-      text(c, rr, label, cex = 0.70, font = ifelse(stars[r, c] != "", 2, 1), col = theme$ink)
+      label_col <- ifelse(mat[r, c] >= zmax * 0.55, "white", theme$ink)
+      text(c, rr, label, cex = 0.70, font = ifelse(stars[r, c] != "", 2, 1), col = label_col)
     }
   }
 
@@ -1222,6 +1225,104 @@ dunnett_figure <- function() {
   close_png()
 }
 
+tukey_key_pairwise_figure <- function() {
+  variables <- intersect(
+    c("duration_seconds", "kill_rate", "input_rate", "damage_taken_rate", "distance_rate", "jitter_rate", "nearest_enemy_dist_mean"),
+    names(run_level)
+  )
+  condition_short_labels <- c(
+    "C0 Base", "C1 Shake", "C2 Zoom", "C3 Recoil",
+    "C4 S+Z", "C5 S+R", "C6 Z+R", "C7 All"
+  )
+  names(condition_short_labels) <- condition_levels
+
+  format_contrast <- function(x) {
+    out <- x
+    for (level in condition_levels) {
+      out <- gsub(level, condition_short_labels[[level]], out, fixed = TRUE)
+    }
+    gsub(" - ", " vs ", out, fixed = TRUE)
+  }
+
+  keep <- data.frame()
+  for (variable in variables) {
+    df <- run_level[is.finite(run_level[[variable]]) & !is.na(run_level$condition), ]
+    df$condition <- factor(df$condition, levels = condition_levels)
+    if (nrow(df) < 16 || length(unique(df$condition)) < 2) next
+    df$value <- scale_metric(variable, df[[variable]])
+    metric_sd <- sd(df$value, na.rm = TRUE)
+    if (!is.finite(metric_sd) || metric_sd == 0) next
+
+    fit <- lm(value ~ condition, data = df)
+    pw <- pairs(emmeans(fit, ~ condition), adjust = "tukey")
+    ct <- as.data.frame(confint(pw))
+    pv <- as.data.frame(summary(pw))
+    ct$p_value <- pv$p.value
+    ct$variable <- variable
+    ct$metric <- metric_labels[variable]
+    ct$metric[is.na(ct$metric)] <- variable
+    ct$estimate_std <- ct$estimate / metric_sd
+    ct$lo <- ct$lower.CL / metric_sd
+    ct$hi <- ct$upper.CL / metric_sd
+    ct$contrast_label <- format_contrast(ct$contrast)
+    keep <- rbind(keep, ct)
+  }
+
+  if (nrow(keep) == 0) return(invisible(NULL))
+  keep <- keep[is.finite(keep$p_value) & is.finite(keep$estimate_std) & keep$p_value < 0.10, ]
+  keep <- keep[order(keep$p_value), ]
+  if (nrow(keep) > 12) keep <- keep[seq_len(12), ]
+  if (nrow(keep) == 0) return(invisible(NULL))
+
+  keep$axis_label <- paste(keep$metric, keep$contrast_label, sep = " · ")
+  keep$axis_label <- gsub("Dist\\. enemigo", "Dist. enem.", keep$axis_label)
+  keep$p_label <- format_p(keep$p_value)
+  keep$significant <- keep$p_value < 0.05
+  keep <- keep[order(keep$estimate_std), ]
+
+  write.csv(
+    keep[, c("metric", "contrast", "estimate", "lower.CL", "upper.CL", "estimate_std", "lo", "hi", "p_value")],
+    file.path(listings_dir, "tukey_key_pairwise_hard_clean.csv"),
+    row.names = FALSE
+  )
+
+  open_png("24_tukey_key_pairwise.png")
+  par(mar = c(7.4, 14.2, 5.8, 4.8), xaxs = "r", yaxs = "i")
+  y <- rev(seq_len(nrow(keep)))
+  xlim_core <- range(c(keep$lo, keep$hi, 0), na.rm = TRUE)
+  pad <- diff(xlim_core) * 0.18
+  if (!is.finite(pad) || pad == 0) pad <- 0.25
+  xlim <- xlim_core + c(-pad, pad * 1.8)
+  p_x <- xlim[2] - pad * 0.55
+
+  plot(
+    keep$estimate_std,
+    y,
+    type = "n",
+    yaxt = "n",
+    xlab = "Diferencia estandarizada entre condiciones",
+    ylab = "",
+    xlim = xlim,
+    ylim = range(y) + c(-0.8, 0.95)
+  )
+  abline(v = pretty(xlim_core), col = theme$grid, lwd = 1)
+  abline(v = 0, col = theme$ink, lwd = 1.7)
+  abline(h = y, col = theme$grid, lwd = 0.8)
+  axis(2, at = y, labels = keep$axis_label, tick = FALSE, las = 1, cex.axis = 0.78)
+
+  point_cols <- ifelse(keep$significant, theme$accent, theme$pale)
+  line_cols <- ifelse(keep$significant, theme$ink, theme$border)
+  segments(keep$lo, y, keep$hi, y, col = line_cols, lwd = 2.6)
+  points(keep$estimate_std, y, pch = 21, bg = point_cols, col = theme$ink, cex = 1.75, lwd = 1.25)
+  text(p_x, y, keep$p_label, adj = 0, cex = 0.82, col = theme$ink, xpd = NA)
+  text(par("usr")[1], max(y) + 0.62, "Métrica / contraste", adj = 0, cex = 0.86, font = 2, col = theme$ink, xpd = NA)
+  text(p_x, max(y) + 0.62, "p Tukey", adj = 0, cex = 0.86, font = 2, col = theme$ink, xpd = NA)
+  mtext("Valores positivos indican que la primera condición del contraste es mayor que la segunda.", side = 1, line = 5.2, adj = 1, cex = 0.84, col = theme$border)
+  draw_title("Tukey HSD: comparaciones clave", "Hard-clean; se muestran comparaciones con p ajustado < .10; puntos verdes = p < .05")
+  box(col = theme$grid)
+  close_png()
+}
+
 synthesis_figure <- function(giq) {
   perf <- aggregate(
     cbind(duration_seconds, kill_rate, damage_taken_rate, jitter_rate) ~ condition,
@@ -1266,19 +1367,24 @@ synthesis_figure <- function(giq) {
   )
   label_offsets <- data.frame(
     condition = condition_levels,
-    dy = c(0.08, 0.06, 0.06, 0.07, 0.06, 0.05, 0.05, 0.07),
+    dx = c(0.09, 0.03, 0.00, 0.00, 0.00, -0.12, 0.10, 0.00),
+    dy = c(0.00, 0.06, -0.07, 0.07, 0.06, 0.035, 0.04, 0.07),
+    adj_x = c(0.0, 0.5, 0.5, 0.5, 0.5, 1.0, 0.0, 0.5),
+    adj_y = c(0.5, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0),
     stringsAsFactors = FALSE
   )
   label_offsets <- label_offsets[match(as.character(m$condition), label_offsets$condition), ]
-  text(
-    m$control_index,
-    m$giq_total + label_offsets$dy,
-    treatment_names,
-    cex = 0.76,
-    font = 2,
-    adj = c(0.5, 0),
-    xpd = NA
-  )
+  for (i in seq_len(nrow(m))) {
+    text(
+      m$control_index[i] + label_offsets$dx[i],
+      m$giq_total[i] + label_offsets$dy[i],
+      treatment_names[i],
+      cex = 0.76,
+      font = 2,
+      adj = c(label_offsets$adj_x[i], label_offsets$adj_y[i]),
+      xpd = NA
+    )
+  }
   draw_title(
     "Matriz inmersión-control",
     "Cada punto resume una condición experimental con inmersión subjetiva y desempeño/control relativo"
@@ -1425,7 +1531,7 @@ tradeoff_scatter <- function(merged, yvar, filename, ylab, subtitle) {
   df <- merged[is.finite(merged$giq_total) & is.finite(merged[[yvar]]), ]
   df$y <- scale_metric(yvar, df[[yvar]])
   df$condition <- factor(df$condition, levels = condition_levels)
-  cols <- c("#212525", "#4b6f44", "#7fee64", "#9aa85d", "#5f8f88", "#b7c36f", "#8aa378", "#677d64")
+  cols <- c("#212525", "#4b6f44", "#55a868", "#9aa85d", "#5f8f88", "#b7c36f", "#8aa378", "#677d64")
   pchs <- c(21, 22, 24, 25, 21, 22, 24, 25)
   open_png(filename)
   par(mar = c(8.0, 5.8, 5.6, 2.2), xaxs = "r", yaxs = "r")
@@ -1460,13 +1566,14 @@ correlation_heatmap <- function(merged) {
   cm <- cor(df, use = "pairwise.complete.obs")
   open_png("22_correlation_heatmap.png")
   par(mar = c(8.0, 8.0, 5.6, 2.2), xaxs = "i", yaxs = "i")
-  pal <- colorRampPalette(c("#485346", "white", "#7fee64"))(101)
+  pal <- colorRampPalette(c("#485346", "white", theme$accent))(101)
   image(seq_len(ncol(cm)), seq_len(nrow(cm)), t(cm[nrow(cm):1, ]), col = pal, zlim = c(-1, 1), axes = FALSE, xlab = "", ylab = "")
   axis(1, at = seq_len(ncol(cm)), labels = colnames(cm), las = 2, tick = FALSE, cex.axis = 0.82)
   axis(2, at = seq_len(nrow(cm)), labels = rev(rownames(cm)), las = 1, tick = FALSE, cex.axis = 0.82)
   for (i in seq_len(nrow(cm))) {
     for (j in seq_len(ncol(cm))) {
-      text(j, nrow(cm) - i + 1, sprintf("%.2f", cm[i, j]), cex = 0.78, font = 2)
+      label_col <- ifelse(abs(cm[i, j]) >= 0.55, "white", theme$ink)
+      text(j, nrow(cm) - i + 1, sprintf("%.2f", cm[i, j]), cex = 0.78, font = 2, col = label_col)
     }
   }
   draw_title("Mapa de correlaciones", "Correlaciones Pearson entre encuesta, desempeño, control, presión y FPS")
@@ -1565,6 +1672,7 @@ gameplay_metrics_summary()
 plot_factorial_anova_effect_map(giq)
 factorial_anova_boxplot_figure()
 dunnett_figure()
+tukey_key_pairwise_figure()
 synthesis_figure(giq)
 interaction_plot(giq, "giq_total", "15_interaction_giq_total.png", "GIQ total (1-5)", "Shake en X; zoom como línea; displacement/recoil como faceta")
 interaction_plot(run_level, "duration_seconds", "16_interaction_survival_time.png", "Duración (s)", "Shake en X; zoom como línea; displacement/recoil como faceta")

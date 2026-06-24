@@ -43,6 +43,35 @@ Permutation ANOVA nominal effects (p < .05; 999 permutations):
 Permutation ANOVA effects after BH-FDR (q < .05):
   None.
 
+ART factorial ANOVA nominal effects (p < .05):
+  - Kills/s / Shake:Recoil: F=18.96, p=0.0000, rank_eta_p2=0.132
+  - Proporcion HP bajo / Recoil: F=18.52, p=0.0000, rank_eta_p2=0.129
+  - Proporcion HP bajo / Shake:Zoom: F=15.69, p=0.0001, rank_eta_p2=0.112
+  - Kills/s / Shake:Zoom: F=14.32, p=0.0002, rank_eta_p2=0.103
+  - Proporcion HP bajo / Zoom:Recoil: F=14.19, p=0.0003, rank_eta_p2=0.102
+  - Proporcion HP bajo / Shake: F=13.99, p=0.0003, rank_eta_p2=0.101
+  - Proporcion HP bajo / Shake:Recoil: F=11.77, p=0.0008, rank_eta_p2=0.086
+  - Proporcion HP bajo / Zoom: F=11.77, p=0.0008, rank_eta_p2=0.086
+  - Inputs/s / Shake:Recoil: F=11.33, p=0.0010, rank_eta_p2=0.083
+  - Distancia/s / Shake:Zoom:Recoil: F=8.27, p=0.0048, rank_eta_p2=0.062
+  - Supervivencia / Recoil: F=7.09, p=0.0088, rank_eta_p2=0.054
+  - Jitter/s / Shake:Recoil: F=5.14, p=0.0251, rank_eta_p2=0.039
+  - Inputs/s / Shake:Zoom:Recoil: F=4.74, p=0.0314, rank_eta_p2=0.037
+  - GIQ engagement / Shake:Recoil: F=4.74, p=0.0314, rank_eta_p2=0.039
+  - GIQ total / Shake:Zoom: F=4.43, p=0.0374, rank_eta_p2=0.036
+
+ART factorial ANOVA effects after BH-FDR (q < .05):
+  - Kills/s / Shake:Recoil: p=0.0000, q=0.0014
+  - Proporcion HP bajo / Recoil: p=0.0000, q=0.0014
+  - Proporcion HP bajo / Shake:Zoom: p=0.0001, q=0.0035
+  - Kills/s / Shake:Zoom: p=0.0002, q=0.0039
+  - Proporcion HP bajo / Shake: p=0.0003, q=0.0039
+  - Proporcion HP bajo / Zoom:Recoil: p=0.0003, q=0.0039
+  - Proporcion HP bajo / Zoom: p=0.0008, q=0.0086
+  - Proporcion HP bajo / Shake:Recoil: p=0.0008, q=0.0086
+  - Inputs/s / Shake:Recoil: p=0.0010, q=0.0095
+  - Distancia/s / Shake:Zoom:Recoil: p=0.0048, q=0.0399
+
 Count-model nominal effects (p < .05):
   - Kills con offset por duracion / negative binomial count model with duration offset / Shake:Recoil: p=0.0007, dispersion=96.32
   - Kills con offset por duracion / negative binomial count model with duration offset / Shake:Zoom: p=0.0021, dispersion=96.32
@@ -62,7 +91,7 @@ Recommended interpretation:
   1. Keep the Hard Clean set as the primary dataset.
   2. Report Shapiro-Wilk residual diagnostics before ANOVA.
   3. Treat the current ANOVA as descriptive/sensitivity when residual normality fails.
-  4. Prefer Type III or permutation ANOVA for the unbalanced Hard Clean factorial design.
+  4. Use ART as the nonparametric factorial check for outcomes with non-normal residuals.
   5. For kills, inputs, hits, and damage events, prefer count models with duration offset over raw rate ANOVA.
   6. For survival time, prefer a survival model when win/death censoring matters.
   7. FPS is excluded from ANOVA and used only as a technical quality control.
