@@ -11,6 +11,12 @@ analysis/
 ├── app.py            # Dashboard principal (4 pestañas)
 ├── data_access.py    # Carga + caché de las tablas de Supabase
 ├── charts.py         # Paleta pastel y tema de Plotly
+├── build_identified_camera_juiciness_csv.py
+├── research_question_analysis.R
+├── data/             # Insumos reales
+├── results/          # Tablas y resúmenes generados
+├── images/           # Figuras finales y archivo de figuras legacy
+├── scripts/          # Scripts anteriores archivados
 ├── requirements.txt
 └── .streamlit/
     ├── config.toml   # Tema visual pastel
@@ -48,6 +54,91 @@ re-consulta Supabase.
 `.streamlit/secrets.toml` contiene `SUPABASE_URL` y `SUPABASE_KEY` (publishable
 key, solo lectura). Está en `.gitignore`. Si clonas en otra máquina, crea ese
 archivo con tus credenciales.
+
+Para scripts ejecutados desde la raíz del repositorio también se puede usar:
+
+```powershell
+copy analysis\.streamlit\secrets.example.toml analysis\.streamlit\secrets.toml
+```
+
+Luego complete `SUPABASE_URL` y `SUPABASE_KEY` localmente. No suba
+`secrets.toml` al repositorio.
+
+## CSV identificado con telemetría fresca
+
+Para reconstruir el CSV de cámara sin anonimización y con métricas nuevas
+(`total_kills`, `kill_rate`, `input_total`, `input_rate`, entre otras), use:
+
+```powershell
+python analysis/build_identified_camera_juiciness_csv.py --live
+```
+
+Salidas locales:
+
+- `analysis/data/camera_juiciness_identified_fresh.csv`
+- `analysis/data/camera_juiciness_identified_fresh_audit.csv`
+
+El CSV principal reemplaza `anon_id` por `player_id` y `run_id`. La auditoría
+registra cuántas corridas candidatas tenía cada participante y cuál fue
+seleccionada. Si un participante repitió runs, el script conserva una sola fila
+para análisis y selecciona la corrida que mejor coincide con el formulario y las
+métricas del CSV base.
+
+## Análisis vigente de investigación
+
+El análisis estadístico vigente usa como fuente principal:
+
+- `analysis/data/camera_juiciness_identified_fresh.csv`
+
+Para reproducirlo:
+
+```powershell
+Rscript analysis/research_question_analysis.R
+```
+
+Orden del cálculo:
+
+1. CSV identificado desde Supabase.
+2. Hard Clean y una sola fila por participante.
+3. RQ1: modelo factorial para `Promedio en GIQ`, supuestos y seguimiento de interacción cuando aplica.
+4. RQ2: telemetría de desempeño con modelos factoriales/ART y modelos de conteo con offset de duración.
+5. RQ3: contrastes de tratamientos aislados contra Control y correlaciones Spearman entre GIQ y desempeño.
+
+Salidas principales:
+
+- `analysis/results/research_questions/summary.txt`
+- `analysis/results/research_questions/01_assumption_checks.csv`
+- `analysis/results/research_questions/03_factorial_anova.csv`
+- `analysis/results/research_questions/04_art_factorial_sensitivity.csv`
+- `analysis/results/research_questions/06_count_models_duration_offset.csv`
+- `analysis/results/research_questions/07_rq3_isolated_vs_control.csv`
+- `analysis/results/research_questions/08_rq3_giq_performance_spearman.csv`
+- `analysis/images/research_questions/`
+
+El CSV fresco ya contiene una fila por participante identificado y se usa como
+base directa para GIQ, condiciones factoriales y métricas observadas de juego.
+
+## Figuras finales
+
+Use únicamente estas figuras para responder las preguntas de investigación:
+
+- `analysis/images/research_questions/RQ1_immersion_giq_effects.png`
+- `analysis/images/research_questions/RQ2_motor_performance_effects.png`
+- `analysis/images/research_questions/RQ2_count_models_duration_offset.png`
+- `analysis/images/research_questions/RQ3_baseline_tradeoff_forest.png`
+- `analysis/images/research_questions/RQ3_giq_performance_correlation.png`
+
+Las figuras antiguas no fueron eliminadas; quedaron archivadas en:
+
+- `analysis/images/archive/legacy_figures_2026-06-27/`
+
+Los CSV/TXT antiguos sueltos quedaron archivados en:
+
+- `analysis/results/legacy_outputs_2026-06-27/`
+
+Los scripts anteriores quedaron archivados en:
+
+- `analysis/scripts/legacy_2026-06-27/`
 
 ## Opcional
 

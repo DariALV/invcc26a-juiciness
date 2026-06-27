@@ -1,0 +1,49 @@
+Research-question analysis
+==========================
+Source: analysis/data/camera_juiciness_identified_fresh.csv
+Rows in identified CSV: 124
+Unique players in identified CSV: 124
+Hard Clean removed rows: 4
+Hard Clean retained rows: 120
+Duplicated players retained after Hard Clean: 0
+
+Order of calculations:
+1. Load identified fresh CSV generated from Supabase exports/live Supabase.
+2. Apply Hard Clean before any inferential test.
+3. Confirm one row per participant.
+4. RQ1: factorial linear model for Promedio en GIQ, residual checks, variance checks, emmeans only for significant interactions.
+5. RQ2: factorial models for telemetry; use log1p for skewed positive rates and ART as nonparametric sensitivity.
+6. RQ2 counts: negative-binomial models with duration offset for total kills, inputs, and hits.
+7. RQ3: isolated-treatment contrasts against Control and Spearman GIQ-performance correlations.
+
+Rmd alignment:
+The attached Rmd is useful as an exploratory GIQ workflow because it models shake, zoom and recoil, checks residuals/variance, and follows interactions with emmeans.
+This canonical script keeps that order but replaces ad-hoc data removal with predefined Hard Clean criteria and adds RQ2/RQ3 tests.
+
+Condition counts after Hard Clean:
+- Control: 17
+- Shake: 13
+- Zoom: 16
+- Shake + Zoom: 17
+- Recoil: 16
+- Shake + Recoil: 13
+- Zoom + Recoil: 14
+- Shake + Zoom + Recoil: 14
+
+RQ1 nominal factorial effects:
+- Promedio en GIQ / Shake x Zoom: F=4.15, p=0.044, q=0.539, eta_p2=0.036
+
+RQ2 nominal ART effects:
+- Daño/min / Shake: F=4.82, p=0.030, q=0.493
+- Hits/min / Shake: F=5.18, p=0.025, q=0.493
+- Enemigos promedio / Shake x Zoom x Recoil: F=5.81, p=0.018, q=0.493
+
+RQ3 FDR-corrected GIQ-performance correlations:
+- GIQ vs Inputs/min: rho=0.241, p=0.008, q=0.049
+
+Final figures:
+- analysis/images/research_questions/RQ1_immersion_giq_effects.png
+- analysis/images/research_questions/RQ2_motor_performance_effects.png
+- analysis/images/research_questions/RQ2_count_models_duration_offset.png
+- analysis/images/research_questions/RQ3_baseline_tradeoff_forest.png
+- analysis/images/research_questions/RQ3_giq_performance_correlation.png
