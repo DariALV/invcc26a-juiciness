@@ -123,22 +123,25 @@ base directa para GIQ, condiciones factoriales y métricas observadas de juego.
 Use únicamente estas figuras para responder las preguntas de investigación:
 
 - `analysis/images/research_questions/RQ1_immersion_giq_effects.png`
-- `analysis/images/research_questions/RQ2_motor_performance_effects.png`
+- `analysis/images/research_questions/RQ2_damage_per_min.png`
+- `analysis/images/research_questions/RQ2_hits_per_min.png`
 - `analysis/images/research_questions/RQ2_count_models_duration_offset.png`
 - `analysis/images/research_questions/RQ3_baseline_tradeoff_forest.png`
 - `analysis/images/research_questions/RQ3_giq_performance_correlation.png`
 
 Las figuras antiguas no fueron eliminadas; quedaron archivadas en:
 
-- `analysis/images/archive/legacy_figures_2026-06-27/`
+- `analysis/archive/legacy/figures_2026-06-27/`
 
 Los CSV/TXT antiguos sueltos quedaron archivados en:
 
-- `analysis/results/legacy_outputs_2026-06-27/`
+- `analysis/archive/data/csv/`
+- `analysis/archive/data/txt/`
+- `analysis/archive/legacy/outputs_2026-06-27/`
 
 Los scripts anteriores quedaron archivados en:
 
-- `analysis/scripts/legacy_2026-06-27/`
+- `analysis/archive/legacy/scripts_2026-06-27/`
 
 ## Opcional
 

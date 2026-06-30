@@ -1,0 +1,175 @@
+Data quality audit for juicy-vs existing metrics
+Input: supabase_data/r_outputs_existing_metrics/juicy_vs_existing_metrics_run_level.csv
+Total runs: 178
+Flagged runs: 74
+
+Flag counts by rule:
+
+      iqr_outlier_by_condition     cooks_distance_gt_4_over_n 
+                           116                             36 
+fps_min_lt_15_or_drop_gt_10pct          zero_kills_after_120s 
+                            31                             10 
+              zero_input_total                duration_lt_30s 
+                             8                              4 
+
+Flag counts by variable:
+
+                    fps nearest_enemy_dist_mean             jitter_rate 
+                     31                      24                      21 
+               fps_mean          fps_drop_ratio                 fps_min 
+                     20                      19                      15 
+                xp_rate       damage_taken_rate           distance_rate 
+                     13                      11                      10 
+            total_kills        duration_seconds             input_total 
+                     10                       8                       8 
+              kill_rate              input_rate 
+                      8                       7 
+
+Top 20 runs for manual review:
+ row_number total_flags n_iqr n_cook n_rule
+         25          10     6      4     10
+        166           9     6      3      9
+        134           9     4      3      9
+        150           8     3      3      8
+        178           7     2      3      7
+         20           7     4      1      7
+         64           6     3      2      6
+        161           5     3      1      5
+        158           5     2      1      5
+         57           5     4      0      5
+         66           4     2      2      4
+        117           4     1      1      4
+        135           4     1      1      4
+        149           4     1      1      4
+        164           4     4      0      4
+         53           4     3      0      4
+         55           4     3      0      4
+        102           4     3      0      4
+        136           4     3      0      4
+         77           3     2      1      3
+                                   id player_id       condition
+ 2042c711-f981-4d9e-bc9e-1e64f6f65312    C6M259     C0_baseline
+ eca21d22-361e-4144-ac20-b2387c331e66    C6P270          C7_all
+ c09f675b-ea6f-4ecb-b9c4-1306f3f6147b    C5F137  C6_zoom_recoil
+ d22d43eb-6955-462a-9698-b927a778bb5a    C6D245       C3_recoil
+ ff88ce7e-63bb-4894-ba60-e505d88d3aa7    C27336 C5_shake_recoil
+ 16ca93d1-2943-4d98-82c7-bf9db7d72ba8    C6P414  C6_zoom_recoil
+ 55442d1a-09e9-40da-bd50-07067d06d202    C6F310  C6_zoom_recoil
+ e7a3224f-83fb-4c12-8455-7055cd163174    C6E428   C4_shake_zoom
+ e52a645d-d3b4-4cc1-bf7b-b03308db922c    C6J409       C3_recoil
+ 501f44e6-b8f8-4dfe-a46e-fc95d6f90753    C6M734       C3_recoil
+ 5f346316-7b98-4fed-9d5e-0aace5ac2f77    C6C128          C7_all
+ a39e7406-c615-43bd-8fd2-7e790ad63876    C6E934   C4_shake_zoom
+ c0b27c1d-f162-4bed-b589-a570b263d23a    C6E077 C5_shake_recoil
+ d08df0f6-36e9-4919-8801-dcc3a2f1e5a7    C15017 C5_shake_recoil
+ e9ae714c-6ca4-414d-87d9-e968c35ebfe2    C6K596       C3_recoil
+ 47544f88-440c-4c4f-9eff-85ec5f081088    C6M734       C3_recoil
+ 4c3ee856-dc8a-44b9-af4c-599ed8f7cff0    C6C335 C5_shake_recoil
+ 8d3951ff-68f5-4229-abc8-b0e014ccf3e4    C6E975   C4_shake_zoom
+ c26f96e0-4ce9-4a54-9f0d-d845d54f3f5e    C6Q124     C0_baseline
+ 6ed179b4-89b7-43c6-822a-653ff5ce4b9d    C6N647   C4_shake_zoom
+ duration_seconds total_kills  kill_rate input_total input_rate total_xp
+               36         435 12.0833333         416 11.5555556     2713
+              115         435  3.7826087         471  4.0956522     6328
+               11           0  0.0000000           0  0.0000000        0
+                6           0  0.0000000           0  0.0000000        0
+                7           0  0.0000000           1  0.1428571        0
+              308           0  0.0000000           0  0.0000000        0
+              127          64  0.5039370         102  0.8031496       94
+              435         435  1.0000000         794  1.8252874    24116
+              187           0  0.0000000           0  0.0000000        0
+              189         435  2.3015873         251  1.3280423     1696
+              599         434  0.7245409        3442  5.7462437    11091
+              297           0  0.0000000           0  0.0000000        0
+              259           0  0.0000000           0  0.0000000        0
+              135           0  0.0000000           0  0.0000000        0
+              552         435  0.7880435         817  1.4800725     8580
+              329         435  1.3221884         310  0.9422492     3934
+              596         435  0.7298658         833  1.3976510    13490
+              438         435  0.9931507         634  1.4474886    18391
+              347         435  1.2536023         235  0.6772334     5226
+              502         435  0.8665339        1055  2.1015936    10155
+    xp_rate nearest_enemy_dist_mean damage_taken_rate jitter_rate distance_rate
+ 75.3611111               194.94943        0.02777778  0.36111111    306.014295
+ 55.0260870                98.80900        0.68695652  0.17391304    207.086780
+  0.0000000               437.72347        4.54545455  0.00000000      0.000000
+  0.0000000               397.72660        8.33333333  0.00000000      0.000000
+  0.0000000               425.21510        7.14285714  0.00000000      7.142857
+  0.0000000               441.07208        0.16233766  0.00000000      0.000000
+  0.7401575               110.44426        0.39850394  0.22047244     87.948736
+ 55.4390805               101.21611        0.48505747  0.05057471     67.709145
+  0.0000000               440.24606        0.26737968  0.00000000      0.000000
+  8.9735450               145.12298        0.06878307  0.07936508     61.398827
+ 18.5158598                86.59907        0.47058431  0.53088481     89.020400
+  0.0000000               410.42318        0.16835017  0.00000000      0.000000
+  0.0000000               435.65960        0.19305019  0.00000000      0.000000
+  0.0000000               436.13416        0.37037037  0.00000000      0.000000
+ 15.5434783               105.94934        0.25724638  0.01449275    108.705906
+ 11.9574468               119.10850        0.08510638  0.05167173     57.532215
+ 22.6342282               108.98180        0.17114094  0.13590604     80.441662
+ 41.9885845               136.39424        0.19178082  0.06392694     89.872817
+ 15.0605187               135.59548        0.19308357  0.08357349     94.906970
+ 20.2290837                74.98051        0.90438247  0.23904382     84.042283
+  fps_mean fps_min fps_drop_ratio
+ 56.540262      51     0.00000000
+ 58.444159      53     0.00000000
+ 60.000000      60     0.00000000
+ 59.000000      59     0.00000000
+ 55.761905      49     0.23809524
+ 54.000000      53     0.00000000
+ 47.724176      40     0.69670330
+ 45.363377      40     0.77854812
+ 58.882353      57     0.00000000
+ 10.265647       9     1.00000000
+ 59.636758      54     0.00000000
+ 60.352941      59     0.00000000
+ 56.000000      56     0.00000000
+ 61.157895      59     0.00000000
+ 53.893220      36     0.04943503
+ 10.137469       8     1.00000000
+  7.112915       3     1.00000000
+ 48.973515      40     0.58667737
+ 10.148845       7     1.00000000
+ 58.503806      50     0.00000000
+                                                                                            flag_rules
+                                                  iqr_outlier_by_condition; cooks_distance_gt_4_over_n
+                                                  iqr_outlier_by_condition; cooks_distance_gt_4_over_n
+               cooks_distance_gt_4_over_n; iqr_outlier_by_condition; duration_lt_30s; zero_input_total
+               cooks_distance_gt_4_over_n; iqr_outlier_by_condition; duration_lt_30s; zero_input_total
+ cooks_distance_gt_4_over_n; iqr_outlier_by_condition; duration_lt_30s; fps_min_lt_15_or_drop_gt_10pct
+         iqr_outlier_by_condition; zero_input_total; cooks_distance_gt_4_over_n; zero_kills_after_120s
+                  cooks_distance_gt_4_over_n; fps_min_lt_15_or_drop_gt_10pct; iqr_outlier_by_condition
+                  fps_min_lt_15_or_drop_gt_10pct; iqr_outlier_by_condition; cooks_distance_gt_4_over_n
+         iqr_outlier_by_condition; zero_input_total; cooks_distance_gt_4_over_n; zero_kills_after_120s
+                                              fps_min_lt_15_or_drop_gt_10pct; iqr_outlier_by_condition
+                                                  cooks_distance_gt_4_over_n; iqr_outlier_by_condition
+         zero_input_total; cooks_distance_gt_4_over_n; iqr_outlier_by_condition; zero_kills_after_120s
+         zero_input_total; cooks_distance_gt_4_over_n; iqr_outlier_by_condition; zero_kills_after_120s
+         zero_input_total; cooks_distance_gt_4_over_n; iqr_outlier_by_condition; zero_kills_after_120s
+                                                                              iqr_outlier_by_condition
+                                              fps_min_lt_15_or_drop_gt_10pct; iqr_outlier_by_condition
+                                              fps_min_lt_15_or_drop_gt_10pct; iqr_outlier_by_condition
+                                              fps_min_lt_15_or_drop_gt_10pct; iqr_outlier_by_condition
+                                              fps_min_lt_15_or_drop_gt_10pct; iqr_outlier_by_condition
+                                                  iqr_outlier_by_condition; cooks_distance_gt_4_over_n
+                                                                                      flag_variables
+                 distance_rate; input_rate; jitter_rate; kill_rate; nearest_enemy_dist_mean; xp_rate
+                       damage_taken_rate; distance_rate; input_rate; jitter_rate; kill_rate; xp_rate
+ damage_taken_rate; distance_rate; duration_seconds; input_total; kill_rate; nearest_enemy_dist_mean
+            damage_taken_rate; distance_rate; duration_seconds; input_total; nearest_enemy_dist_mean
+                                   damage_taken_rate; duration_seconds; fps; nearest_enemy_dist_mean
+               distance_rate; fps_mean; input_total; kill_rate; nearest_enemy_dist_mean; total_kills
+                                        duration_seconds; fps; fps_drop_ratio; fps_mean; jitter_rate
+                                                              fps; fps_drop_ratio; fps_mean; xp_rate
+                                    distance_rate; input_total; nearest_enemy_dist_mean; total_kills
+                                                   fps; fps_drop_ratio; fps_mean; fps_min; kill_rate
+                                                                             input_rate; jitter_rate
+                                                   input_total; nearest_enemy_dist_mean; total_kills
+                                                   input_total; nearest_enemy_dist_mean; total_kills
+                                                   input_total; nearest_enemy_dist_mean; total_kills
+                                                    distance_rate; fps_drop_ratio; fps_mean; fps_min
+                                                              fps; fps_drop_ratio; fps_mean; fps_min
+                                                              fps; fps_drop_ratio; fps_mean; fps_min
+                                                              fps; fps_drop_ratio; fps_mean; xp_rate
+                                                              fps; fps_drop_ratio; fps_mean; fps_min
+                                                                      damage_taken_rate; jitter_rate

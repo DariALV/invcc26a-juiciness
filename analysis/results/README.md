@@ -28,4 +28,4 @@ Rscript analysis/research_question_analysis.R
 
 Older CSV/TXT outputs were moved to:
 
-- `analysis/results/legacy_outputs_2026-06-27/`
+- `analysis/archive/legacy/outputs_2026-06-27/`

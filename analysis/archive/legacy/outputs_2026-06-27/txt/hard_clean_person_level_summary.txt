@@ -1,0 +1,32 @@
+Hard Clean person-level CSV
+===========================
+Source telemetry file: supabase_data/r_outputs_existing_metrics/juicy_vs_existing_metrics_run_level.csv
+Original run-level rows: 178
+Rows removed by Hard Clean: 45
+Rows retained after Hard Clean: 133
+Unique players after Hard Clean: 103
+Duplicate players after Hard Clean: 17
+Duplicate runs removed for person-level CSV: 30
+Final person-level rows: 103
+Any duplicated player_id in final CSV: NO
+Duplicate players with more than one condition: 0
+Duplicate resolution rule: first_valid_hard_clean_run_by_started_at
+
+Condition counts:
+- Control: 26 hard-clean runs -> 17 person-level rows
+- Shake: 19 hard-clean runs -> 12 person-level rows
+- Zoom: 11 hard-clean runs -> 9 person-level rows
+- Recoil: 20 hard-clean runs -> 16 person-level rows
+- Shake + Zoom: 19 hard-clean runs -> 14 person-level rows
+- Shake + Recoil: 11 hard-clean runs -> 10 person-level rows
+- Zoom + Recoil: 13 hard-clean runs -> 12 person-level rows
+- Shake + Zoom + Recoil: 14 hard-clean runs -> 13 person-level rows
+
+Outputs:
+analysis/hard_clean_person_level.csv
+analysis/hard_clean_person_level_removed_duplicate_runs.csv
+analysis/hard_clean_removed_runs.csv
+analysis/hard_clean_person_level_with_giq.csv
+
+Person-level rows with matched GIQ mean: 101
+GIQ condition mismatches among matched rows: 0

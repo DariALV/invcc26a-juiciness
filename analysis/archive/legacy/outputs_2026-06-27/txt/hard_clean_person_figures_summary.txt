@@ -1,0 +1,41 @@
+Hard Clean person-level figure summary
+======================================
+Source: analysis/hard_clean_person_level_with_giq.csv
+Rows in source: 103
+Rows with valid GIQ used for linked figures: 101
+
+Assumption check:
+- Promedio en GIQ: Shapiro p=0.341; Brown-Forsythe p=0.775
+- Engagement: Shapiro p<.001; Brown-Forsythe p=0.608
+- Engrossment: Shapiro p=0.606; Brown-Forsythe p=0.173
+- Inmersion total: Shapiro p=0.302; Brown-Forsythe p=0.757
+- Supervivencia (s): Shapiro p=0.133; Brown-Forsythe p=0.688
+- Kills/s: Shapiro p=0.008; Brown-Forsythe p=0.914
+- Inputs/s: Shapiro p<.001; Brown-Forsythe p=0.889
+- Dano recibido/s: Shapiro p<.001; Brown-Forsythe p=0.378
+- Golpes recibidos/s: Shapiro p<.001; Brown-Forsythe p=0.272
+- Jitter/s: Shapiro p<.001; Brown-Forsythe p=0.933
+- Distancia/s: Shapiro p=0.889; Brown-Forsythe p=0.856
+- Distancia al enemigo: Shapiro p=0.004; Brown-Forsythe p=0.743
+- HP bajo: Shapiro p<.001; Brown-Forsythe p=0.580
+
+ART nominal p < .05:
+- Promedio en GIQ / Shake x Zoom: F=5.28, p=0.024, q_all=0.44
+- Inmersion total / Shake x Zoom: F=4.08, p=0.046, q_all=0.53
+- Supervivencia (s) / Shake: F=5.77, p=0.018, q_all=0.44
+- Kills/s / Shake: F=5.12, p=0.026, q_all=0.44
+- Golpes recibidos/s / Shake: F=4.29, p=0.041, q_all=0.53
+- Distancia/s / Shake x Zoom x Recoil: F=5.53, p=0.021, q_all=0.44
+- Distancia al enemigo / Shake: F=5.67, p=0.019, q_all=0.44
+- HP bajo / Recoil: F=4.92, p=0.029, q_all=0.44
+
+Generated figures:
+- analysis/images/hard_clean_person_figures/01_assumption_diagnostics.png
+- analysis/images/hard_clean_person_figures/02_giq_by_condition.png
+- analysis/images/hard_clean_person_figures/03_giq_interaction_shake_zoom.png
+- analysis/images/hard_clean_person_figures/04_gameplay_synthesis_vs_control.png
+- analysis/images/hard_clean_person_figures/05_art_factorial_effect_map.png
+- analysis/images/hard_clean_person_figures/06_count_model_effect_map.png
+- analysis/images/hard_clean_person_figures/07_baseline_forest_vs_control.png
+- analysis/images/hard_clean_person_figures/08_immersion_control_matrix.png
+- analysis/images/hard_clean_person_figures/09_tradeoff_giq_gameplay.png

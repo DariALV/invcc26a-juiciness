@@ -1,0 +1,18 @@
+Validation outputs - no XP metrics, no FPS in ANOVA
+Telemetry runs original: 178
+Telemetry runs retained after Hard Clean: 133
+GIQ responses with condition mapping: 125
+
+Generated figures:
+  - analysis/images/validation_figures/01_assumption_diagnostics.png
+  - analysis/images/validation_figures/02_giq_factorial_interaction.png
+  - analysis/images/validation_figures/03_count_model_effect_map.png
+  - analysis/images/validation_figures/04_survival_cox_curves.png
+  - analysis/images/validation_figures/05_baseline_forest_vs_c0.png
+  - analysis/images/validation_figures/06_tradeoff_giq_gameplay.png
+  - analysis/images/validation_figures/07_art_factorial_effect_map.png
+
+Generated calculation tables:
+  - analysis/validation_baseline_contrasts_no_xp.csv
+  - analysis/validation_tradeoff_spearman_no_xp.csv
+  - analysis/art_factorial_results_hard_clean.csv

@@ -1,0 +1,20 @@
+Interpretable p-value figures
+=============================
+Source ART: analysis/hard_clean_person_art_results.csv
+Source counts: analysis/hard_clean_person_count_model_results.csv
+Source tradeoff: analysis/hard_clean_person_tradeoff_correlations.csv
+
+Key p-values:
+- RQ1: inmersion / Promedio en GIQ / Shake x Zoom: p=0.024, q=0.44
+- RQ2: desempeno / Supervivencia (s) / Shake: p=0.018, q=0.44
+- RQ2: desempeno / Kills/s / Shake: p=0.026, q=0.44
+- RQ2: desempeno / Distancia/s / Shake x Zoom x Recoil: p=0.021, q=0.44
+- RQ2: desempeno / Distancia al enemigo / Shake: p=0.019, q=0.44
+- RQ3: trade-off / GIQ vs Inputs/s / Asociacion: p=0.038, q=0.23
+
+Generated figures:
+- analysis/images/hard_clean_person_pvalue_figures/01_pvalues_relevantes_por_pregunta.png
+- analysis/images/hard_clean_person_pvalue_figures/02_p_nominal_vs_q_fdr.png
+- analysis/images/hard_clean_person_pvalue_figures/03_giq_y_tradeoff_con_pvalues.png
+- analysis/images/hard_clean_person_pvalue_figures/04_pvalues_gameplay_interpretables.png
+- analysis/images/hard_clean_person_pvalue_figures/05_tarjeta_de_interpretacion_pvalues.png
