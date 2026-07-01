@@ -1,0 +1,71 @@
+Fresh camera juiciness analysis
+===============================
+Source: analysis/data/camera_juiciness_identified_fresh.csv
+Rows in identified CSV: 124
+Unique players in identified CSV: 124
+Hard Clean removed rows: 4
+Hard Clean retained rows: 120
+Duplicated players retained after Hard Clean: 0
+
+Hard Clean rules:
+  - duplicate player rows beyond the first occurrence
+  - ingame_survival_s < 30
+  - input_total <= 0
+  - total_kills <= 0 when ingame_survival_s >= 120
+  - fps_mean < 15, used only as technical quality control
+
+Condition counts after Hard Clean:
+  - Control: 17
+  - Shake: 13
+  - Zoom: 16
+  - Recoil: 16
+  - Shake + Zoom: 17
+  - Shake + Recoil: 13
+  - Zoom + Recoil: 14
+  - Shake + Zoom + Recoil: 14
+
+Rmd viability check:
+  - Viable as a preliminary GIQ analysis: it uses factorial linear models, residual inspection, variance checks, and emmeans for interactions.
+  - Incomplete for the full paper: it does not apply Hard Clean, does not model gameplay telemetry, does not use count models with duration offsets, does not test GIQ-performance trade-offs, and uses ad-hoc removal of low GIQ attraction values.
+  - This script keeps the useful Rmd structure as a sensitivity path but uses predefined Hard Clean criteria and adds the missing RQ2/RQ3 analyses.
+
+Assumption notes:
+  - Promedio en GIQ (raw): Shapiro p=0.221; Brown-Forsythe p=0.393
+  - GIQ - atraccion (raw): Shapiro p=<.001; Brown-Forsythe p=0.673
+  - GIQ - foco (raw): Shapiro p=0.240; Brown-Forsythe p=0.060
+  - GIQ - presencia (raw): Shapiro p=0.066; Brown-Forsythe p=0.852
+  - Supervivencia (s) (log1p): Shapiro p=0.029; Brown-Forsythe p=0.983
+  - Kills/min (log1p): Shapiro p=0.005; Brown-Forsythe p=0.920
+  - Inputs/min (log1p): Shapiro p=<.001; Brown-Forsythe p=0.987
+  - Dano/min (log1p): Shapiro p=0.414; Brown-Forsythe p=0.891
+  - Hits/min (log1p): Shapiro p=0.546; Brown-Forsythe p=0.490
+  - Enemigos promedio (log1p): Shapiro p=0.005; Brown-Forsythe p=0.423
+
+Nominal ANOVA effects (p < .05):
+  - Hits/min / Shake: F=7.27, p=0.008, q=0.248, eta_p2=0.061
+  - Enemigos promedio / Shake x Zoom x Recoil: F=7.14, p=0.009, q=0.248, eta_p2=0.060
+  - Dano/min / Shake: F=6.75, p=0.011, q=0.248, eta_p2=0.057
+  - GIQ - atraccion / Shake x Zoom x Recoil: F=4.17, p=0.043, q=0.616, eta_p2=0.036
+  - Promedio en GIQ / Shake x Zoom: F=4.15, p=0.044, q=0.616, eta_p2=0.036
+
+FDR-corrected ANOVA effects (q < .05):
+  None.
+
+FDR-corrected ART effects (q < .05):
+  None.
+
+FDR-corrected count-model effects (q < .05):
+  None.
+
+FDR-corrected GIQ-performance correlations (q < .05):
+  - Promedio en GIQ vs Inputs/min: rho=0.241, p=0.008, q=0.049
+
+Generated figures:
+  - analysis/images/fresh_camera_figures/01_hard_clean_flow.png
+  - analysis/images/fresh_camera_figures/02_giq_by_treatment.png
+  - analysis/images/fresh_camera_figures/03_performance_summary_vs_control.png
+  - analysis/images/fresh_camera_figures/04_factorial_anova_effect_map.png
+  - analysis/images/fresh_camera_figures/05_art_effect_map.png
+  - analysis/images/fresh_camera_figures/06_count_model_effect_map.png
+  - analysis/images/fresh_camera_figures/07_baseline_forest_vs_control.png
+  - analysis/images/fresh_camera_figures/08_tradeoff_giq_performance.png

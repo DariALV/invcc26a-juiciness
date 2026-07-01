@@ -1,0 +1,33 @@
+Treatment-vs-Control contrasts used in figures
+=============================================
+
+P-values are selected according to the primary method for each metric: ANOVA when assumptions are viable; ART/Wilcoxon fallback when assumptions are not viable.
+
+- ANOVA / Inmersión percibida / Shake vs Control: p=0.602, q=0.900 [ANOVA emmeans vs Control]
+- ANOVA / Inmersión percibida / Zoom vs Control: p=0.409, q=0.900 [ANOVA emmeans vs Control]
+- ANOVA / Inmersión percibida / Shake + Zoom vs Control: p=0.512, q=0.900 [ANOVA fallback Welch t-test]
+- ANOVA / Inmersión percibida / Recoil vs Control: p=0.135, q=0.804 [ANOVA emmeans vs Control]
+- ANOVA / Inmersión percibida / Shake + Recoil vs Control: p=0.642, q=0.900 [ANOVA fallback Welch t-test]
+- ANOVA / Inmersión percibida / Zoom + Recoil vs Control: p=0.690, q=0.900 [ANOVA fallback Welch t-test]
+- ANOVA / Inmersión percibida / Shake + Zoom + Recoil vs Control: p=0.481, q=0.900 [ANOVA fallback Welch t-test]
+- ART / Kills/min / Shake vs Control: p=0.776, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Kills/min / Zoom vs Control: p=0.890, q=0.923 [ART fallback Wilcoxon rank-sum]
+- ART / Kills/min / Shake + Zoom vs Control: p=0.552, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Kills/min / Recoil vs Control: p=0.499, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Kills/min / Shake + Recoil vs Control: p=0.924, q=0.924 [ART fallback Wilcoxon rank-sum]
+- ART / Kills/min / Zoom + Recoil vs Control: p=0.203, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Kills/min / Shake + Zoom + Recoil vs Control: p=0.071, q=0.804 [ART fallback Wilcoxon rank-sum]
+- ANOVA / Golpes recibidos/min / Shake vs Control: p=0.300, q=0.900 [ANOVA emmeans vs Control]
+- ANOVA / Golpes recibidos/min / Zoom vs Control: p=0.761, q=0.900 [ANOVA emmeans vs Control]
+- ANOVA / Golpes recibidos/min / Shake + Zoom vs Control: p=0.655, q=0.900 [ANOVA fallback Welch t-test]
+- ANOVA / Golpes recibidos/min / Recoil vs Control: p=0.432, q=0.900 [ANOVA emmeans vs Control]
+- ANOVA / Golpes recibidos/min / Shake + Recoil vs Control: p=0.117, q=0.804 [ANOVA fallback Welch t-test]
+- ANOVA / Golpes recibidos/min / Zoom + Recoil vs Control: p=0.829, q=0.900 [ANOVA fallback Welch t-test]
+- ANOVA / Golpes recibidos/min / Shake + Zoom + Recoil vs Control: p=0.007, q=0.182 [ANOVA fallback Welch t-test]
+- ART / Supervivencia (s) / Shake vs Control: p=0.531, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Supervivencia (s) / Zoom vs Control: p=0.836, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Supervivencia (s) / Shake + Zoom vs Control: p=0.620, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Supervivencia (s) / Recoil vs Control: p=0.704, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Supervivencia (s) / Shake + Recoil vs Control: p=0.747, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Supervivencia (s) / Zoom + Recoil vs Control: p=0.608, q=0.900 [ART fallback Wilcoxon rank-sum]
+- ART / Supervivencia (s) / Shake + Zoom + Recoil vs Control: p=0.144, q=0.804 [ART fallback Wilcoxon rank-sum]

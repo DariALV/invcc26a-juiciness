@@ -14,3 +14,9 @@ __pycache__/
 data/
 *.csv
 *.parquet
+
+# Input canónico del análisis de investigación
+!data/
+data/*
+!data/README.md
+!data/juiciness_clean_dataset.csv

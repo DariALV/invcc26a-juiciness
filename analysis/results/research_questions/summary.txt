@@ -1,25 +1,28 @@
 Research-question analysis
 ==========================
-Source: analysis/results/research_questions/juiciness_clean_dataset.csv
+Source: analysis/data/juiciness_clean_dataset.csv
 Rows in juiciness clean dataset: 124
 Unique players in juiciness clean dataset: 124
 Rows removed from analysis: 0
 Rows retained for analysis: 124
-Quality-flagged rows retained for analysis: 4
+Quality-flagged rows retained for analysis: 0
 Duplicated players retained: 0
+
+Primary metric set:
+- RQ1: Inmersion percibida (imm_total).
+- RQ2: Kills/min and golpes recibidos/min.
+- RQ2 context: supervivencia en segundos.
+- RQ3: cambio conjunto de inmersion y golpes recibidos frente a Control.
 
 Order of calculations:
 1. Load juiciness_clean_dataset.csv.
-2. Retain all rows, including runs previously excluded by the hard-clean FPS rule.
-3. Confirm one row per participant.
-4. RQ1: factorial linear model for perceived immersion, residual checks, variance checks, emmeans only for significant interactions.
-5. RQ2: factorial models for telemetry; use log1p for skewed positive rates and ART as nonparametric sensitivity.
-6. RQ2 counts: negative-binomial model with duration offset for total hits.
-7. RQ3: isolated-treatment contrasts against Control and Spearman GIQ-performance correlations.
-
-Rmd alignment:
-The attached Rmd is useful as an exploratory GIQ workflow because it models shake, zoom and recoil, checks residuals/variance, and follows interactions with emmeans.
-This canonical script keeps that order but uses the current juiciness_clean_dataset.csv without excluding the low-FPS runs.
+2. Retain all rows and keep quality flags as audit metadata; FPS is not used as a treatment-level validity metric.
+2b. Added two simplified diagnostic figures inspired by generate_interpretable_pvalue_figures.R and anova_assumptions_and_alternatives.R.
+3. RQ1: factorial model for perceived immersion, residual checks, variance checks, and contrasts vs Control.
+4. RQ2: factorial/ART checks for kills/min and golpes recibidos/min; survival is contextual.
+5. RQ2 supplementary counts: negative-binomial models with duration offset for total kills and total hits.
+6. RQ3: all treatments contrasted against Control for immersion and hits/min.
+7. RQ3: trade-off classification plus a quadrant plot for immersion vs hits/min.
 
 Condition counts in juiciness clean dataset:
 - Control: 18
@@ -32,20 +35,35 @@ Condition counts in juiciness clean dataset:
 - Shake + Zoom + Recoil: 14
 
 RQ1 nominal factorial effects:
-- Inmersión percibida / Shake x Zoom: F=4.19, p=0.043, q=0.450, eta_p2=0.035
+- Inmersión percibida / Shake x Zoom: F=4.19, p=0.043, q=0.600, eta_p2=0.035
 
 RQ2 nominal ART effects:
-- Daño recibido por minuto / Shake: F=4.61, p=0.034, q=0.422
-- Golpes recibidos por minuto / Shake: F=5.06, p=0.026, q=0.422
-- Enemigos promedio / Shake x Zoom x Recoil: F=6.41, p=0.013, q=0.422
+- Golpes recibidos/min / Shake: F=5.06, p=0.026, q=0.554
 
 RQ3 FDR-corrected GIQ-performance correlations:
 None.
 
 Final figures:
+- analysis/images/research_questions/00_assumption_validation_main_metrics.png
+- analysis/images/research_questions/00_art_factorial_main_metrics.png
 - analysis/images/research_questions/RQ1_immersion_giq_effects.png
-- analysis/images/research_questions/RQ2_damage_per_min.png
+- analysis/images/research_questions/RQ1_immersion_vs_control_forest.png
+- analysis/images/research_questions/RQ2_kills_per_min.png
 - analysis/images/research_questions/RQ2_hits_per_min.png
+- analysis/images/research_questions/RQ2_performance_effects_directional_forest.png
 - analysis/images/research_questions/RQ2_count_models_duration_offset.png
-- analysis/images/research_questions/RQ3_baseline_tradeoff_forest.png
+- analysis/images/research_questions/RQ2_count_model_rate_ratios.png
+- analysis/images/research_questions/RQ2_survival_time_context.png
+- analysis/images/research_questions/RQ3_immersion_vs_control_forest.png
+- analysis/images/research_questions/RQ3_hits_vs_control_forest.png
+- analysis/images/research_questions/RQ3_immersion_hits_tradeoff_quadrants.png
 - analysis/images/research_questions/RQ3_giq_performance_correlation.png
+
+Main tables:
+- analysis/results/research_questions/00_primary_factorial_tests_main_metrics.csv
+- analysis/results/research_questions/00_primary_factorial_tests_main_metrics.txt
+- analysis/results/research_questions/07_rq3_all_treatments_vs_control.csv
+- analysis/results/research_questions/11_all_treatments_vs_control.csv
+- analysis/results/research_questions/11_all_treatments_vs_control_pq_values.txt
+- analysis/results/research_questions/12_rq2_directional_treatment_contrasts.csv
+- analysis/results/research_questions/14_rq3_tradeoff_classification.csv

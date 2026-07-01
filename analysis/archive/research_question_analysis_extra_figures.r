@@ -55,15 +55,13 @@ paths <- list(
 final_figure_files <- c(
   "RQ1_immersion_giq_effects.png",
   "RQ1_immersion_vs_control_forest.png",
-  "RQ2_kills_per_min.png",
+  "RQ2_damage_per_min.png",
   "RQ2_hits_per_min.png",
-  "RQ2_performance_effects_directional_forest.png",
+  "RQ2_factor_effects_forest.png",
   "RQ2_count_models_duration_offset.png",
   "RQ2_count_model_rate_ratios.png",
-  "RQ2_survival_time_context.png",
-  "RQ3_immersion_vs_control_forest.png",
-  "RQ3_hits_vs_control_forest.png",
-  "RQ3_immersion_hits_tradeoff_quadrants.png",
+  "RQ3_baseline_tradeoff_forest.png",
+  "RQ3_tradeoff_quadrants.png",
   "RQ3_giq_performance_correlation.png"
 )
 
@@ -112,25 +110,30 @@ factor_terms <- c("Shake", "Zoom", "Recoil", "Shake:Zoom", "Shake:Recoil", "Zoom
 metric_specs <- data.frame(
   metric = c(
     "imm_total",
+    "ingame_survival_s",
     "kills_per_min",
+    "dmg_per_min",
     "hits_per_min",
-    "ingame_survival_s"
+    "enemies_mean"
   ),
   label = c(
     "Inmersi\u00f3n percibida",
+    "Supervivencia (s)",
     "Kills/min",
-    "Golpes recibidos/min",
-    "Supervivencia (s)"
+    "Da\u00f1o recibido por minuto",
+    "Golpes recibidos por minuto",
+    "Enemigos promedio"
   ),
-  rq = c("RQ1", "RQ2", "RQ2", "context"),
-  log_model = c(FALSE, TRUE, TRUE, TRUE),
+  rq = c("RQ1", rep("RQ2", 5)),
+  log_model = c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE),
   stringsAsFactors = FALSE
 )
 
 raw <- read.csv(data_path, check.names = FALSE, stringsAsFactors = FALSE)
 required <- c(
   "player_id", "run_id", "shake", "zoom", "recoil", "imm_total",
-  "ingame_survival_s", "total_kills", "input_total", "hits_per_min"
+  "ingame_survival_s", "total_kills", "input_total", "dmg_per_min",
+  "hits_per_min", "fps_mean"
 )
 missing_required <- setdiff(required, names(raw))
 if (length(missing_required) > 0) {
@@ -143,10 +146,8 @@ raw$shake_num <- as.integer(to_num(raw$shake))
 raw$zoom_num <- as.integer(to_num(raw$zoom))
 raw$recoil_num <- as.integer(to_num(raw$recoil))
 raw$duration_min <- to_num(raw$ingame_survival_s) / 60
-if (!"kills_per_min" %in% names(raw)) {
-  raw$kills_per_min <- to_num(raw$total_kills) / raw$duration_min
-}
 raw$hits_total_est <- round(to_num(raw$hits_per_min) * raw$duration_min)
+raw$damage_amount_total_est <- to_num(raw$dmg_per_min) * raw$duration_min
 raw$treatment <- factor(
   treatment_from_flags(raw$shake_num, raw$zoom_num, raw$recoil_num),
   levels = treatment_levels
@@ -221,6 +222,14 @@ add_flag(
   ],
   "> 0 when survival >= 120s",
   "Long run has no kills, suggesting failed telemetry or non-representative play."
+)
+add_flag(
+  which(is.finite(to_num(raw$fps_mean)) & to_num(raw$fps_mean) < 15),
+  "fps_mean_lt_15",
+  "fps_mean",
+  raw$fps_mean[is.finite(to_num(raw$fps_mean)) & to_num(raw$fps_mean) < 15],
+  ">= 15 FPS mean",
+  "Run has severe average frame-rate instability; FPS is only a technical quality criterion."
 )
 
 flags <- if (length(flag_rows) > 0) do.call(rbind, flag_rows) else data.frame()
@@ -435,9 +444,10 @@ write.csv(emmeans_results, file.path(out_dir, "05_interaction_emmeans_followup.c
 # -------------------------------------------------------------------------
 
 count_specs <- data.frame(
-  metric = c("total_kills", "hits_total_est"),
+  metric = c("total_kills", "input_total", "hits_total_est"),
   label = c(
     "Kills totales ajustados por duraci\u00f3n de partida",
+    "Inputs totales ajustados por duraci\u00f3n de partida",
     "Golpes totales ajustados por duraci\u00f3n de partida"
   ),
   stringsAsFactors = FALSE
@@ -489,55 +499,28 @@ write.csv(count_results, file.path(out_dir, "06_count_models_duration_offset.csv
 # -------------------------------------------------------------------------
 
 baseline_metrics <- metric_specs$metric
-baseline_treatments <- treatment_levels
-baseline_contrast_treatments <- baseline_treatments[baseline_treatments != "Control"]
-
-match_dunnett_contrast <- function(contrast_table, treatment_name) {
-  if (is.null(contrast_table) || nrow(contrast_table) == 0 || !"contrast" %in% names(contrast_table)) {
-    return(contrast_table[FALSE, , drop = FALSE])
-  }
-
-  contrast_clean <- gsub("\\s+", " ", trimws(as.character(contrast_table$contrast)))
-  exact_patterns <- c(
-    paste(treatment_name, "- Control"),
-    paste(treatment_name, "vs Control"),
-    paste(treatment_name, "/ Control")
-  )
-
-  hit <- contrast_table[contrast_clean %in% exact_patterns, , drop = FALSE]
-  if (nrow(hit) > 0) return(hit)
-
-  control_suffix <- grepl("\\s*(-|vs|/)\\s*Control\\s*$", contrast_clean)
-  left_side <- trimws(sub("\\s*(-|vs|/)\\s*Control\\s*$", "", contrast_clean))
-  contrast_table[control_suffix & left_side == treatment_name, , drop = FALSE]
-}
-
 baseline_rows <- list()
 for (metric in baseline_metrics) {
   spec <- metric_specs[metric_specs$metric == metric, , drop = FALSE]
   temp <- prep_metric_df(metric, spec$log_model)
-  temp <- temp[as.character(temp$treatment) %in% baseline_treatments, , drop = FALSE]
-  temp$treatment <- factor(as.character(temp$treatment), levels = baseline_treatments)
-  if (nrow(temp) < length(baseline_treatments) * 2) next
-
+  temp <- temp[temp$treatment %in% isolated_treatments, , drop = FALSE]
+  temp$treatment <- factor(as.character(temp$treatment), levels = isolated_treatments)
+  if (nrow(temp) < 12) next
   fit <- lm(Y_model ~ treatment, data = temp)
-
   emm_p <- NULL
   if (has_emmeans) {
     emm <- tryCatch(emmeans::emmeans(fit, "treatment"), error = function(e) NULL)
     if (!is.null(emm)) {
       emm_p <- tryCatch(
-        as.data.frame(emmeans::contrast(emm, method = "trt.vs.ctrl", ref = "Control", adjust = "dunnettx")),
+        as.data.frame(emmeans::contrast(emm, method = "trt.vs.ctrl", ref = 1, adjust = "dunnettx")),
         error = function(e) NULL
       )
     }
   }
-
   control_vals <- temp$Y_raw[temp$treatment == "Control"]
-  for (tr in baseline_contrast_treatments) {
+  for (tr in isolated_treatments[isolated_treatments != "Control"]) {
     vals <- temp$Y_raw[temp$treatment == tr]
     if (length(vals) < 2 || length(control_vals) < 2) next
-
     pooled_sd <- sqrt(((length(vals) - 1) * var(vals) + (length(control_vals) - 1) * var(control_vals)) /
       (length(vals) + length(control_vals) - 2))
     diff_raw <- mean(vals) - mean(control_vals)
@@ -545,13 +528,11 @@ for (metric in baseline_metrics) {
     se_raw <- sqrt(var(vals) / length(vals) + var(control_vals) / length(control_vals))
     ci_raw <- diff_raw + c(-1, 1) * qt(0.975, df = max(length(vals) + length(control_vals) - 2, 1)) * se_raw
     ci_std <- if (is.finite(pooled_sd) && pooled_sd > 0) ci_raw / pooled_sd else c(NA_real_, NA_real_)
-
     p_value <- NA_real_
     if (!is.null(emm_p)) {
-      hit <- match_dunnett_contrast(emm_p, tr)
+      hit <- emm_p[grepl(tr, emm_p$contrast, fixed = TRUE), , drop = FALSE]
       if (nrow(hit) > 0 && "p.value" %in% names(hit)) p_value <- hit$p.value[1]
     }
-
     baseline_rows[[paste(metric, tr, sep = "_")]] <- data.frame(
       rq = "RQ3",
       metric = metric,
@@ -565,19 +546,14 @@ for (metric in baseline_metrics) {
       std_diff = std_diff,
       std_low = ci_std[1],
       std_high = ci_std[2],
-      raw_low = ci_raw[1],
-      raw_high = ci_raw[2],
       p_value = p_value,
       stringsAsFactors = FALSE
     )
   }
 }
 baseline <- if (length(baseline_rows) > 0) do.call(rbind, baseline_rows) else data.frame()
-if (nrow(baseline) > 0) {
-  baseline$q_value <- p.adjust(baseline$p_value, method = "BH")
-  baseline$significant_q05 <- is.finite(baseline$q_value) & baseline$q_value < 0.05
-}
-write.csv(baseline, file.path(out_dir, "07_rq3_all_treatments_vs_control.csv"), row.names = FALSE, na = "")
+if (nrow(baseline) > 0) baseline$q_value <- p.adjust(baseline$p_value, method = "BH")
+write.csv(baseline, file.path(out_dir, "07_rq3_isolated_vs_control.csv"), row.names = FALSE, na = "")
 
 tradeoff_metrics <- metric_specs$metric[metric_specs$rq == "RQ2"]
 tradeoff_rows <- list()
@@ -933,37 +909,6 @@ draw_x_axis_with_minor <- function(xlim, major_n = 5, minor_n = 11) {
   axis(1, at = major, labels = axis_label(major, scale_values), cex.axis = 1.02, col = panel_border, col.axis = ink)
 }
 
-
-draw_x_axis_with_minor_log <- function(xlim, major_n = 5, minor_step = 0.25) {
-  if (!all(is.finite(xlim)) || any(xlim <= 0)) return(invisible(NULL))
-  log_lim <- log10(xlim)
-  major_log <- pretty(log_lim, n = major_n)
-  major_log <- major_log[major_log >= log_lim[1] & major_log <= log_lim[2]]
-  major <- 10^major_log
-  start_minor <- floor(log_lim[1] / minor_step) * minor_step
-  end_minor <- ceiling(log_lim[2] / minor_step) * minor_step
-  minor_log <- seq(start_minor, end_minor, by = minor_step)
-  minor_log <- minor_log[minor_log >= log_lim[1] & minor_log <= log_lim[2]]
-  minor <- 10^minor_log
-  tol <- 1e-10
-  minor_only <- minor[sapply(minor, function(v) all(abs(v - major) > tol))]
-  scale_values <- sort(unique(c(major, minor_only)))
-  if (length(minor_only) > 0) {
-    abline(v = minor_only, col = adjustcolor(minor_grid_col, alpha.f = 0.68), lwd = 0.75, lty = 3)
-    axis(
-      1,
-      at = minor_only,
-      labels = axis_label(minor_only, scale_values),
-      cex.axis = 0.62,
-      col = panel_border,
-      col.axis = adjustcolor(soft_ink, alpha.f = 0.78),
-      tcl = -0.14
-    )
-  }
-  abline(v = major, col = grid_col, lwd = 1)
-  axis(1, at = major, labels = axis_label(major, scale_values), cex.axis = 1.02, col = panel_border, col.axis = ink)
-}
-
 metric_note <- function(metric, preferred = c("art", "anova")) {
   preferred <- match.arg(preferred)
   if (preferred == "art" && nrow(art_results) > 0) {
@@ -1093,13 +1038,13 @@ draw_legacy_box(
 )
 close_png()
 
-open_png("RQ2_kills_per_min.png", width = 3000, height = 1688)
+open_png("RQ2_damage_per_min.png", width = 3000, height = 1688)
 par(mar = c(10.7, 7.4, 4.8, 2.0), mgp = c(3.85, 0.78, 0), tcl = -0.25)
 draw_legacy_box(
-  "kills_per_min",
-  "Kills/min",
-  "Kills por minuto",
-  metric_note("kills_per_min", "art"),
+  "dmg_per_min",
+  "Da\u00f1o/min",
+  "Da\u00f1o recibido por minuto",
+  metric_note("dmg_per_min", "art"),
   title_cex = 1.34
 )
 close_png()
@@ -1115,17 +1060,6 @@ draw_legacy_box(
 )
 close_png()
 
-open_png("RQ2_survival_time_context.png", width = 3000, height = 1688)
-par(mar = c(10.7, 7.4, 4.8, 2.0), mgp = c(3.85, 0.78, 0), tcl = -0.25)
-draw_legacy_box(
-  "ingame_survival_s",
-  "Supervivencia (s)",
-  "Supervivencia por tratamiento",
-  "Métrica contextual: interpreta tasas y conteos; no define por sí sola el desempeño.",
-  title_cex = 1.34
-)
-close_png()
-
 open_png("RQ2_count_models_duration_offset.png", width = 3000, height = 1688)
 par(mar = c(10.7, 7.4, 4.8, 2.0), mgp = c(3.85, 0.78, 0), tcl = -0.25)
 draw_legacy_box(
@@ -1136,97 +1070,87 @@ draw_legacy_box(
 )
 close_png()
 
-baseline_focus_metrics <- c("imm_total", "hits_per_min")
-baseline_focus_labels <- c("Inmersi\u00f3n percibida", "Golpes recibidos/min")
+baseline_focus_metrics <- c("imm_total", "dmg_per_min", "hits_per_min")
+baseline_focus_labels <- c("Inmersi\u00f3n percibida", "Da\u00f1o/min", "Golpes/Min")
 baseline_focus <- baseline[
   baseline$metric %in% baseline_focus_metrics &
-    baseline$treatment %in% truth_order[truth_order != "Control"] &
+    baseline$treatment %in% isolated_treatments[-1] &
     is.finite(baseline$std_diff),
   ,
   drop = FALSE
 ]
 baseline_focus$metric_label <- baseline_focus_labels[match(baseline_focus$metric, baseline_focus_metrics)]
-baseline_focus$treatment <- factor(baseline_focus$treatment, levels = truth_order[truth_order != "Control"])
+baseline_focus$treatment <- factor(baseline_focus$treatment, levels = isolated_treatments[-1])
 baseline_focus$metric <- factor(baseline_focus$metric, levels = baseline_focus_metrics)
 baseline_focus <- baseline_focus[order(baseline_focus$metric, baseline_focus$treatment), ]
 
-draw_rq3_single_metric_forest <- function(metric_name, output_file, title_text, xlab_text) {
-  panel <- baseline_focus[as.character(baseline_focus$metric) == metric_name, , drop = FALSE]
-  if (nrow(panel) == 0) return(invisible(NULL))
-  panel <- panel[order(panel$treatment), , drop = FALSE]
-  y_levels <- rev(truth_order[truth_order != "Control"])
-  y_pos <- seq_along(y_levels)
-  names(y_pos) <- y_levels
-  xlim <- range(c(panel$std_low, panel$std_high, 0), na.rm = TRUE)
+open_png("RQ3_baseline_tradeoff_forest.png", width = 3000, height = 1180)
+op <- par(
+  mfrow = c(1, 3),
+  mar = c(3.35, 5.15, 2.55, 1.05),
+  oma = c(2.9, 0, 4.55, 0),
+  mgp = c(2.05, 0.66, 0),
+  tcl = -0.25
+)
+if (nrow(baseline_focus) > 0) {
+  xlim <- range(c(baseline_focus$std_low, baseline_focus$std_high, 0), na.rm = TRUE)
   pad <- diff(xlim) * 0.18
   if (!is.finite(pad) || pad == 0) pad <- 0.35
   xlim <- xlim + c(-pad, pad)
-
-  open_png(output_file, width = 2550, height = 1500)
-  op <- par(
-    mar = c(4.15, 11.8, 4.65, 1.35),
-    oma = c(1.3, 0.4, 0, 0),
-    mgp = c(2.55, 0.72, 0),
-    tcl = -0.25
-  )
-  plot(
-    NA,
-    NA,
-    xlim = xlim,
-    ylim = c(0.78, length(y_levels) + 0.22),
-    axes = FALSE,
-    xlab = xlab_text,
-    ylab = "",
-    main = title_text,
-    cex.main = 1.22,
-    cex.lab = 0.98
-  )
-  draw_x_axis_with_minor(xlim)
-  abline(v = 0, lty = 2, col = "#8A918B", lwd = 1.1)
-  abline(h = y_pos, col = adjustcolor(grid_col, alpha.f = 0.62), lwd = 1)
-  y <- y_pos[as.character(panel$treatment)]
-  segments(panel$std_low, y, panel$std_high, y, col = ink, lwd = 2)
-  points(
-    panel$std_diff,
-    y,
-    pch = 21,
-    bg = adjustcolor(box_fill[as.character(panel$treatment)], alpha.f = 0.68),
-    col = box_border[as.character(panel$treatment)],
-    cex = 1.55,
-    lwd = 1.2
-  )
-  if (any(is.finite(panel$q_value) & panel$q_value < 0.05)) {
-    sig <- panel[is.finite(panel$q_value) & panel$q_value < 0.05, , drop = FALSE]
-    sig_y <- y_pos[as.character(sig$treatment)]
-    text(
-      sig$std_high,
-      sig_y,
-      labels = paste0("p=", fmt_p(sig$p_value), " q=", fmt_p(sig$q_value)),
-      pos = 4,
-      cex = 0.70,
-      col = soft_ink
+  y_levels <- rev(isolated_treatments[-1])
+  y_pos <- seq_along(y_levels)
+  names(y_pos) <- y_levels
+  for (metric_name in baseline_focus_metrics) {
+    panel <- baseline_focus[as.character(baseline_focus$metric) == metric_name, , drop = FALSE]
+    plot(
+      NA,
+      NA,
+      xlim = xlim,
+      ylim = c(0.78, length(y_levels) + 0.22),
+      axes = FALSE,
+      xlab = "",
+      ylab = "",
+      main = baseline_focus_labels[match(metric_name, baseline_focus_metrics)],
+      cex.main = 1.16
     )
+    x_major <- pretty(xlim, n = 5)
+    x_major <- x_major[x_major >= xlim[1] & x_major <= xlim[2]]
+    abline(v = x_major, col = grid_col, lwd = 1)
+    axis(1, at = x_major, labels = axis_label(x_major, x_major), cex.axis = 0.98, col = panel_border, col.axis = ink)
+    abline(v = 0, lty = 2, col = "#8A918B", lwd = 1.1)
+    abline(h = y_pos, col = adjustcolor(grid_col, alpha.f = 0.62), lwd = 1)
+    y <- y_pos[as.character(panel$treatment)]
+    segments(panel$std_low, y, panel$std_high, y, col = ink, lwd = 2)
+    points(
+      panel$std_diff,
+      y,
+      pch = 21,
+      bg = adjustcolor(box_fill[as.character(panel$treatment)], alpha.f = 0.68),
+      col = box_border[as.character(panel$treatment)],
+      cex = 1.55,
+      lwd = 1.2
+    )
+    if (any(is.finite(panel$q_value) & panel$q_value < 0.05)) {
+      sig <- panel[is.finite(panel$q_value) & panel$q_value < 0.05, , drop = FALSE]
+      sig_y <- y_pos[as.character(sig$treatment)]
+      text(
+        sig$std_high,
+        sig_y,
+        labels = paste0("p=", fmt_p(sig$p_value), " q=", fmt_p(sig$q_value)),
+        pos = 4,
+        cex = 0.70,
+        col = soft_ink
+      )
+    }
+    axis(2, at = y_pos, labels = names(y_pos), las = 1, tick = FALSE, cex.axis = 1.04)
+    box(col = panel_border, lwd = 1.15)
   }
-  axis(2, at = y_pos, labels = names(y_pos), las = 1, tick = FALSE, cex.axis = 0.95)
-  box(col = panel_border, lwd = 1.15)
-  mtext("0 indica ausencia de diferencia respecto a Control; todos los tratamientos se comparan contra Control", side = 3, adj = 0, line = 0.45, cex = 0.82, col = soft_ink)
-  par(op)
-  close_png()
-  invisible(TRUE)
 }
-
-draw_rq3_single_metric_forest(
-  "imm_total",
-  "RQ3_immersion_vs_control_forest.png",
-  "RQ3: inmersi\u00f3n frente a Control",
-  "Diferencia estandarizada de inmersi\u00f3n frente a Control"
-)
-draw_rq3_single_metric_forest(
-  "hits_per_min",
-  "RQ3_hits_vs_control_forest.png",
-  "RQ3: golpes recibidos frente a Control",
-  "Diferencia estandarizada de golpes/min frente a Control"
-)
+mtext("RQ3: diferencias frente al control en inmersi\u00f3n, da\u00f1o y golpes recibidos", side = 3, outer = TRUE, adj = 0.02, line = 2.75, cex = 1.25, font = 2, col = ink)
+mtext("0 indica ausencia de diferencia respecto a Control", side = 3, outer = TRUE, adj = 0.02, line = 1.52, cex = 0.88, col = soft_ink)
+mtext("Diferencia estandarizada frente a Control", side = 1, outer = TRUE, line = 0.8, cex = 0.96, col = ink)
+par(op)
+close_png()
 
 open_png("RQ3_giq_performance_correlation.png", width = 3200, height = 1800)
 par(mfrow = c(1, 2), mar = c(10.7, 6.8, 4.8, 1.7), mgp = c(3.65, 0.78, 0), tcl = -0.25)
@@ -1277,7 +1201,7 @@ compute_treatment_contrasts <- function(metrics = metric_specs$metric) {
       emm <- tryCatch(emmeans::emmeans(fit, "treatment"), error = function(e) NULL)
       if (!is.null(emm)) {
         emm_p <- tryCatch(
-          as.data.frame(emmeans::contrast(emm, method = "trt.vs.ctrl", ref = "Control", adjust = "dunnettx")),
+          as.data.frame(emmeans::contrast(emm, method = "trt.vs.ctrl", ref = 1, adjust = "dunnettx")),
           error = function(e) NULL
         )
       }
@@ -1299,7 +1223,7 @@ compute_treatment_contrasts <- function(metrics = metric_specs$metric) {
 
       p_value <- NA_real_
       if (!is.null(emm_p) && "p.value" %in% names(emm_p)) {
-        hit <- match_dunnett_contrast(emm_p, tr)
+        hit <- emm_p[grepl(tr, emm_p$contrast, fixed = TRUE), , drop = FALSE]
         if (nrow(hit) > 0) p_value <- hit$p.value[1]
       }
 
@@ -1405,33 +1329,30 @@ if (has_mass) {
     temp <- hard
     temp$Y <- round(to_num(temp[[spec$metric]]))
     temp$duration_min <- to_num(temp$duration_min)
-    temp$treatment <- factor(as.character(temp$treatment), levels = truth_order)
     temp <- temp[
       is.finite(temp$Y) & temp$Y >= 0 &
-        is.finite(temp$duration_min) & temp$duration_min > 0 &
-        !is.na(temp$treatment),
+        is.finite(temp$duration_min) & temp$duration_min > 0,
       ,
       drop = FALSE
     ]
-    if (nrow(temp) < 16 || sum(temp$treatment == "Control") < 2) next
+    if (nrow(temp) < 16) next
 
-    fit <- tryCatch(MASS::glm.nb(Y ~ treatment + offset(log(duration_min)), data = temp), error = function(e) NULL)
+    fit <- tryCatch(MASS::glm.nb(Y ~ Shake + Zoom + Recoil + offset(log(duration_min)), data = temp), error = function(e) NULL)
     if (is.null(fit)) next
 
     coef_tab <- as.data.frame(summary(fit)$coefficients)
     coef_tab$term_raw <- rownames(coef_tab)
     rownames(coef_tab) <- NULL
-    for (tr in truth_order[truth_order != "Control"]) {
-      term_name <- paste0("treatment", tr)
+    for (factor_name in c("Shake", "Zoom", "Recoil")) {
+      term_name <- paste0(factor_name, "Presente")
       hit <- coef_tab[coef_tab$term_raw == term_name, , drop = FALSE]
       if (nrow(hit) == 0) next
       beta <- hit$Estimate[1]
       se <- hit$`Std. Error`[1]
-      count_rate_ratio_rows[[paste(spec$metric, tr, sep = "_")]] <- data.frame(
+      count_rate_ratio_rows[[paste(spec$metric, factor_name, sep = "_")]] <- data.frame(
         metric = spec$metric,
         metric_label = spec$label,
-        treatment = tr,
-        contrast = paste(tr, "vs Control"),
+        factor = factor_name,
         rate_ratio = exp(beta),
         rr_low = exp(beta - 1.96 * se),
         rr_high = exp(beta + 1.96 * se),
@@ -1442,46 +1363,23 @@ if (has_mass) {
   }
 }
 count_rate_ratios <- if (length(count_rate_ratio_rows) > 0) do.call(rbind, count_rate_ratio_rows) else data.frame()
-if (nrow(count_rate_ratios) > 0) {
-  control_rate_rows <- count_specs[count_specs$metric %in% unique(count_rate_ratios$metric), , drop = FALSE]
-  if (nrow(control_rate_rows) > 0) {
-    control_rate_rows <- data.frame(
-      metric = control_rate_rows$metric,
-      metric_label = control_rate_rows$label,
-      treatment = "Control",
-      contrast = "Control reference",
-      rate_ratio = 1,
-      rr_low = 1,
-      rr_high = 1,
-      p_value = NA_real_,
-      stringsAsFactors = FALSE
-    )
-    count_rate_ratios <- rbind(control_rate_rows, count_rate_ratios)
-  }
-  count_rate_ratios$q_value <- NA_real_
-  finite_p <- is.finite(count_rate_ratios$p_value)
-  count_rate_ratios$q_value[finite_p] <- p.adjust(count_rate_ratios$p_value[finite_p], method = "BH")
-}
+if (nrow(count_rate_ratios) > 0) count_rate_ratios$q_value <- p.adjust(count_rate_ratios$p_value, method = "BH")
 write.csv(count_rate_ratios, file.path(out_dir, "13_count_model_rate_ratios.csv"), row.names = FALSE, na = "")
 
 draw_forest_panels <- function(df, file, title, subtitle, xlab,
                                panel_col, row_col,
                                est_col = "std_diff", low_col = "std_low", high_col = "std_high",
                                null_value = 0, log_x = FALSE,
-                               width = 3000, height = 1450,
-                               left_mar = NULL, y_axis_cex = 0.98) {
+                               width = 3000, height = 1450) {
   df <- df[is.finite(df[[est_col]]) & is.finite(df[[low_col]]) & is.finite(df[[high_col]]), , drop = FALSE]
   if (nrow(df) == 0) return(invisible(NULL))
 
   panels <- unique(as.character(df[[panel_col]]))
-  if (is.null(left_mar)) {
-    left_mar <- if (identical(row_col, "treatment")) 10.8 else 5.1
-  }
   open_png(file, width = width, height = height)
   op <- par(
     mfrow = c(1, length(panels)),
-    mar = c(3.55, left_mar, 2.75, 1.05),
-    oma = c(2.9, 0.4, 4.7, 0),
+    mar = c(3.55, 5.1, 2.75, 1.05),
+    oma = c(2.9, 0, 4.7, 0),
     mgp = c(2.05, 0.66, 0),
     tcl = -0.25
   )
@@ -1514,11 +1412,9 @@ draw_forest_panels <- function(df, file, title, subtitle, xlab,
       log = if (log_x) "x" else ""
     )
 
-    if (log_x) {
-      draw_x_axis_with_minor_log(xlim)
-    } else {
-      draw_x_axis_with_minor(xlim)
-    }
+    x_major <- pretty(xlim, n = 5)
+    x_major <- x_major[x_major >= xlim[1] & x_major <= xlim[2]]
+    abline(v = x_major, col = grid_col, lwd = 1)
     abline(v = null_value, lty = 2, col = "#8A918B", lwd = 1.1)
     abline(h = y_pos, col = adjustcolor(grid_col, alpha.f = 0.62), lwd = 1)
 
@@ -1542,7 +1438,8 @@ draw_forest_panels <- function(df, file, title, subtitle, xlab,
       text(sig[[est_col]], sig_y + 0.20, labels = paste0("q=", fmt_p(sig$q_value)), cex = 0.70, col = soft_ink)
     }
 
-    axis(2, at = y_pos, labels = names(y_pos), las = 1, tick = FALSE, cex.axis = y_axis_cex)
+    axis(1, at = x_major, labels = axis_label(x_major, x_major), cex.axis = 0.92, col = panel_border, col.axis = ink)
+    axis(2, at = y_pos, labels = names(y_pos), las = 1, tick = FALSE, cex.axis = 0.98)
     box(col = panel_border, lwd = 1.15)
   }
 
@@ -1575,150 +1472,77 @@ draw_forest_panels(
   low_col = "raw_low",
   high_col = "raw_high",
   null_value = 0,
-  width = 2950,
-  height = 1550,
-  left_mar = 11.8,
-  y_axis_cex = 0.94
+  width = 2650,
+  height = 1450
 )
 
-# RQ2: directional treatment contrasts with uncertainty.
-rq2_performance_plot <- treatment_contrasts_all[
-  treatment_contrasts_all$metric %in% c("kills_per_min", "hits_per_min") &
-    is.finite(treatment_contrasts_all$diff_raw),
-  ,
-  drop = FALSE
-]
-if (nrow(rq2_performance_plot) > 0) {
-  direction <- ifelse(rq2_performance_plot$metric == "hits_per_min", -1, 1)
-  rq2_performance_plot$diff_directional <- rq2_performance_plot$diff_raw * direction
-  low_dir <- rq2_performance_plot$raw_low * direction
-  high_dir <- rq2_performance_plot$raw_high * direction
-  rq2_performance_plot$low_directional <- pmin(low_dir, high_dir)
-  rq2_performance_plot$high_directional <- pmax(low_dir, high_dir)
-  rq2_performance_plot$metric_label <- factor(
-    rq2_performance_plot$metric_label,
-    levels = c("Kills/min", "Golpes recibidos/min")
-  )
-  rq2_performance_plot$treatment <- factor(
-    rq2_performance_plot$treatment,
-    levels = truth_order[truth_order != "Control"]
-  )
-  rq2_performance_plot <- rq2_performance_plot[
-    order(rq2_performance_plot$metric_label, rq2_performance_plot$treatment),
-    ,
-    drop = FALSE
-  ]
-  write.csv(rq2_performance_plot, file.path(out_dir, "12_rq2_directional_treatment_contrasts.csv"), row.names = FALSE, na = "")
-  draw_forest_panels(
-    rq2_performance_plot,
-    file = "RQ2_performance_effects_directional_forest.png",
-    title = "RQ2: diferencias direccionales de desempeno frente a Control",
-    subtitle = "Derecha = mejor desempeno; Kills/min se mantiene e impactos recibidos/min se invierte",
-    xlab = "Cambio direccional frente a Control",
-    panel_col = "metric_label",
-    row_col = "treatment",
-    est_col = "diff_directional",
-    low_col = "low_directional",
-    high_col = "high_directional",
-    null_value = 0,
-    width = 3300,
-    height = 1550,
-    left_mar = 11.8,
-    y_axis_cex = 0.94
-  )
-}
+# RQ2: factor effects with uncertainty.
+rq2_effect_ci$metric_label <- factor(rq2_effect_ci$metric_label, levels = metric_specs$label[metric_specs$rq == "RQ2"])
+rq2_effect_ci <- rq2_effect_ci[order(rq2_effect_ci$metric_label, rq2_effect_ci$factor), , drop = FALSE]
+draw_forest_panels(
+  rq2_effect_ci,
+  file = "RQ2_factor_effects_forest.png",
+  title = "RQ2: efectos de camara sobre metricas de desempeno",
+  subtitle = "Punto: diferencia estandarizada Presente-Ausente; barra: IC 95%; q se muestra solo si q < 0.05",
+  xlab = "Diferencia estandarizada Presente-Ausente",
+  panel_col = "metric_label",
+  row_col = "factor",
+  est_col = "std_diff",
+  low_col = "std_low",
+  high_col = "std_high",
+  null_value = 0,
+  width = 3400,
+  height = 1450
+)
 
 # RQ2: rate ratios from the duration-offset count model.
 if (nrow(count_rate_ratios) > 0) {
   count_rate_ratios$metric_label <- factor(count_rate_ratios$metric_label, levels = count_specs$label)
-  count_rate_ratios$treatment <- factor(count_rate_ratios$treatment, levels = truth_order)
-  count_rate_ratios <- count_rate_ratios[order(count_rate_ratios$metric_label, count_rate_ratios$treatment), , drop = FALSE]
+  count_rate_ratios <- count_rate_ratios[order(count_rate_ratios$metric_label, count_rate_ratios$factor), , drop = FALSE]
   draw_forest_panels(
     count_rate_ratios,
     file = "RQ2_count_model_rate_ratios.png",
     title = "RQ2: frecuencia esperada de eventos ajustada por duracion",
-    subtitle = "Modelo binomial negativo con offset de duracion; Control se muestra como referencia = 1",
-    xlab = "Rate ratio frente a Control",
+    subtitle = "Modelo binomial negativo con offset de duracion; 1 = sin cambio frente a Ausente",
+    xlab = "Rate ratio Presente-Ausente",
     panel_col = "metric_label",
-    row_col = "treatment",
+    row_col = "factor",
     est_col = "rate_ratio",
     low_col = "rr_low",
     high_col = "rr_high",
     null_value = 1,
     log_x = TRUE,
-    width = 3500,
-    height = 1550,
-    left_mar = 11.8,
-    y_axis_cex = 0.94
+    width = 3300,
+    height = 1450
   )
 }
 
-# RQ3: quadrant view of immersion against hits received.
+# RQ3: quadrant view of immersion against damage/hits.
 trade_quad <- merge(
-  treatment_contrasts_all[treatment_contrasts_all$metric == "imm_total",
-                          c("treatment", "diff_raw", "raw_low", "raw_high", "p_value", "q_value")],
-  treatment_contrasts_all[treatment_contrasts_all$metric == "hits_per_min",
-                          c("treatment", "diff_raw", "raw_low", "raw_high", "p_value", "q_value")],
+  treatment_contrasts_all[treatment_contrasts_all$metric == "imm_total", c("treatment", "diff_raw", "raw_low", "raw_high")],
+  treatment_contrasts_all[treatment_contrasts_all$metric %in% c("dmg_per_min", "hits_per_min"),
+                          c("metric", "metric_label", "treatment", "diff_raw", "raw_low", "raw_high", "q_value")],
   by = "treatment",
-  suffixes = c("_giq", "_hits")
+  suffixes = c("_giq", "_perf")
 )
 trade_quad$treatment <- factor(trade_quad$treatment, levels = truth_order[truth_order != "Control"])
-trade_quad <- trade_quad[order(trade_quad$treatment), , drop = FALSE]
+trade_quad$metric_label <- factor(
+  trade_quad$metric_label,
+  levels = c("Da\u00f1o recibido por minuto", "Golpes recibidos por minuto"),
+  labels = c("Da\u00f1o/min", "Golpes/Min")
+)
 
-classify_change <- function(low, high, higher_is_better = TRUE) {
-  if (!is.finite(low) || !is.finite(high)) return("sin evidencia clara")
-  if (low > 0 && high > 0) return(ifelse(higher_is_better, "sube", "empeora"))
-  if (low < 0 && high < 0) return(ifelse(higher_is_better, "baja", "mejora"))
-  "sin evidencia clara"
-}
-
-if (nrow(trade_quad) > 0) {
-  trade_quad$immersion_change <- mapply(classify_change, trade_quad$raw_low_giq, trade_quad$raw_high_giq, MoreArgs = list(higher_is_better = TRUE))
-  trade_quad$hits_change <- mapply(classify_change, trade_quad$raw_low_hits, trade_quad$raw_high_hits, MoreArgs = list(higher_is_better = FALSE))
-  trade_quad$tradeoff_class <- ifelse(
-    trade_quad$immersion_change == "sube" & trade_quad$hits_change == "empeora", "trade-off posible",
-    ifelse(
-      trade_quad$immersion_change == "sube" & trade_quad$hits_change == "mejora", "mejora dominante",
-      ifelse(
-        trade_quad$immersion_change %in% c("baja", "sin evidencia clara") & trade_quad$hits_change == "empeora", "costo sin beneficio claro",
-        ifelse(
-          trade_quad$immersion_change == "baja" & trade_quad$hits_change == "mejora", "menor inmersion con mejor control",
-          "sin evidencia clara"
-        )
-      )
-    )
-  )
-
-  tradeoff_classification <- data.frame(
-    treatment = as.character(trade_quad$treatment),
-    delta_immersion = trade_quad$diff_raw_giq,
-    delta_immersion_low = trade_quad$raw_low_giq,
-    delta_immersion_high = trade_quad$raw_high_giq,
-    delta_hits_per_min = trade_quad$diff_raw_hits,
-    delta_hits_low = trade_quad$raw_low_hits,
-    delta_hits_high = trade_quad$raw_high_hits,
-    immersion_change = trade_quad$immersion_change,
-    hits_change = trade_quad$hits_change,
-    tradeoff_class = trade_quad$tradeoff_class,
-    p_immersion = trade_quad$p_value_giq,
-    q_immersion = trade_quad$q_value_giq,
-    p_hits = trade_quad$p_value_hits,
-    q_hits = trade_quad$q_value_hits,
-    stringsAsFactors = FALSE
-  )
-  write.csv(tradeoff_classification, file.path(out_dir, "14_rq3_tradeoff_classification.csv"), row.names = FALSE, na = "")
-}
-
-open_png("RQ3_immersion_hits_tradeoff_quadrants.png", width = 3000, height = 1450)
+open_png("RQ3_tradeoff_quadrants.png", width = 3000, height = 1450)
 op <- par(
-  mar = c(4.35, 5.45, 4.15, 1.15),
-  oma = c(2.3, 0, 1.0, 0),
+  mfrow = c(1, 2),
+  mar = c(4.35, 5.45, 2.75, 1.15),
+  oma = c(2.8, 0, 4.65, 0),
   mgp = c(2.75, 0.75, 0),
   tcl = -0.25
 )
 if (nrow(trade_quad) > 0) {
   xlim <- range(c(trade_quad$raw_low_giq, trade_quad$raw_high_giq, 0), na.rm = TRUE)
-  ylim <- range(c(trade_quad$raw_low_hits, trade_quad$raw_high_hits, 0), na.rm = TRUE)
+  ylim <- range(c(trade_quad$raw_low_perf, trade_quad$raw_high_perf, 0), na.rm = TRUE)
   xpad <- diff(xlim) * 0.18
   ypad <- diff(ylim) * 0.18
   if (!is.finite(xpad) || xpad == 0) xpad <- 0.20
@@ -1726,44 +1550,49 @@ if (nrow(trade_quad) > 0) {
   xlim <- xlim + c(-xpad, xpad)
   ylim <- ylim + c(-ypad, ypad)
 
-  plot(
-    NA, NA,
-    xlim = xlim,
-    ylim = ylim,
-    axes = FALSE,
-    xlab = "Cambio en inmersi\u00f3n frente a Control",
-    ylab = "Cambio en golpes recibidos/min frente a Control",
-    main = "RQ3: inmersi\u00f3n frente a golpes recibidos",
-    cex.main = 1.22,
-    cex.lab = 1.02
-  )
-  draw_x_axis_with_minor(xlim)
-  draw_y_axis_with_minor(ylim)
-  abline(v = 0, h = 0, lty = 2, col = "#8A918B", lwd = 1.1)
+  for (metric_name in levels(trade_quad$metric_label)) {
+    panel <- trade_quad[as.character(trade_quad$metric_label) == metric_name, , drop = FALSE]
+    plot(
+      NA, NA,
+      xlim = xlim,
+      ylim = ylim,
+      axes = FALSE,
+      xlab = "Cambio en GIQ frente a Control",
+      ylab = paste("Cambio en", metric_name, "frente a Control"),
+      main = metric_name,
+      cex.main = 1.12,
+      cex.lab = 1.02
+    )
+    draw_x_axis_with_minor(xlim)
+    draw_y_axis_with_minor(ylim)
+    abline(v = 0, h = 0, lty = 2, col = "#8A918B", lwd = 1.1)
 
-  segments(trade_quad$raw_low_giq, trade_quad$diff_raw_hits, trade_quad$raw_high_giq, trade_quad$diff_raw_hits, col = ink, lwd = 1.7)
-  segments(trade_quad$diff_raw_giq, trade_quad$raw_low_hits, trade_quad$diff_raw_giq, trade_quad$raw_high_hits, col = ink, lwd = 1.7)
-  points(
-    trade_quad$diff_raw_giq,
-    trade_quad$diff_raw_hits,
-    pch = 21,
-    bg = adjustcolor(box_fill[as.character(trade_quad$treatment)], alpha.f = 0.72),
-    col = box_border[as.character(trade_quad$treatment)],
-    cex = 1.35,
-    lwd = 1.1
-  )
-  text(
-    trade_quad$diff_raw_giq,
-    trade_quad$diff_raw_hits,
-    labels = as.character(trade_quad$treatment),
-    pos = 4,
-    cex = 0.68,
-    col = soft_ink,
-    xpd = TRUE
-  )
-  box(col = panel_border, lwd = 1.15)
+    segments(panel$raw_low_giq, panel$diff_raw_perf, panel$raw_high_giq, panel$diff_raw_perf, col = ink, lwd = 1.7)
+    segments(panel$diff_raw_giq, panel$raw_low_perf, panel$diff_raw_giq, panel$raw_high_perf, col = ink, lwd = 1.7)
+    points(
+      panel$diff_raw_giq,
+      panel$diff_raw_perf,
+      pch = 21,
+      bg = adjustcolor(box_fill[as.character(panel$treatment)], alpha.f = 0.72),
+      col = box_border[as.character(panel$treatment)],
+      cex = 1.35,
+      lwd = 1.1
+    )
+    text(
+      panel$diff_raw_giq,
+      panel$diff_raw_perf,
+      labels = as.character(panel$treatment),
+      pos = 4,
+      cex = 0.68,
+      col = soft_ink,
+      xpd = TRUE
+    )
+    box(col = panel_border, lwd = 1.15)
+  }
 }
-mtext("Derecha = mayor inmersi\u00f3n; arriba = m\u00e1s golpes recibidos; derecha + arriba = posible trade-off", side = 1, outer = TRUE, line = 0.45, cex = 0.86, col = soft_ink)
+mtext("RQ3: inmersion frente a dano y golpes recibidos", side = 3, outer = TRUE, adj = 0.02, line = 2.75, cex = 1.22, font = 2, col = ink)
+mtext("Derecha = mayor inmersion; arriba = mas dano o golpes recibidos frente a Control", side = 3, outer = TRUE, adj = 0.02, line = 1.50, cex = 0.86, col = soft_ink)
+mtext("Barras: IC 95%; lineas punteadas: sin cambio frente a Control", side = 1, outer = TRUE, line = 0.75, cex = 0.86, col = soft_ink)
 par(op)
 close_png()
 
@@ -1797,20 +1626,18 @@ summary_lines <- c(
   sprintf("Quality-flagged rows retained for analysis: %d", length(quality_flag_rows)),
   sprintf("Duplicated players retained: %d", sum(duplicated(hard$player_id))),
   "",
-  "Primary metric set:",
-  "- RQ1: Inmersion percibida (imm_total).",
-  "- RQ2: Kills/min and golpes recibidos/min.",
-  "- RQ2 context: supervivencia en segundos.",
-  "- RQ3: cambio conjunto de inmersion y golpes recibidos frente a Control.",
-  "",
   "Order of calculations:",
   "1. Load juiciness_clean_dataset.csv.",
-  "2. Retain all rows and keep quality flags as audit metadata; FPS is not used as a treatment-level validity metric.",
-  "3. RQ1: factorial model for perceived immersion, residual checks, variance checks, and contrasts vs Control.",
-  "4. RQ2: factorial/ART checks for kills/min and golpes recibidos/min; survival is contextual.",
-  "5. RQ2 supplementary counts: negative-binomial models with duration offset for total kills and total hits.",
-  "6. RQ3: all treatments contrasted against Control for immersion and hits/min.",
-  "7. RQ3: trade-off classification plus a quadrant plot for immersion vs hits/min.",
+  "2. Retain all rows, including runs previously excluded by the hard-clean FPS rule.",
+  "3. Confirm one row per participant.",
+  "4. RQ1: factorial linear model for perceived immersion, residual checks, variance checks, emmeans only for significant interactions.",
+  "5. RQ2: factorial models for telemetry; use log1p for skewed positive rates and ART as nonparametric sensitivity.",
+  "6. RQ2 counts: negative-binomial model with duration offset for total hits.",
+  "7. RQ3: isolated-treatment contrasts against Control and Spearman GIQ-performance correlations.",
+  "",
+  "Rmd alignment:",
+  "The attached Rmd is useful as an exploratory GIQ workflow because it models shake, zoom and recoil, checks residuals/variance, and follows interactions with emmeans.",
+  "This canonical script keeps that order but uses the current juiciness_clean_dataset.csv without excluding the low-FPS runs.",
   "",
   "Condition counts in juiciness clean dataset:",
   paste(sprintf("- %s: %d", condition_counts$treatment, condition_counts$n), collapse = "\n"),
@@ -1845,13 +1672,16 @@ summary_lines <- c(
   },
   "",
   "Final figures:",
-  paste(sprintf("- analysis/images/research_questions/%s", final_figure_files), collapse = "\n"),
-  "",
-  "Main tables:",
-  "- analysis/results/research_questions/07_rq3_all_treatments_vs_control.csv",
-  "- analysis/results/research_questions/11_all_treatments_vs_control.csv",
-  "- analysis/results/research_questions/12_rq2_directional_treatment_contrasts.csv",
-  "- analysis/results/research_questions/14_rq3_tradeoff_classification.csv"
+  "- analysis/images/research_questions/RQ1_immersion_giq_effects.png",
+  "- analysis/images/research_questions/RQ1_immersion_vs_control_forest.png",
+  "- analysis/images/research_questions/RQ2_damage_per_min.png",
+  "- analysis/images/research_questions/RQ2_hits_per_min.png",
+  "- analysis/images/research_questions/RQ2_factor_effects_forest.png",
+  "- analysis/images/research_questions/RQ2_count_models_duration_offset.png",
+  "- analysis/images/research_questions/RQ2_count_model_rate_ratios.png",
+  "- analysis/images/research_questions/RQ3_baseline_tradeoff_forest.png",
+  "- analysis/images/research_questions/RQ3_tradeoff_quadrants.png",
+  "- analysis/images/research_questions/RQ3_giq_performance_correlation.png"
 )
 
 writeLines(summary_lines, file.path(out_dir, "summary.txt"))
@@ -1863,39 +1693,35 @@ guide_lines <- c(
   "",
   "## RQ1",
   "",
-  "- `RQ1_immersion_giq_effects.png`: Inmersion percibida by treatment. It includes raw observations, median/IQR, mean, 95% CI and the relevant factorial p-value.",
-  "- `RQ1_immersion_vs_control_forest.png`: difference in GIQ against Control for all non-control treatments with 95% CI.",
+  "- `RQ1_immersion_giq_effects.png`: Inmersión percibida by treatment, ordered from worst to best mean. It includes raw observations, median/IQR, mean, 95% CI and the relevant factorial p-value.",
+  "- `RQ1_immersion_vs_control_forest.png`: difference in GIQ against Control with 95% CI.",
   "",
   "## RQ2",
   "",
-  "- `RQ2_kills_per_min.png`: offensive performance by treatment.",
-  "- `RQ2_hits_per_min.png`: received hits per minute by treatment. Lower values indicate better defensive/motor performance.",
-  "- `RQ2_performance_effects_directional_forest.png`: directional treatment contrasts against Control for all non-control treatments. Right means better performance.",
-  "- `RQ2_survival_time_context.png`: contextual survival-time figure. It helps interpret rates and counts but is not the main performance metric.",
-  "- `RQ2_count_models_duration_offset.png`: supplementary duration-adjusted total hits.",
-  "- `RQ2_count_model_rate_ratios.png`: supplementary duration-offset count-model rate ratios for all treatments, with Control shown as reference = 1.",
+  "- `RQ2_damage_per_min.png`: boxplot for Daño/min by treatment, ordered from worst to best mean.",
+  "- `RQ2_hits_per_min.png`: boxplot for Golpes/min by treatment, ordered from worst to best mean.",
+  "- `RQ2_factor_effects_forest.png`: standardized factor effects for RQ2 metrics with 95% CI.",
+  "- `RQ2_count_models_duration_offset.png`: boxplot for Golpes totales ajustados por duración de partida, ordered from worst to best mean, with the negative-binomial duration-offset p/q value.",
+  "- `RQ2_count_model_rate_ratios.png`: duration-offset count-model rate ratios with 95% CI.",
   "",
   "## RQ3",
   "",
-  "- `RQ3_immersion_vs_control_forest.png`: all non-control treatments against Control for Inmersion percibida.",
-  "- `RQ3_hits_vs_control_forest.png`: all non-control treatments against Control for Golpes recibidos/min.",
-  "- `RQ3_immersion_hits_tradeoff_quadrants.png`: change in GIQ against change in hits/min versus Control. Right + up indicates possible trade-off.",
-  "- `RQ3_giq_performance_correlation.png`: secondary individual-level Spearman association, not the primary trade-off test.",
-  "- `14_rq3_tradeoff_classification.csv`: treatment-level interpretation table for the trade-off decision.",
+  "- `RQ3_baseline_tradeoff_forest.png`: RQ3 forest plot with horizontal panels for Inmersión percibida, Daño/min and Golpes/Min against Control.",
+  "- `RQ3_tradeoff_quadrants.png`: change in GIQ against change in Daño/min and Golpes/Min versus Control.",
+  "- `RQ3_giq_performance_correlation.png`: paired boxplots for perceived immersion and Golpes/min by treatment, each ordered from worst to best mean. The footer reports the GIQ vs Golpes/min Spearman result.",
   "",
   "## Calculation Order",
   "",
   "1. juiciness_clean_dataset.csv.",
-  "2. Retain all rows and keep quality flags as audit metadata; do not use FPS as a treatment-level validity figure.",
-  "3. RQ1 GIQ factorial model with assumptions and all-treatment contrasts vs Control.",
-  "4. RQ2 factorial/ART checks for kills/min and hits/min.",
-  "5. RQ2 supplementary count models with duration offset.",
-  "6. RQ3 all-treatment contrasts vs Control.",
-  "7. RQ3 trade-off quadrant and classification using immersion vs received hits.",
+  "2. Retain all rows and keep quality flags as audit metadata.",
+  "3. RQ1 GIQ factorial model with assumptions.",
+  "4. RQ2 telemetry factorial/ART checks.",
+  "5. RQ2 count models with duration offset.",
+  "6. RQ3 isolated contrasts vs Control.",
+  "7. RQ3 Spearman correlations between GIQ and gameplay metrics.",
   "",
   "The older analysis assets are archived under `analysis/archive/`."
 )
-
 writeLines(guide_lines, file.path(fig_dir, "README.md"))
 
 cat(paste(summary_lines, collapse = "\n"), "\n")

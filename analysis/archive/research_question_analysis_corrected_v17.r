@@ -21,6 +21,11 @@ suppressPackageStartupMessages({
   library(graphics)
 })
 
+# Intentar renderizar correctamente tildes y ñ en los PNG.
+invisible(try(Sys.setlocale("LC_CTYPE", "es_CR.UTF-8"), silent = TRUE))
+invisible(try(Sys.setlocale("LC_CTYPE", "en_US.UTF-8"), silent = TRUE))
+utf8_text <- function(x) enc2utf8(as.character(x))
+
 set.seed(20260627)
 
 find_project_root <- function() {
@@ -53,6 +58,8 @@ paths <- list(
   scratch_figures = scratch_fig_dir
 )
 final_figure_files <- c(
+  "00_assumption_validation_main_metrics.png",
+  "00_art_factorial_main_metrics.png",
   "RQ1_immersion_giq_effects.png",
   "RQ1_immersion_vs_control_forest.png",
   "RQ2_kills_per_min.png",
@@ -88,6 +95,26 @@ fmt_p <- function(p) {
 
 fmt_num <- function(x, digits = 2) {
   ifelse(!is.finite(x), "NA", formatC(x, format = "f", digits = digits))
+}
+
+sig_class <- function(p, q) {
+  if (!is.finite(p) && !is.finite(q)) return("no_disponible")
+  if (is.finite(q) && q < 0.05) return("significativo_q")
+  if (is.finite(p) && p < 0.05) return("nominal_p")
+  "no_significativo"
+}
+
+sig_label <- function(p, q, p_prefix = "p", q_prefix = "q") {
+  cls <- sig_class(p, q)
+  if (identical(cls, "significativo_q")) return(paste0(q_prefix, "=", fmt_p(q)))
+  if (identical(cls, "nominal_p")) return(paste0(p_prefix, "=", fmt_p(p)))
+  ""
+}
+
+display_stat_label <- function(p, q, p_prefix = "p", q_prefix = "q") {
+  if (is.finite(q)) return(paste0(q_prefix, "=", fmt_p(q)))
+  if (is.finite(p)) return(paste0(p_prefix, "=", fmt_p(p)))
+  "n/d"
 }
 
 treatment_from_flags <- function(shake, zoom, recoil) {
@@ -162,69 +189,10 @@ raw$Recoil <- factor(raw$recoil_num, levels = c(0, 1), labels = c("Ausente", "Pr
 raw <- raw[order(raw$player_id, raw$run_id), ]
 raw$person_row_index <- ave(seq_len(nrow(raw)), raw$player_id, FUN = seq_along)
 
-flag_rows <- list()
-add_flag <- function(rows, rule, variable, value, threshold, reason) {
-  rows <- rows[!is.na(rows)]
-  if (length(rows) == 0) return(invisible(NULL))
-  flag_rows[[length(flag_rows) + 1]] <<- data.frame(
-    row_number = rows,
-    player_id = raw$player_id[rows],
-    run_id = raw$run_id[rows],
-    treatment = as.character(raw$treatment[rows]),
-    rule = rule,
-    variable = variable,
-    value = value,
-    threshold = threshold,
-    reason = reason,
-    stringsAsFactors = FALSE
-  )
-}
-
-add_flag(
-  which(raw$person_row_index > 1),
-  "duplicate_player_row",
-  "player_id",
-  raw$player_id[raw$person_row_index > 1],
-  "retain first row only",
-  "A participant must contribute only one gameplay run."
-)
-add_flag(
-  which(is.finite(raw$duration_min) & raw$duration_min * 60 < 30),
-  "duration_lt_30s",
-  "ingame_survival_s",
-  raw$ingame_survival_s[is.finite(raw$duration_min) & raw$duration_min * 60 < 30],
-  ">= 30 seconds",
-  "Run is too short to represent stable gameplay."
-)
-add_flag(
-  which(is.finite(to_num(raw$input_total)) & to_num(raw$input_total) <= 0),
-  "zero_input_total",
-  "input_total",
-  raw$input_total[is.finite(to_num(raw$input_total)) & to_num(raw$input_total) <= 0],
-  "> 0",
-  "Run has no recorded input."
-)
-add_flag(
-  which(
-    is.finite(to_num(raw$ingame_survival_s)) &
-      is.finite(to_num(raw$total_kills)) &
-      to_num(raw$ingame_survival_s) >= 120 &
-      to_num(raw$total_kills) <= 0
-  ),
-  "zero_kills_after_120s",
-  "total_kills",
-  raw$total_kills[
-    is.finite(to_num(raw$ingame_survival_s)) &
-      is.finite(to_num(raw$total_kills)) &
-      to_num(raw$ingame_survival_s) >= 120 &
-      to_num(raw$total_kills) <= 0
-  ],
-  "> 0 when survival >= 120s",
-  "Long run has no kills, suggesting failed telemetry or non-representative play."
-)
-
-flags <- if (length(flag_rows) > 0) do.call(rbind, flag_rows) else data.frame()
-quality_flag_rows <- sort(unique(flags$row_number))
+# No se eliminan runs al inicio.
+# La auditoría de calidad no excluye observaciones en esta versión.
+flags <- data.frame()
+quality_flag_rows <- integer(0)
 removed <- raw[FALSE, , drop = FALSE]
 hard <- raw
 
@@ -431,6 +399,89 @@ write.csv(art_results, file.path(out_dir, "04_art_factorial_sensitivity.csv"), r
 write.csv(emmeans_results, file.path(out_dir, "05_interaction_emmeans_followup.csv"), row.names = FALSE, na = "")
 
 # -------------------------------------------------------------------------
+# Primary factorial evidence: ANOVA only when assumptions are viable; ART otherwise.
+# -------------------------------------------------------------------------
+
+primary_method_for_metric <- function(metric) {
+  row <- assumptions[assumptions$metric == metric, , drop = FALSE]
+  if (nrow(row) == 0) return("ART")
+  if (isTRUE(row$normality_ok[1]) && isTRUE(row$variance_ok_brown_forsythe[1])) "ANOVA" else "ART"
+}
+
+pairwise_control_p <- function(vals, control_vals, method) {
+  vals <- vals[is.finite(vals)]
+  control_vals <- control_vals[is.finite(control_vals)]
+  if (length(vals) < 2 || length(control_vals) < 2) return(NA_real_)
+
+  if (identical(method, "ANOVA")) {
+    return(tryCatch(t.test(vals, control_vals, var.equal = FALSE)$p.value, error = function(e) NA_real_))
+  }
+
+  tryCatch(wilcox.test(vals, control_vals, exact = FALSE)$p.value, error = function(e) NA_real_)
+}
+
+primary_metric_order <- c("imm_total", "ingame_survival_s", "kills_per_min", "hits_per_min")
+primary_metric_labels <- c(
+  "imm_total" = "Inmersión percibida",
+  "ingame_survival_s" = "Supervivencia (s)",
+  "kills_per_min" = "Kills/min",
+  "hits_per_min" = "Golpes recibidos/min"
+)
+primary_term_order <- c("Shake", "Zoom", "Recoil", "Shake:Zoom", "Shake:Recoil", "Zoom:Recoil", "Shake:Zoom:Recoil")
+
+primary_rows <- list()
+for (metric in primary_metric_order) {
+  method <- primary_method_for_metric(metric)
+  source <- if (identical(method, "ANOVA")) anova_results else art_results
+  metric_rows <- source[source$metric == metric & source$term %in% primary_term_order, , drop = FALSE]
+  if (nrow(metric_rows) == 0) next
+  metric_rows$primary_method <- method
+  metric_rows$assumption_normality_ok <- assumptions$normality_ok[match(metric_rows$metric, assumptions$metric)]
+  metric_rows$assumption_variance_ok <- assumptions$variance_ok_brown_forsythe[match(metric_rows$metric, assumptions$metric)]
+  if (!"f_value" %in% names(metric_rows) && "statistic" %in% names(metric_rows)) metric_rows$f_value <- metric_rows$statistic
+  primary_rows[[metric]] <- metric_rows[
+    ,
+    intersect(
+      c("metric", "metric_label", "term", "primary_method", "assumption_normality_ok",
+        "assumption_variance_ok", "df_effect", "df_residual", "f_value", "p_value", "q_value"),
+      names(metric_rows)
+    ),
+    drop = FALSE
+  ]
+}
+primary_factorial_results <- if (length(primary_rows) > 0) do.call(rbind, primary_rows) else data.frame()
+if (nrow(primary_factorial_results) > 0) {
+  primary_factorial_results$q_value_primary_family <- p.adjust(primary_factorial_results$p_value, method = "BH")
+  primary_factorial_results <- primary_factorial_results[order(match(primary_factorial_results$metric, primary_metric_order), match(primary_factorial_results$term, primary_term_order)), , drop = FALSE]
+}
+write.csv(primary_factorial_results, file.path(out_dir, "00_primary_factorial_tests_main_metrics.csv"), row.names = FALSE, na = "")
+
+primary_doc_lines <- c(
+  "Primary factorial tests for simplified metrics",
+  "============================================",
+  "",
+  "Rule: use ANOVA only when residual normality and Brown-Forsythe variance checks are both viable; otherwise use ART.",
+  "",
+  if (nrow(primary_factorial_results) == 0) {
+    "No primary factorial results were available."
+  } else {
+    paste(
+      sprintf(
+        "- %s / %s / %s: p=%s, q=%s",
+        primary_factorial_results$primary_method,
+        primary_factorial_results$metric_label,
+        gsub(":", " x ", primary_factorial_results$term),
+        fmt_p(primary_factorial_results$p_value),
+        fmt_p(primary_factorial_results$q_value_primary_family)
+      ),
+      collapse = "\n"
+    )
+  }
+)
+writeLines(primary_doc_lines, file.path(out_dir, "00_primary_factorial_tests_main_metrics.txt"))
+
+
+# -------------------------------------------------------------------------
 # 3. Count models for event totals with duration offsets.
 # -------------------------------------------------------------------------
 
@@ -520,14 +571,15 @@ for (metric in baseline_metrics) {
   temp$treatment <- factor(as.character(temp$treatment), levels = baseline_treatments)
   if (nrow(temp) < length(baseline_treatments) * 2) next
 
+  primary_method <- primary_method_for_metric(metric)
   fit <- lm(Y_model ~ treatment, data = temp)
 
   emm_p <- NULL
-  if (has_emmeans) {
+  if (identical(primary_method, "ANOVA") && has_emmeans) {
     emm <- tryCatch(emmeans::emmeans(fit, "treatment"), error = function(e) NULL)
     if (!is.null(emm)) {
       emm_p <- tryCatch(
-        as.data.frame(emmeans::contrast(emm, method = "trt.vs.ctrl", ref = "Control", adjust = "dunnettx")),
+        as.data.frame(emmeans::contrast(emm, method = "trt.vs.ctrl", ref = "Control", adjust = "none")),
         error = function(e) NULL
       )
     }
@@ -547,15 +599,24 @@ for (metric in baseline_metrics) {
     ci_std <- if (is.finite(pooled_sd) && pooled_sd > 0) ci_raw / pooled_sd else c(NA_real_, NA_real_)
 
     p_value <- NA_real_
+    p_source <- NA_character_
     if (!is.null(emm_p)) {
       hit <- match_dunnett_contrast(emm_p, tr)
-      if (nrow(hit) > 0 && "p.value" %in% names(hit)) p_value <- hit$p.value[1]
+      if (nrow(hit) > 0 && "p.value" %in% names(hit)) {
+        p_value <- hit$p.value[1]
+        p_source <- "ANOVA emmeans vs Control"
+      }
+    }
+    if (!is.finite(p_value)) {
+      p_value <- pairwise_control_p(vals, control_vals, primary_method)
+      p_source <- ifelse(identical(primary_method, "ANOVA"), "ANOVA fallback Welch t-test", "ART fallback Wilcoxon rank-sum")
     }
 
     baseline_rows[[paste(metric, tr, sep = "_")]] <- data.frame(
       rq = "RQ3",
       metric = metric,
       metric_label = spec$label,
+      primary_method = primary_method,
       treatment = tr,
       contrast = paste(tr, "vs Control"),
       model_scale = attr(temp, "model_scale"),
@@ -568,16 +629,20 @@ for (metric in baseline_metrics) {
       raw_low = ci_raw[1],
       raw_high = ci_raw[2],
       p_value = p_value,
+      p_value_source = p_source,
       stringsAsFactors = FALSE
     )
   }
 }
 baseline <- if (length(baseline_rows) > 0) do.call(rbind, baseline_rows) else data.frame()
 if (nrow(baseline) > 0) {
-  baseline$q_value <- p.adjust(baseline$p_value, method = "BH")
+  baseline$q_value <- NA_real_
+  finite_p <- is.finite(baseline$p_value)
+  baseline$q_value[finite_p] <- p.adjust(baseline$p_value[finite_p], method = "BH")
   baseline$significant_q05 <- is.finite(baseline$q_value) & baseline$q_value < 0.05
 }
 write.csv(baseline, file.path(out_dir, "07_rq3_all_treatments_vs_control.csv"), row.names = FALSE, na = "")
+
 
 tradeoff_metrics <- metric_specs$metric[metric_specs$rq == "RQ2"]
 tradeoff_rows <- list()
@@ -674,7 +739,7 @@ segments(seq_len(nrow(rq1_effect)) - 0.08, rq1_effect$absent_mean,
          seq_len(nrow(rq1_effect)) + 0.08, rq1_effect$present_mean, col = "#202423", lwd = 2)
 legend("bottomleft", legend = c("Ausente", "Presente"), pch = 21,
        pt.bg = c("#C9D6DF", "#0072B2"), bty = "n")
-draw_title("RQ1: inmersion por efecto aislado", "Promedio marginal observado; el modelo factorial se reporta en tabla")
+draw_title("Inmersión por efecto", "Promedio marginal observado")
 
 par(mar = c(6, 5.5, 5.2, 2))
 temp <- hard[is.finite(to_num(hard$imm_total)), ]
@@ -758,7 +823,7 @@ for (r in seq_len(nrow(mat))) {
   }
 }
 box()
-draw_title("RQ2: telemetria por efecto aislado", "Valor = diferencia estandarizada Presente-Ausente; p/q priorizan ART cuando esta disponible")
+draw_title("Desempeño por efecto", "Diferencia estandarizada Presente–Ausente")
 close_png()
 
 # RQ2 scratch diagnostic count-model figure.
@@ -776,7 +841,7 @@ if (nrow(count_results) > 0) {
     axis(2, at = y, labels = count_plot$label, las = 1, cex.axis = 0.82)
     abline(v = -log10(0.05), lty = 2, col = "#B2182B")
     text(x, y + 0.18, paste0("p=", fmt_p(count_plot$p_value), "; q=", fmt_p(count_plot$q_value)), cex = 0.78)
-    draw_title("RQ2: conteos con offset por duracion", "Modelo binomial negativo para golpes totales ajustados por duracion")
+    draw_title("Conteos ajustados por duración", "Modelo binomial negativo con offset de duración")
     close_png()
   }
 }
@@ -793,7 +858,7 @@ plot(plot_trade$rho, y, xlim = c(-1, 1), yaxt = "n", pch = 21,
 abline(v = 0, lty = 2, col = "#777777")
 axis(2, at = y, labels = plot_trade$metric_label, las = 1, cex.axis = 0.9)
 text(plot_trade$rho, y + 0.2, labels = paste0("p=", fmt_p(plot_trade$p_value), "; q=", fmt_p(plot_trade$q_value)), cex = 0.8)
-draw_title("RQ3: relacion inmersion-desempeno", "Puntos verdes indican correlaciones que sobreviven FDR")
+draw_title("Relación entre inmersión y desempeño", "Puntos verdes: correlaciones que sobreviven FDR")
 close_png()
 
 # -------------------------------------------------------------------------
@@ -886,12 +951,21 @@ axis_label <- function(x, scale_values = x) {
   sub("\\.$", "", out)
 }
 
-draw_y_axis_with_minor <- function(ylim, major_n = 5, minor_n = 11) {
+draw_y_axis_with_minor <- function(ylim, major_n = 5, minor_n = 11,
+                                   major_cex = 1.05, minor_cex = 0.78) {
   major <- pretty(ylim, n = major_n)
   major <- major[major >= ylim[1] & major <= ylim[2]]
   minor <- pretty(ylim, n = minor_n)
   minor <- minor[minor >= ylim[1] & minor <= ylim[2]]
   minor_only <- minor[!minor %in% major]
+  if (length(minor_only) == 0 && length(major) >= 2) {
+    step <- min(diff(sort(unique(major)))) / 2
+    if (is.finite(step) && step > 0) {
+      minor <- seq(floor(ylim[1] / step) * step, ceiling(ylim[2] / step) * step, by = step)
+      minor <- minor[minor >= ylim[1] & minor <= ylim[2]]
+      minor_only <- minor[!vapply(minor, function(v) any(abs(v - major) < 1e-8), logical(1))]
+    }
+  }
   scale_values <- sort(unique(c(major, minor_only)))
   if (length(minor_only) > 0) {
     abline(h = minor_only, col = adjustcolor(minor_grid_col, alpha.f = 0.68), lwd = 0.75, lty = 3)
@@ -900,22 +974,31 @@ draw_y_axis_with_minor <- function(ylim, major_n = 5, minor_n = 11) {
       at = minor_only,
       labels = axis_label(minor_only, scale_values),
       las = 1,
-      cex.axis = 0.78,
+      cex.axis = minor_cex,
       col = panel_border,
       col.axis = adjustcolor(soft_ink, alpha.f = 0.78),
       tcl = -0.14
     )
   }
   abline(h = major, col = grid_col, lwd = 1)
-  axis(2, at = major, labels = axis_label(major, scale_values), las = 1, cex.axis = 1.05, col = panel_border, col.axis = ink)
+  axis(2, at = major, labels = axis_label(major, scale_values), las = 1, cex.axis = major_cex, col = panel_border, col.axis = ink)
 }
 
-draw_x_axis_with_minor <- function(xlim, major_n = 5, minor_n = 11) {
+draw_x_axis_with_minor <- function(xlim, major_n = 5, minor_n = 9,
+                                   major_cex = 1.02, minor_cex = 0.62) {
   major <- pretty(xlim, n = major_n)
   major <- major[major >= xlim[1] & major <= xlim[2]]
-  minor <- seq(floor(xlim[1] * 4) / 4, ceiling(xlim[2] * 4) / 4, by = 0.25)
+  minor <- pretty(xlim, n = minor_n)
   minor <- minor[minor >= xlim[1] & minor <= xlim[2]]
-  minor_only <- minor[!minor %in% major]
+  minor_only <- minor[!vapply(minor, function(v) any(abs(v - major) < 1e-8), logical(1))]
+  if (length(minor_only) == 0 && length(major) >= 2) {
+    step <- min(diff(sort(unique(major)))) / 2
+    if (is.finite(step) && step > 0) {
+      minor <- seq(floor(xlim[1] / step) * step, ceiling(xlim[2] / step) * step, by = step)
+      minor <- minor[minor >= xlim[1] & minor <= xlim[2]]
+      minor_only <- minor[!vapply(minor, function(v) any(abs(v - major) < 1e-8), logical(1))]
+    }
+  }
   scale_values <- sort(unique(c(major, minor_only)))
   if (length(minor_only) > 0) {
     abline(v = minor_only, col = adjustcolor(minor_grid_col, alpha.f = 0.68), lwd = 0.75, lty = 3)
@@ -923,30 +1006,34 @@ draw_x_axis_with_minor <- function(xlim, major_n = 5, minor_n = 11) {
       1,
       at = minor_only,
       labels = axis_label(minor_only, scale_values),
-      cex.axis = 0.62,
+      cex.axis = minor_cex,
       col = panel_border,
       col.axis = adjustcolor(soft_ink, alpha.f = 0.78),
       tcl = -0.14
     )
   }
   abline(v = major, col = grid_col, lwd = 1)
-  axis(1, at = major, labels = axis_label(major, scale_values), cex.axis = 1.02, col = panel_border, col.axis = ink)
+  axis(1, at = major, labels = axis_label(major, scale_values), cex.axis = major_cex, col = panel_border, col.axis = ink)
 }
 
 
-draw_x_axis_with_minor_log <- function(xlim, major_n = 5, minor_step = 0.25) {
+draw_x_axis_with_minor_log <- function(xlim, major_n = 5,
+                                       major_cex = 1.02, minor_cex = 0.68) {
   if (!all(is.finite(xlim)) || any(xlim <= 0)) return(invisible(NULL))
   log_lim <- log10(xlim)
   major_log <- pretty(log_lim, n = major_n)
   major_log <- major_log[major_log >= log_lim[1] & major_log <= log_lim[2]]
-  major <- 10^major_log
-  start_minor <- floor(log_lim[1] / minor_step) * minor_step
-  end_minor <- ceiling(log_lim[2] / minor_step) * minor_step
-  minor_log <- seq(start_minor, end_minor, by = minor_step)
+  if (length(major_log) >= 2) {
+    step <- min(diff(sort(unique(major_log)))) / 2
+  } else {
+    step <- 0.1
+  }
+  minor_log <- seq(floor(log_lim[1] / step) * step, ceiling(log_lim[2] / step) * step, by = step)
   minor_log <- minor_log[minor_log >= log_lim[1] & minor_log <= log_lim[2]]
+  major <- 10^major_log
   minor <- 10^minor_log
-  tol <- 1e-10
-  minor_only <- minor[sapply(minor, function(v) all(abs(v - major) > tol))]
+  tol <- 1e-8
+  minor_only <- minor[sapply(minor, function(v) all(abs(log10(v) - major_log) > tol))]
   scale_values <- sort(unique(c(major, minor_only)))
   if (length(minor_only) > 0) {
     abline(v = minor_only, col = adjustcolor(minor_grid_col, alpha.f = 0.68), lwd = 0.75, lty = 3)
@@ -954,14 +1041,14 @@ draw_x_axis_with_minor_log <- function(xlim, major_n = 5, minor_step = 0.25) {
       1,
       at = minor_only,
       labels = axis_label(minor_only, scale_values),
-      cex.axis = 0.62,
+      cex.axis = minor_cex,
       col = panel_border,
       col.axis = adjustcolor(soft_ink, alpha.f = 0.78),
       tcl = -0.14
     )
   }
   abline(v = major, col = grid_col, lwd = 1)
-  axis(1, at = major, labels = axis_label(major, scale_values), cex.axis = 1.02, col = panel_border, col.axis = ink)
+  axis(1, at = major, labels = axis_label(major, scale_values), cex.axis = major_cex, col = panel_border, col.axis = ink)
 }
 
 metric_note <- function(metric, preferred = c("art", "anova")) {
@@ -1078,7 +1165,7 @@ draw_legacy_box <- function(metric, ylab, title_text = "", subtitle = "", ylim =
     line = 1.18
   )
   box(col = panel_border, lwd = 1.15)
-  if (nzchar(title_text)) title(title_text, adj = 0, cex.main = title_cex, font.main = 2, line = 1.45)
+  if (nzchar(title_text)) title(utf8_text(title_text), adj = 0, cex.main = title_cex, font.main = 2, line = 1.45)
   add_box_footer(subtitle, show_treatment_note = x_note)
 }
 
@@ -1157,59 +1244,76 @@ draw_rq3_single_metric_forest <- function(metric_name, output_file, title_text, 
   y_levels <- rev(truth_order[truth_order != "Control"])
   y_pos <- seq_along(y_levels)
   names(y_pos) <- y_levels
+
   xlim <- range(c(panel$std_low, panel$std_high, 0), na.rm = TRUE)
-  pad <- diff(xlim) * 0.18
-  if (!is.finite(pad) || pad == 0) pad <- 0.35
+  pad <- diff(xlim) * 0.10
+  if (!is.finite(pad) || pad == 0) pad <- 0.20
   xlim <- xlim + c(-pad, pad)
 
-  open_png(output_file, width = 2550, height = 1500)
+  open_png(output_file, width = 2850, height = 1500)
   op <- par(
-    mar = c(4.15, 11.8, 4.65, 1.35),
-    oma = c(1.3, 0.4, 0, 0),
-    mgp = c(2.55, 0.72, 0),
+    mar = c(3.85, 11.2, 3.55, 1.15),
+    oma = c(1.1, 0.35, 0, 0),
+    mgp = c(2.40, 0.70, 0),
     tcl = -0.25
   )
   plot(
     NA,
     NA,
     xlim = xlim,
-    ylim = c(0.78, length(y_levels) + 0.22),
+    ylim = c(0.62, length(y_levels) + 0.38),
     axes = FALSE,
-    xlab = xlab_text,
+    xlab = utf8_text(xlab_text),
     ylab = "",
-    main = title_text,
+    main = utf8_text(title_text),
     cex.main = 1.22,
     cex.lab = 0.98
   )
-  draw_x_axis_with_minor(xlim)
-  abline(v = 0, lty = 2, col = "#8A918B", lwd = 1.1)
-  abline(h = y_pos, col = adjustcolor(grid_col, alpha.f = 0.62), lwd = 1)
+
+  # Bandas alternas para mejorar lectura por fila.
+  for (i in seq_along(y_pos)) {
+    if (i %% 2 == 0) {
+      rect(xlim[1], y_pos[i] - 0.45, xlim[2], y_pos[i] + 0.45,
+           col = adjustcolor("#EEF3EF", alpha.f = 0.58), border = NA)
+    }
+  }
+
+  draw_x_axis_with_minor(xlim, major_cex = 0.98, minor_cex = 0.72)
+  abline(v = 0, lty = 2, col = "#8A918B", lwd = 1.25)
+  abline(h = y_pos, col = adjustcolor(grid_col, alpha.f = 0.35), lwd = 0.85)
+
   y <- y_pos[as.character(panel$treatment)]
-  segments(panel$std_low, y, panel$std_high, y, col = ink, lwd = 2)
+  segments(panel$std_low, y, panel$std_high, y, col = ink, lwd = 1.65)
+
+  # Topes de intervalo de confianza.
+  cap <- 0.105
+  segments(panel$std_low, y - cap, panel$std_low, y + cap, col = ink, lwd = 1.65)
+  segments(panel$std_high, y - cap, panel$std_high, y + cap, col = ink, lwd = 1.65)
+
+  panel$sig_class <- mapply(sig_class, panel$p_value, panel$q_value)
+  point_border <- ifelse(panel$sig_class == "significativo_q", "#111111", box_border[as.character(panel$treatment)])
+  point_lwd <- ifelse(panel$sig_class == "significativo_q", 2.55, 1.35)
+  point_cex <- ifelse(panel$sig_class == "significativo_q", 2.05, 1.85)
   points(
     panel$std_diff,
     y,
     pch = 21,
-    bg = adjustcolor(box_fill[as.character(panel$treatment)], alpha.f = 0.68),
-    col = box_border[as.character(panel$treatment)],
-    cex = 1.55,
-    lwd = 1.2
+    bg = adjustcolor(box_fill[as.character(panel$treatment)], alpha.f = 0.78),
+    col = point_border,
+    cex = point_cex,
+    lwd = point_lwd
   )
-  if (any(is.finite(panel$q_value) & panel$q_value < 0.05)) {
-    sig <- panel[is.finite(panel$q_value) & panel$q_value < 0.05, , drop = FALSE]
-    sig_y <- y_pos[as.character(sig$treatment)]
-    text(
-      sig$std_high,
-      sig_y,
-      labels = paste0("p=", fmt_p(sig$p_value), " q=", fmt_p(sig$q_value)),
-      pos = 4,
-      cex = 0.70,
-      col = soft_ink
-    )
-  }
-  axis(2, at = y_pos, labels = names(y_pos), las = 1, tick = FALSE, cex.axis = 0.95)
+
+  # Etiquetas p/q en columna fija para evitar tapar el estimador.
+  panel$label_text <- mapply(display_stat_label, panel$p_value, panel$q_value)
+  label_col <- ifelse(panel$sig_class == "significativo_q", "#111111", ifelse(panel$sig_class == "nominal_p", "#8B5A10", soft_ink))
+  label_cex <- ifelse(panel$sig_class == "significativo_q", 0.86, 0.78)
+  label_font <- ifelse(panel$sig_class == "significativo_q", 2, 1)
+  text(xlim[2], y, labels = panel$label_text,
+       adj = 1, cex = label_cex, font = label_font, col = label_col)
+
+  axis(2, at = y_pos, labels = utf8_text(names(y_pos)), las = 1, tick = FALSE, cex.axis = 0.98)
   box(col = panel_border, lwd = 1.15)
-  mtext("0 indica ausencia de diferencia respecto a Control; todos los tratamientos se comparan contra Control", side = 3, adj = 0, line = 0.45, cex = 0.82, col = soft_ink)
   par(op)
   close_png()
   invisible(TRUE)
@@ -1218,13 +1322,13 @@ draw_rq3_single_metric_forest <- function(metric_name, output_file, title_text, 
 draw_rq3_single_metric_forest(
   "imm_total",
   "RQ3_immersion_vs_control_forest.png",
-  "RQ3: inmersi\u00f3n frente a Control",
+  "Inmersión frente a Control",
   "Diferencia estandarizada de inmersi\u00f3n frente a Control"
 )
 draw_rq3_single_metric_forest(
   "hits_per_min",
   "RQ3_hits_vs_control_forest.png",
-  "RQ3: golpes recibidos frente a Control",
+  "Golpes recibidos frente a Control",
   "Diferencia estandarizada de golpes/min frente a Control"
 )
 
@@ -1271,13 +1375,14 @@ compute_treatment_contrasts <- function(metrics = metric_specs$metric) {
     temp <- temp[!is.na(temp$treatment), , drop = FALSE]
     if (nrow(temp) < 12 || sum(temp$treatment == "Control") < 2) next
 
+    primary_method <- primary_method_for_metric(metric)
     fit <- lm(Y_model ~ treatment, data = temp)
     emm_p <- NULL
     if (has_emmeans) {
       emm <- tryCatch(emmeans::emmeans(fit, "treatment"), error = function(e) NULL)
       if (!is.null(emm)) {
         emm_p <- tryCatch(
-          as.data.frame(emmeans::contrast(emm, method = "trt.vs.ctrl", ref = "Control", adjust = "dunnettx")),
+          as.data.frame(emmeans::contrast(emm, method = "trt.vs.ctrl", ref = "Control", adjust = "none")),
           error = function(e) NULL
         )
       }
@@ -1298,14 +1403,23 @@ compute_treatment_contrasts <- function(metrics = metric_specs$metric) {
       ci_std <- if (is.finite(pooled_sd) && pooled_sd > 0) ci_raw / pooled_sd else c(NA_real_, NA_real_)
 
       p_value <- NA_real_
-      if (!is.null(emm_p) && "p.value" %in% names(emm_p)) {
+      p_source <- NA_character_
+      if (identical(primary_method, "ANOVA") && !is.null(emm_p) && "p.value" %in% names(emm_p)) {
         hit <- match_dunnett_contrast(emm_p, tr)
-        if (nrow(hit) > 0) p_value <- hit$p.value[1]
+        if (nrow(hit) > 0) {
+          p_value <- hit$p.value[1]
+          p_source <- "ANOVA emmeans vs Control"
+        }
+      }
+      if (!is.finite(p_value)) {
+        p_value <- pairwise_control_p(vals, control_vals, primary_method)
+        p_source <- ifelse(identical(primary_method, "ANOVA"), "ANOVA fallback Welch t-test", "ART fallback Wilcoxon rank-sum")
       }
 
       rows[[paste(metric, tr, sep = "_")]] <- data.frame(
         metric = metric,
         metric_label = spec$label[1],
+        primary_method = primary_method,
         treatment = tr,
         contrast = paste(tr, "vs Control"),
         diff_raw = diff_raw,
@@ -1315,18 +1429,46 @@ compute_treatment_contrasts <- function(metrics = metric_specs$metric) {
         std_low = ci_std[1],
         std_high = ci_std[2],
         p_value = p_value,
+        p_value_source = p_source,
         stringsAsFactors = FALSE
       )
     }
   }
 
   out <- if (length(rows) > 0) do.call(rbind, rows) else data.frame()
-  if (nrow(out) > 0) out$q_value <- p.adjust(out$p_value, method = "BH")
+  if (nrow(out) > 0) {
+    out$q_value <- NA_real_
+    finite_p <- is.finite(out$p_value)
+    out$q_value[finite_p] <- p.adjust(out$p_value[finite_p], method = "BH")
+  }
   out
 }
 
 treatment_contrasts_all <- compute_treatment_contrasts()
 write.csv(treatment_contrasts_all, file.path(out_dir, "11_all_treatments_vs_control.csv"), row.names = FALSE, na = "")
+
+if (nrow(treatment_contrasts_all) > 0) {
+  contrast_doc_lines <- c(
+    "Treatment-vs-Control contrasts used in figures",
+    "=============================================",
+    "",
+    "P-values are selected according to the primary method for each metric: ANOVA when assumptions are viable; ART/Wilcoxon fallback when assumptions are not viable.",
+    "",
+    paste(
+      sprintf(
+        "- %s / %s / %s: p=%s, q=%s [%s]",
+        treatment_contrasts_all$primary_method,
+        treatment_contrasts_all$metric_label,
+        treatment_contrasts_all$contrast,
+        fmt_p(treatment_contrasts_all$p_value),
+        fmt_p(treatment_contrasts_all$q_value),
+        treatment_contrasts_all$p_value_source
+      ),
+      collapse = "\n"
+    )
+  )
+  writeLines(contrast_doc_lines, file.path(out_dir, "11_all_treatments_vs_control_pq_values.txt"))
+}
 
 factor_effect_ci_summary <- function(metric, label) {
   rows <- list()
@@ -1469,7 +1611,9 @@ draw_forest_panels <- function(df, file, title, subtitle, xlab,
                                est_col = "std_diff", low_col = "std_low", high_col = "std_high",
                                null_value = 0, log_x = FALSE,
                                width = 3000, height = 1450,
-                               left_mar = NULL, y_axis_cex = 0.98) {
+                               left_mar = NULL, y_axis_cex = 0.98,
+                               per_panel_xlim = FALSE, symmetric_zero = FALSE,
+                               x_major_cex = 1.02, x_minor_cex = 0.62) {
   df <- df[is.finite(df[[est_col]]) & is.finite(df[[low_col]]) & is.finite(df[[high_col]]), , drop = FALSE]
   if (nrow(df) == 0) return(invisible(NULL))
 
@@ -1477,23 +1621,32 @@ draw_forest_panels <- function(df, file, title, subtitle, xlab,
   if (is.null(left_mar)) {
     left_mar <- if (identical(row_col, "treatment")) 10.8 else 5.1
   }
+
+  top_oma <- if (nzchar(subtitle)) 4.15 else 3.15
   open_png(file, width = width, height = height)
   op <- par(
     mfrow = c(1, length(panels)),
-    mar = c(3.55, left_mar, 2.75, 1.05),
-    oma = c(2.9, 0.4, 4.7, 0),
-    mgp = c(2.05, 0.66, 0),
+    mar = c(3.35, left_mar, 2.05, 0.90),
+    oma = c(2.55, 0.35, top_oma, 0),
+    mgp = c(1.95, 0.64, 0),
     tcl = -0.25
   )
 
-  xlim <- range(c(df[[low_col]], df[[high_col]], null_value), na.rm = TRUE)
+  global_xlim <- range(c(df[[low_col]], df[[high_col]], null_value), na.rm = TRUE)
   if (log_x) {
-    xlim[1] <- max(xlim[1], 0.01)
-    xlim <- exp(log(xlim) + c(-0.12, 0.12) * diff(log(xlim)))
+    global_xlim[1] <- max(global_xlim[1], 0.01)
+    global_xlim <- exp(log(global_xlim) + c(-0.08, 0.08) * diff(log(global_xlim)))
   } else {
-    pad <- diff(xlim) * 0.16
-    if (!is.finite(pad) || pad == 0) pad <- 0.35
-    xlim <- xlim + c(-pad, pad)
+    if (symmetric_zero) {
+      max_abs <- max(abs(c(df[[low_col]], df[[high_col]], null_value)), na.rm = TRUE)
+      if (!is.finite(max_abs) || max_abs == 0) max_abs <- 1
+      max_abs <- max_abs * 1.08
+      global_xlim <- c(-max_abs, max_abs)
+    } else {
+      pad <- diff(global_xlim) * 0.10
+      if (!is.finite(pad) || pad == 0) pad <- 0.25
+      global_xlim <- global_xlim + c(-pad, pad)
+    }
   }
 
   for (pn in panels) {
@@ -1502,53 +1655,98 @@ draw_forest_panels <- function(df, file, title, subtitle, xlab,
     y_pos <- seq_along(y_levels)
     names(y_pos) <- y_levels
 
+    xlim <- global_xlim
+    if (per_panel_xlim) {
+      xlim <- range(c(panel[[low_col]], panel[[high_col]], null_value), na.rm = TRUE)
+      if (log_x) {
+        xlim[1] <- max(xlim[1], 0.01)
+        xlim <- exp(log(xlim) + c(-0.08, 0.08) * diff(log(xlim)))
+      } else if (symmetric_zero) {
+        max_abs <- max(abs(c(panel[[low_col]], panel[[high_col]], null_value)), na.rm = TRUE)
+        if (!is.finite(max_abs) || max_abs == 0) max_abs <- 1
+        xlim <- c(-1, 1) * max_abs * 1.08
+      } else {
+        pad <- diff(xlim) * 0.10
+        if (!is.finite(pad) || pad == 0) pad <- 0.25
+        xlim <- xlim + c(-pad, pad)
+      }
+    }
+
     plot(
       NA, NA,
       xlim = xlim,
-      ylim = c(0.78, length(y_levels) + 0.22),
+      ylim = c(0.62, length(y_levels) + 0.38),
       axes = FALSE,
       xlab = "",
       ylab = "",
-      main = pn,
+      main = utf8_text(pn),
       cex.main = 1.08,
       log = if (log_x) "x" else ""
     )
 
-    if (log_x) {
-      draw_x_axis_with_minor_log(xlim)
-    } else {
-      draw_x_axis_with_minor(xlim)
+    # Bandas alternas por fila para aprovechar mejor el espacio y guiar la lectura.
+    for (i in seq_along(y_pos)) {
+      if (i %% 2 == 0) {
+        rect(xlim[1], y_pos[i] - 0.45, xlim[2], y_pos[i] + 0.45,
+             col = adjustcolor("#EEF3EF", alpha.f = 0.58), border = NA)
+      }
     }
-    abline(v = null_value, lty = 2, col = "#8A918B", lwd = 1.1)
-    abline(h = y_pos, col = adjustcolor(grid_col, alpha.f = 0.62), lwd = 1)
+
+    if (log_x) {
+      draw_x_axis_with_minor_log(xlim, major_cex = x_major_cex, minor_cex = x_minor_cex)
+    } else {
+      draw_x_axis_with_minor(xlim, major_cex = x_major_cex, minor_cex = x_minor_cex)
+    }
+    abline(v = null_value, lty = 2, col = "#8A918B", lwd = 1.25)
+    abline(h = y_pos, col = adjustcolor(grid_col, alpha.f = 0.35), lwd = 0.85)
 
     y <- y_pos[as.character(panel[[row_col]])]
-    segments(panel[[low_col]], y, panel[[high_col]], y, col = ink, lwd = 2)
+    segments(panel[[low_col]], y, panel[[high_col]], y, col = ink, lwd = 1.65)
+
+    # Topes de intervalo de confianza.
+    cap <- 0.105
+    segments(panel[[low_col]], y - cap, panel[[low_col]], y + cap, col = ink, lwd = 1.65)
+    segments(panel[[high_col]], y - cap, panel[[high_col]], y + cap, col = ink, lwd = 1.65)
+
     point_fill <- if (row_col == "treatment") {
-      adjustcolor(box_fill[as.character(panel[[row_col]])], alpha.f = 0.72)
+      adjustcolor(box_fill[as.character(panel[[row_col]])], alpha.f = 0.78)
     } else {
-      adjustcolor(c("Shake" = "#2F83D0", "Zoom" = "#1FB06E", "Recoil" = "#E36F43")[as.character(panel[[row_col]])], alpha.f = 0.72)
+      adjustcolor(c("Shake" = "#2F83D0", "Zoom" = "#1FB06E", "Recoil" = "#E36F43")[as.character(panel[[row_col]])], alpha.f = 0.78)
     }
     point_border <- if (row_col == "treatment") {
       box_border[as.character(panel[[row_col]])]
     } else {
       c("Shake" = "#1265AD", "Zoom" = "#0B8254", "Recoil" = "#AF4B28")[as.character(panel[[row_col]])]
     }
-    points(panel[[est_col]], y, pch = 21, bg = point_fill, col = point_border, cex = 1.45, lwd = 1.15)
 
-    if ("q_value" %in% names(panel) && any(is.finite(panel$q_value) & panel$q_value < 0.05)) {
-      sig <- panel[is.finite(panel$q_value) & panel$q_value < 0.05, , drop = FALSE]
-      sig_y <- y_pos[as.character(sig[[row_col]])]
-      text(sig[[est_col]], sig_y + 0.20, labels = paste0("q=", fmt_p(sig$q_value)), cex = 0.70, col = soft_ink)
+    if (all(c("p_value", "q_value") %in% names(panel))) {
+      panel$sig_class <- mapply(sig_class, panel$p_value, panel$q_value)
+    } else {
+      panel$sig_class <- rep("no_significativo", nrow(panel))
     }
 
-    axis(2, at = y_pos, labels = names(y_pos), las = 1, tick = FALSE, cex.axis = y_axis_cex)
+    point_col_use <- ifelse(panel$sig_class == "significativo_q", "#111111", point_border)
+    point_lwd_use <- ifelse(panel$sig_class == "significativo_q", 2.55, 1.35)
+    point_cex_use <- ifelse(panel$sig_class == "significativo_q", 2.05, 1.85)
+    points(panel[[est_col]], y, pch = 21, bg = point_fill, col = point_col_use, cex = point_cex_use, lwd = point_lwd_use)
+
+    # Etiquetas p/q en columna fija a la derecha para no tapar puntos ni IC.
+    if (all(c("p_value", "q_value") %in% names(panel))) {
+      panel$label_text <- mapply(display_stat_label, panel$p_value, panel$q_value)
+      label_col <- ifelse(panel$sig_class == "significativo_q", "#111111", ifelse(panel$sig_class == "nominal_p", "#8B5A10", soft_ink))
+      label_cex <- ifelse(panel$sig_class == "significativo_q", 0.86, 0.78)
+      label_font <- ifelse(panel$sig_class == "significativo_q", 2, 1)
+      text(xlim[2], y, labels = panel$label_text,
+           adj = 1, cex = label_cex, font = label_font, col = label_col)
+    }
+
+    axis(2, at = y_pos, labels = utf8_text(names(y_pos)), las = 1, tick = FALSE, cex.axis = y_axis_cex)
     box(col = panel_border, lwd = 1.15)
   }
 
-  mtext(title, side = 3, outer = TRUE, adj = 0.02, line = 2.85, cex = 1.22, font = 2, col = ink)
-  mtext(subtitle, side = 3, outer = TRUE, adj = 0.02, line = 1.62, cex = 0.86, col = soft_ink)
-  mtext(xlab, side = 1, outer = TRUE, line = 0.8, cex = 0.96, col = ink)
+  mtext(utf8_text(title), side = 3, outer = TRUE, adj = 0.02, line = if (nzchar(subtitle)) 2.55 else 1.75, cex = 1.22, font = 2, col = ink)
+  if (nzchar(subtitle)) mtext(utf8_text(subtitle), side = 3, outer = TRUE, adj = 0.02, line = 1.35, cex = 0.86, col = soft_ink)
+  mtext(utf8_text(xlab), side = 1, outer = TRUE, line = 0.75, cex = 0.96, col = ink)
   par(op)
   close_png()
   invisible(TRUE)
@@ -1566,8 +1764,8 @@ rq1_control <- rq1_control[order(rq1_control$diff_raw), , drop = FALSE]
 draw_forest_panels(
   rq1_control,
   file = "RQ1_immersion_vs_control_forest.png",
-  title = "RQ1: cambio en inmersion frente a Control",
-  subtitle = "Punto: diferencia media en GIQ; barra: IC 95%; 0 = sin diferencia frente a Control",
+  title = "Cambio en inmersión frente a Control",
+  subtitle = "Punto: diferencia media; barra: IC 95%; 0 = sin diferencia",
   xlab = "Cambio en GIQ frente a Control",
   panel_col = "metric_label",
   row_col = "treatment",
@@ -1578,7 +1776,8 @@ draw_forest_panels(
   width = 2950,
   height = 1550,
   left_mar = 11.8,
-  y_axis_cex = 0.94
+  y_axis_cex = 1.00,
+  x_minor_cex = 0.68
 )
 
 # RQ2: directional treatment contrasts with uncertainty.
@@ -1612,8 +1811,8 @@ if (nrow(rq2_performance_plot) > 0) {
   draw_forest_panels(
     rq2_performance_plot,
     file = "RQ2_performance_effects_directional_forest.png",
-    title = "RQ2: diferencias direccionales de desempeno frente a Control",
-    subtitle = "Derecha = mejor desempeno; Kills/min se mantiene e impactos recibidos/min se invierte",
+    title = "Desempeño frente a Control",
+    subtitle = "",
     xlab = "Cambio direccional frente a Control",
     panel_col = "metric_label",
     row_col = "treatment",
@@ -1624,7 +1823,11 @@ if (nrow(rq2_performance_plot) > 0) {
     width = 3300,
     height = 1550,
     left_mar = 11.8,
-    y_axis_cex = 0.94
+    y_axis_cex = 0.94,
+    per_panel_xlim = TRUE,
+    symmetric_zero = TRUE,
+    x_major_cex = 0.98,
+    x_minor_cex = 0.66
   )
 }
 
@@ -1636,8 +1839,8 @@ if (nrow(count_rate_ratios) > 0) {
   draw_forest_panels(
     count_rate_ratios,
     file = "RQ2_count_model_rate_ratios.png",
-    title = "RQ2: frecuencia esperada de eventos ajustada por duracion",
-    subtitle = "Modelo binomial negativo con offset de duracion; Control se muestra como referencia = 1",
+    title = "Razones de tasa frente a Control",
+    subtitle = "",
     xlab = "Rate ratio frente a Control",
     panel_col = "metric_label",
     row_col = "treatment",
@@ -1649,7 +1852,10 @@ if (nrow(count_rate_ratios) > 0) {
     width = 3500,
     height = 1550,
     left_mar = 11.8,
-    y_axis_cex = 0.94
+    y_axis_cex = 0.94,
+    per_panel_xlim = TRUE,
+    x_major_cex = 0.98,
+    x_minor_cex = 0.68
   )
 }
 
@@ -1712,15 +1918,27 @@ if (nrow(trade_quad) > 0) {
 open_png("RQ3_immersion_hits_tradeoff_quadrants.png", width = 3000, height = 1450)
 op <- par(
   mar = c(4.35, 5.45, 4.15, 1.15),
-  oma = c(2.3, 0, 1.0, 0),
+  oma = c(2.5, 0, 1.0, 0),
   mgp = c(2.75, 0.75, 0),
   tcl = -0.25
 )
 if (nrow(trade_quad) > 0) {
-  xlim <- range(c(trade_quad$raw_low_giq, trade_quad$raw_high_giq, 0), na.rm = TRUE)
-  ylim <- range(c(trade_quad$raw_low_hits, trade_quad$raw_high_hits, 0), na.rm = TRUE)
-  xpad <- diff(xlim) * 0.18
-  ypad <- diff(ylim) * 0.18
+  trade_quad$sig_class <- mapply(
+    function(p1, q1, p2, q2) {
+      cls <- c(sig_class(p1, q1), sig_class(p2, q2))
+      if ("significativo_q" %in% cls) return("significativo_q")
+      if ("nominal_p" %in% cls) return("nominal_p")
+      if (all(cls == "no_disponible")) return("no_disponible")
+      "no_significativo"
+    },
+    trade_quad$p_value_giq, trade_quad$q_value_giq,
+    trade_quad$p_value_hits, trade_quad$q_value_hits
+  )
+
+  xlim <- range(c(trade_quad$diff_raw_giq, 0), na.rm = TRUE)
+  ylim <- range(c(trade_quad$diff_raw_hits, 0), na.rm = TRUE)
+  xpad <- diff(xlim) * 0.24
+  ypad <- diff(ylim) * 0.26
   if (!is.finite(xpad) || xpad == 0) xpad <- 0.20
   if (!is.finite(ypad) || ypad == 0) ypad <- 0.20
   xlim <- xlim + c(-xpad, xpad)
@@ -1731,41 +1949,217 @@ if (nrow(trade_quad) > 0) {
     xlim = xlim,
     ylim = ylim,
     axes = FALSE,
-    xlab = "Cambio en inmersi\u00f3n frente a Control",
+    xlab = "Cambio en inmersión frente a Control",
     ylab = "Cambio en golpes recibidos/min frente a Control",
-    main = "RQ3: inmersi\u00f3n frente a golpes recibidos",
+    main = "Inmersión y golpes recibidos",
     cex.main = 1.22,
     cex.lab = 1.02
   )
-  draw_x_axis_with_minor(xlim)
-  draw_y_axis_with_minor(ylim)
+  draw_x_axis_with_minor(xlim, major_cex = 0.98, minor_cex = 0.68)
+  draw_y_axis_with_minor(ylim, major_cex = 1.02, minor_cex = 0.82)
   abline(v = 0, h = 0, lty = 2, col = "#8A918B", lwd = 1.1)
 
-  segments(trade_quad$raw_low_giq, trade_quad$diff_raw_hits, trade_quad$raw_high_giq, trade_quad$diff_raw_hits, col = ink, lwd = 1.7)
-  segments(trade_quad$diff_raw_giq, trade_quad$raw_low_hits, trade_quad$diff_raw_giq, trade_quad$raw_high_hits, col = ink, lwd = 1.7)
+  point_fill <- adjustcolor(box_fill[as.character(trade_quad$treatment)], alpha.f = 0.84)
+  point_border <- ifelse(
+    trade_quad$sig_class == "significativo_q", "#111111",
+    ifelse(trade_quad$sig_class == "nominal_p", "#8B5A10",
+           ifelse(trade_quad$sig_class == "no_disponible", "#9EA59B", box_border[as.character(trade_quad$treatment)]))
+  )
+  point_lwd <- ifelse(trade_quad$sig_class == "significativo_q", 2.35, ifelse(trade_quad$sig_class == "nominal_p", 1.7, 1.3))
+
   points(
     trade_quad$diff_raw_giq,
     trade_quad$diff_raw_hits,
     pch = 21,
-    bg = adjustcolor(box_fill[as.character(trade_quad$treatment)], alpha.f = 0.72),
-    col = box_border[as.character(trade_quad$treatment)],
-    cex = 1.35,
-    lwd = 1.1
+    bg = point_fill,
+    col = point_border,
+    cex = ifelse(trade_quad$sig_class == "significativo_q", 1.68, 1.55),
+    lwd = point_lwd
   )
+
   text(
     trade_quad$diff_raw_giq,
     trade_quad$diff_raw_hits,
     labels = as.character(trade_quad$treatment),
-    pos = 4,
-    cex = 0.68,
-    col = soft_ink,
+    pos = 1,
+    offset = 0.70,
+    cex = 0.84,
+    col = ifelse(trade_quad$sig_class == "significativo_q", "#111111", ifelse(trade_quad$sig_class == "nominal_p", "#8B5A10", soft_ink)),
     xpd = TRUE
   )
+
+  trade_quad$label_text <- mapply(
+    function(p1, q1, p2, q2) {
+      lab <- c(
+        display_stat_label(p1, q1, p_prefix = "pI", q_prefix = "qI"),
+        display_stat_label(p2, q2, p_prefix = "pH", q_prefix = "qH")
+      )
+      paste(lab, collapse = " | ")
+    },
+    trade_quad$p_value_giq, trade_quad$q_value_giq,
+    trade_quad$p_value_hits, trade_quad$q_value_hits
+  )
+  text(
+    trade_quad$diff_raw_giq,
+    trade_quad$diff_raw_hits,
+    labels = trade_quad$label_text,
+    pos = 3,
+    offset = 0.72,
+    cex = ifelse(trade_quad$sig_class == "significativo_q", 0.76, 0.70),
+    font = ifelse(trade_quad$sig_class == "significativo_q", 2, 1),
+    col = ifelse(trade_quad$sig_class == "significativo_q", "#111111", ifelse(trade_quad$sig_class == "nominal_p", "#8B5A10", soft_ink))
+  )
+
   box(col = panel_border, lwd = 1.15)
 }
-mtext("Derecha = mayor inmersi\u00f3n; arriba = m\u00e1s golpes recibidos; derecha + arriba = posible trade-off", side = 1, outer = TRUE, line = 0.45, cex = 0.86, col = soft_ink)
+mtext("Los puntos usan el color del tratamiento; borde negro grueso: q < 0.05; borde café: p < 0.05 pero q ≥ 0.05. Derecha = mayor inmersión; arriba = más golpes recibidos.", side = 1, outer = TRUE, line = 0.55, cex = 0.80, col = soft_ink)
 par(op)
 close_png()
+
+
+# -------------------------------------------------------------------------
+# Additional simplified diagnostic figures inspired by the uploaded example scripts.
+# These use only the simplified metrics kept in the current analysis.
+# -------------------------------------------------------------------------
+
+main_metric_order <- c("imm_total", "ingame_survival_s", "kills_per_min", "hits_per_min")
+main_metric_label_map <- c(
+  "imm_total" = "Inmersión percibida",
+  "ingame_survival_s" = "Supervivencia (s)",
+  "kills_per_min" = "Kills/min",
+  "hits_per_min" = "Golpes recibidos/min"
+)
+main_term_order <- c("Shake", "Zoom", "Recoil", "Shake:Zoom", "Shake:Recoil", "Zoom:Recoil", "Shake:Zoom:Recoil")
+main_term_short <- c("Shake", "Zoom", "Recoil", "SxZ", "SxR", "ZxR", "SxZxR")
+
+# 1) ART factorial matrix for the simplified metrics.
+if (nrow(art_results) > 0) {
+  art_plot <- merge(
+    expand.grid(metric = main_metric_order, term = main_term_order, stringsAsFactors = FALSE),
+    art_results[, c("metric", "term", "p_value", "q_value", "f_value")],
+    by = c("metric", "term"),
+    all.x = TRUE,
+    sort = FALSE
+  )
+  art_plot$metric_label <- main_metric_label_map[art_plot$metric]
+  art_plot$term_short <- main_term_short[match(art_plot$term, main_term_order)]
+  art_plot$score <- ifelse(
+    is.finite(art_plot$q_value), pmax(0, -log10(pmax(art_plot$q_value, 1e-4))),
+    ifelse(is.finite(art_plot$p_value), 0.60 * pmax(0, -log10(pmax(art_plot$p_value, 1e-4))), 0)
+  )
+  art_plot$evidence_class <- ifelse(
+    is.finite(art_plot$q_value) & art_plot$q_value < 0.05, "good_q",
+    ifelse(is.finite(art_plot$p_value) & art_plot$p_value < 0.05, "good_p", "bad_ns")
+  )
+  max_score <- max(art_plot$score, na.rm = TRUE)
+  if (!is.finite(max_score) || max_score <= 0) max_score <- 1
+  green_pal <- grDevices::colorRampPalette(c("#EAF6EA", "#BFE0BE", "#79BE7E", "#3E8D54", "#203B2B"))(100)
+  red_pal <- grDevices::colorRampPalette(c("#FBEDED", "#F2C9C9", "#E69797", "#D25E5E", "#A53030"))(100)
+
+  open_png("00_art_factorial_main_metrics.png", width = 3400, height = 1850)
+  op <- par(mar = c(4.3, 10.6, 4.4, 1.2), oma = c(2.1, 0, 0.4, 0), mgp = c(2.4, 0.72, 0), tcl = -0.22)
+  plot(NA, NA,
+       xlim = c(0.5, length(main_term_order) + 0.5),
+       ylim = c(0.5, length(main_metric_order) + 0.5),
+       axes = FALSE, xlab = "", ylab = "",
+       main = utf8_text("ART factorial: métricas principales"), cex.main = 1.28)
+
+  for (r in seq_along(main_metric_order)) {
+    for (c in seq_along(main_term_order)) {
+      hit <- art_plot[art_plot$metric == main_metric_order[r] & art_plot$term == main_term_order[c], , drop = FALSE]
+      score <- hit$score[1]
+      fill_col <- if (is.finite(score) && score > 0) {
+        idx_col <- max(1, min(100, round(score / max_score * 99) + 1))
+        if (identical(hit$evidence_class[1], "good_q")) {
+          green_pal[idx_col]
+        } else if (identical(hit$evidence_class[1], "good_p")) {
+          green_pal[max(1, round(idx_col * 0.70))]
+        } else {
+          red_pal[max(1, round(max(8, idx_col * 0.65)))]
+        }
+      } else {
+        "#F7EDED"
+      }
+      yrow <- length(main_metric_order) - r + 1
+      rect(c - 0.5, yrow - 0.5, c + 0.5, yrow + 0.5, col = fill_col, border = "#D5DDD5", lwd = 1)
+
+      p_lab <- paste0("p=", fmt_p(hit$p_value[1]))
+      q_lab <- paste0("q=", fmt_p(hit$q_value[1]))
+      is_q_sig <- is.finite(hit$q_value[1]) && hit$q_value[1] < 0.05
+      text(c, yrow + 0.08, utf8_text(p_lab), cex = if (is_q_sig) 0.98 else 0.92,
+           font = if (is_q_sig) 2 else 1, col = "#202423")
+      text(c, yrow - 0.10, utf8_text(q_lab), cex = if (is_q_sig) 1.00 else 0.94,
+           font = if (is_q_sig) 2 else 1, col = "#202423")
+    }
+  }
+
+  axis(1, at = seq_along(main_term_order), labels = utf8_text(main_term_short), tick = FALSE, cex.axis = 1.12)
+  axis(2, at = rev(seq_along(main_metric_order)), labels = utf8_text(unname(main_metric_label_map[main_metric_order])), las = 1, tick = FALSE, cex.axis = 1.08)
+  box(col = "#D5DDD5", lwd = 1.1)
+  mtext(utf8_text("Verde = evidencia favorable (q < 0.05 o p < 0.05); rojo = sin evidencia clara. Texto = p nominal y q FDR."), side = 1, outer = TRUE, line = 0.7, cex = 0.90, col = soft_ink)
+  par(op)
+  close_png()
+}
+
+# 2) Assumption validation plot for the simplified metrics.
+assump_plot <- assumptions[assumptions$metric %in% main_metric_order, , drop = FALSE]
+if (nrow(assump_plot) > 0) {
+  assump_plot$metric_label_short <- main_metric_label_map[assump_plot$metric]
+  assump_plot <- assump_plot[match(main_metric_order, assump_plot$metric), , drop = FALSE]
+  threshold_x <- -log10(0.05)
+
+  draw_assumption_panel <- function(values, labels, title_text, pass_label) {
+    score <- -log10(pmax(values, 1e-12))
+    xlim <- c(0, max(3, score, na.rm = TRUE) * 1.12)
+    y <- rev(seq_along(labels))
+    plot(score, y,
+         xlim = xlim,
+         ylim = c(0.5, length(labels) + 0.5),
+         axes = FALSE,
+         xlab = "-log10(p)", ylab = "",
+         main = utf8_text(title_text),
+         pch = 21,
+         bg = ifelse(is.finite(values) & values < 0.05, "#E07A20", "#58B368"),
+         col = "#202423",
+         cex = 1.55,
+         lwd = 1.2,
+         cex.main = 1.15)
+    x_major <- pretty(c(0, xlim[2]), n = 6)
+    x_major <- x_major[x_major >= 0 & x_major <= xlim[2]]
+    abline(v = x_major, col = adjustcolor(grid_col, alpha.f = 0.75), lwd = 1)
+    abline(h = y, col = adjustcolor(grid_col, alpha.f = 0.55), lwd = 0.9)
+    abline(v = threshold_x, lty = 2, col = "#4A4A4A", lwd = 1.4)
+    points(score, y,
+           pch = 21,
+           bg = ifelse(is.finite(values) & values < 0.05, "#E07A20", "#58B368"),
+           col = "#202423",
+           cex = 1.55,
+           lwd = 1.2)
+    axis(1, at = x_major, labels = axis_label(x_major, x_major), cex.axis = 0.96)
+    axis(2, at = y, labels = utf8_text(labels), las = 1, tick = FALSE, cex.axis = 0.96)
+    text(score, y, labels = paste0("p=", fmt_p(values)), pos = 4, offset = 0.35, cex = 0.82, col = "#202423")
+    box(col = panel_border, lwd = 1.1)
+  }
+
+  open_png("00_assumption_validation_main_metrics.png", width = 3200, height = 1650)
+  op <- par(mfrow = c(1, 2), mar = c(4.4, 9.0, 3.6, 1.3), oma = c(2.5, 0, 2.1, 0), mgp = c(2.35, 0.72, 0), tcl = -0.22)
+  draw_assumption_panel(
+    assump_plot$shapiro_residual_p,
+    assump_plot$metric_label_short,
+    "Normalidad residual",
+    "Cumple"
+  )
+  draw_assumption_panel(
+    assump_plot$brown_forsythe_p,
+    assump_plot$metric_label_short,
+    "Homogeneidad de varianza",
+    "Cumple"
+  )
+  mtext(utf8_text("Validación de supuestos"), side = 3, outer = TRUE, adj = 0.00, line = 0.8, cex = 1.36, font = 2, col = ink)
+  mtext(utf8_text("Línea punteada: p = 0.05; verde = no rechaza el supuesto; naranja = posible incumplimiento."), side = 1, outer = TRUE, line = 0.6, cex = 0.92, col = soft_ink)
+  par(op)
+  close_png()
+}
 
 # -------------------------------------------------------------------------
 # Summary and guide.
@@ -1806,6 +2200,7 @@ summary_lines <- c(
   "Order of calculations:",
   "1. Load juiciness_clean_dataset.csv.",
   "2. Retain all rows and keep quality flags as audit metadata; FPS is not used as a treatment-level validity metric.",
+  "2b. Added two simplified diagnostic figures inspired by generate_interpretable_pvalue_figures.R and anova_assumptions_and_alternatives.R.",
   "3. RQ1: factorial model for perceived immersion, residual checks, variance checks, and contrasts vs Control.",
   "4. RQ2: factorial/ART checks for kills/min and golpes recibidos/min; survival is contextual.",
   "5. RQ2 supplementary counts: negative-binomial models with duration offset for total kills and total hits.",
@@ -1848,8 +2243,11 @@ summary_lines <- c(
   paste(sprintf("- analysis/images/research_questions/%s", final_figure_files), collapse = "\n"),
   "",
   "Main tables:",
+  "- analysis/results/research_questions/00_primary_factorial_tests_main_metrics.csv",
+  "- analysis/results/research_questions/00_primary_factorial_tests_main_metrics.txt",
   "- analysis/results/research_questions/07_rq3_all_treatments_vs_control.csv",
   "- analysis/results/research_questions/11_all_treatments_vs_control.csv",
+  "- analysis/results/research_questions/11_all_treatments_vs_control_pq_values.txt",
   "- analysis/results/research_questions/12_rq2_directional_treatment_contrasts.csv",
   "- analysis/results/research_questions/14_rq3_tradeoff_classification.csv"
 )
@@ -1860,6 +2258,12 @@ guide_lines <- c(
   "# Final Research Figures",
   "",
   "Use only these figures for the academic presentation unless a reviewer asks for diagnostics.",
+  "The two additional diagnostic plots were inspired by useful ideas found in generate_interpretable_pvalue_figures.R and anova_assumptions_and_alternatives.R.",
+  "",
+  "## Diagnostics",
+  "",
+  "- `00_assumption_validation_main_metrics.png`: residual normality and Brown-Forsythe variance checks for the four simplified metrics.",
+  "- `00_art_factorial_main_metrics.png`: ART factorial matrix for the four simplified metrics with p and q shown inside each cell.",
   "",
   "## RQ1",
   "",
@@ -1879,7 +2283,7 @@ guide_lines <- c(
   "",
   "- `RQ3_immersion_vs_control_forest.png`: all non-control treatments against Control for Inmersion percibida.",
   "- `RQ3_hits_vs_control_forest.png`: all non-control treatments against Control for Golpes recibidos/min.",
-  "- `RQ3_immersion_hits_tradeoff_quadrants.png`: change in GIQ against change in hits/min versus Control. Right + up indicates possible trade-off.",
+  "- `RQ3_immersion_hits_tradeoff_quadrants.png`: one point per treatment showing change in GIQ vs change in hits/min against Control; p-values appear above each point and significant treatments are highlighted.",
   "- `RQ3_giq_performance_correlation.png`: secondary individual-level Spearman association, not the primary trade-off test.",
   "- `14_rq3_tradeoff_classification.csv`: treatment-level interpretation table for the trade-off decision.",
   "",
@@ -1888,7 +2292,7 @@ guide_lines <- c(
   "1. juiciness_clean_dataset.csv.",
   "2. Retain all rows and keep quality flags as audit metadata; do not use FPS as a treatment-level validity figure.",
   "3. RQ1 GIQ factorial model with assumptions and all-treatment contrasts vs Control.",
-  "4. RQ2 factorial/ART checks for kills/min and hits/min.",
+  "4. Use ANOVA for metrics that pass residual-normality and variance checks; use ART for metrics that do not.",
   "5. RQ2 supplementary count models with duration offset.",
   "6. RQ3 all-treatment contrasts vs Control.",
   "7. RQ3 trade-off quadrant and classification using immersion vs received hits.",

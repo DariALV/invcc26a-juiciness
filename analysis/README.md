@@ -13,10 +13,10 @@ analysis/
 ├── charts.py         # Paleta pastel y tema de Plotly
 ├── build_identified_camera_juiciness_csv.py
 ├── research_question_analysis.R
-├── data/             # Insumos reales
+├── data/             # Insumos activos para RStudio/R
 ├── results/          # Tablas y resúmenes generados
-├── images/           # Figuras finales y archivo de figuras legacy
-├── scripts/          # Scripts anteriores archivados
+├── images/           # Figuras finales
+├── archive/          # CSV/TXT/figuras/scripts archivados
 ├── requirements.txt
 └── .streamlit/
     ├── config.toml   # Tema visual pastel
@@ -88,7 +88,7 @@ métricas del CSV base.
 
 El análisis estadístico vigente usa como fuente principal:
 
-- `analysis/data/camera_juiciness_identified_fresh.csv`
+- `analysis/data/juiciness_clean_dataset.csv`
 
 Para reproducirlo:
 
@@ -98,8 +98,8 @@ Rscript analysis/research_question_analysis.R
 
 Orden del cálculo:
 
-1. CSV identificado desde Supabase.
-2. Hard Clean y una sola fila por participante.
+1. Cargar `analysis/data/juiciness_clean_dataset.csv`.
+2. Retener todas las filas y conservar banderas de calidad como auditoría.
 3. RQ1: modelo factorial para `Promedio en GIQ`, supuestos y seguimiento de interacción cuando aplica.
 4. RQ2: telemetría de desempeño con modelos factoriales/ART y modelos de conteo con offset de duración.
 5. RQ3: contrastes de tratamientos aislados contra Control y correlaciones Spearman entre GIQ y desempeño.
@@ -115,7 +115,7 @@ Salidas principales:
 - `analysis/results/research_questions/08_rq3_giq_performance_spearman.csv`
 - `analysis/images/research_questions/`
 
-El CSV fresco ya contiene una fila por participante identificado y se usa como
+El dataset limpio activo ya contiene una fila por participante y se usa como
 base directa para GIQ, condiciones factoriales y métricas observadas de juego.
 
 ## Figuras finales

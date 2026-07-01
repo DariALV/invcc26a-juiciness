@@ -1,0 +1,33 @@
+Primary factorial tests for simplified metrics
+============================================
+
+Rule: use ANOVA only when residual normality and Brown-Forsythe variance checks are both viable; otherwise use ART.
+
+- ANOVA / Inmersión percibida / Shake: p=0.543, q=0.894
+- ANOVA / Inmersión percibida / Zoom: p=0.493, q=0.894
+- ANOVA / Inmersión percibida / Recoil: p=0.596, q=0.928
+- ANOVA / Inmersión percibida / Shake x Zoom: p=0.043, q=0.554
+- ANOVA / Inmersión percibida / Shake x Recoil: p=0.179, q=0.626
+- ANOVA / Inmersión percibida / Zoom x Recoil: p=0.988, q=0.998
+- ANOVA / Inmersión percibida / Shake x Zoom x Recoil: p=0.273, q=0.764
+- ART / Supervivencia (s) / Shake: p=0.256, q=0.764
+- ART / Supervivencia (s) / Zoom: p=0.820, q=0.984
+- ART / Supervivencia (s) / Recoil: p=0.688, q=0.963
+- ART / Supervivencia (s) / Shake x Zoom: p=0.475, q=0.894
+- ART / Supervivencia (s) / Shake x Recoil: p=0.634, q=0.934
+- ART / Supervivencia (s) / Zoom x Recoil: p=0.892, q=0.984
+- ART / Supervivencia (s) / Shake x Zoom x Recoil: p=0.080, q=0.556
+- ART / Kills/min / Shake: p=0.120, q=0.556
+- ART / Kills/min / Zoom: p=0.847, q=0.984
+- ART / Kills/min / Recoil: p=0.914, q=0.984
+- ART / Kills/min / Shake x Zoom: p=0.139, q=0.556
+- ART / Kills/min / Shake x Recoil: p=0.335, q=0.853
+- ART / Kills/min / Zoom x Recoil: p=0.998, q=0.998
+- ART / Kills/min / Shake x Zoom x Recoil: p=0.059, q=0.554
+- ANOVA / Golpes recibidos/min / Shake: p=0.008, q=0.221
+- ANOVA / Golpes recibidos/min / Zoom: p=0.806, q=0.984
+- ANOVA / Golpes recibidos/min / Recoil: p=0.108, q=0.556
+- ANOVA / Golpes recibidos/min / Shake x Zoom: p=0.375, q=0.853
+- ANOVA / Golpes recibidos/min / Shake x Recoil: p=0.526, q=0.894
+- ANOVA / Golpes recibidos/min / Zoom x Recoil: p=0.751, q=0.984
+- ANOVA / Golpes recibidos/min / Shake x Zoom x Recoil: p=0.396, q=0.853
